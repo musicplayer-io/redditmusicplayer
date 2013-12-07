@@ -1,0 +1,394 @@
+
+@import "mixins";
+
+// Roboto 100, 300, 400, 500, 700, 900
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic);
+
+// Roboto Condensed 300, 400, 700
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700);
+
+// Basics
+*,
+::before,
+::after {
+	-webkit-user-select: none;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html, body, window {
+	background: #161616;
+}
+
+::selection {
+	background: #F75858;
+}
+
+.ui.grid>.column {
+	margin: inherit;
+}
+
+body {
+	font-family: "Roboto", sans-serif;
+	font-weight: 300;
+	margin: 0px;
+	background: #161616;
+	color: #FFF;
+}
+
+a {
+	font-weight: 300;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+// Title bar
+.title.menu.ui {
+	 .top.header.menu {
+		-webkit-app-region: drag;
+		-webkit-border-radius-bottom: 10px;
+		border-radius-bottom: 10px;
+		font-weight: 100;
+
+		.gradient(#393939, #212121);
+		background: -webkit-gradient(linear, center top, center bottom, from(rgba(57,57,57,0.7)), to(rgba(31,31,31,0.7))) 0 1px, url(../img/header.jpg);
+		background-repeat: repeat-x;
+		background-size: 100%, 378px;
+		border-top: 0px solid #6d6d6d;
+		border-left: 1px solid #464646;
+		border-right: 1px solid #464646;
+		border-bottom: 1px solid #313131;
+		.drop-shadow(0, 5px, 10px, 0.5);
+
+		.mac.native {
+			padding: 16px 10px 15px 15px;
+			&:hover, &.active {
+				.close {
+					background: lighten(#F75858, 20%);
+					box-shadow: 0 0 1px lighten(#7d0606, 20%);
+				}
+				.minimize {
+					background: lighten(#FFDA53, 20%);
+					box-shadow: 0 0 1px lighten(#866900, 20%);
+				}
+				.maximize {
+					background: lighten(#9fbb58, 20%);
+					box-shadow: 0 0 1px lighten(#2a3215, 20%);
+				}
+			}
+			.button {
+				-webkit-app-region: no-drag;
+				display: inline-block;
+				width: 11px;
+				height: 11px;
+				margin-right: 8px;
+				border-radius: 20px;
+				background: #fff;
+				.drop-shadow(0, 0, 1px, 0.5);
+				.transition(0.15s, ease-out);
+			}
+			.close:hover {
+				background: #F75858;
+				box-shadow: 0 0 1px #7d0606;
+			}
+			.minimize:hover {
+				background: #FFDA53;
+				box-shadow: 0 0 1px #866900;
+			}
+			.maximize:hover {
+				background: #9fbb58;
+				box-shadow: 0 0 1px #2a3215;
+			}
+			.close:active {
+				background: darken(#F75858, 20%);
+				box-shadow: 0 0 1px darken(#7d0606, 20%);
+			}
+			.minimize:active {
+				background: darken(#FFDA53, 20%);
+				box-shadow: 0 0 1px darken(#866900, 20%);
+			}
+			.maximize:active {
+				background: darken(#9fbb58, 20%);
+				box-shadow: 0 0 1px darken(#2a3215, 20%);
+			}
+		}
+		.redmusic {
+			font-weight: 400;
+			font-family: "Roboto Condensed", sans-serif;
+			text-transform: uppercase;
+			span {
+				font-variant: small-caps;
+				font-weight: 300;
+			}
+		}
+		.page-menu {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			-webkit-app-region: no-drag;
+		}
+	}
+	.sub.menu {
+		.drop-shadow(0, 5px, 10px, 0.3);
+		.ui.divided.grid>.column:not(.row), .ui.divided.grid>.row>.column {
+			box-shadow: -1px 0 0 0 rgba(0,0,0,.1),-2px 0 0 0 rgba(0,0,0,.1);
+		}
+		.dropdown.ui {
+			z-index: 1000;
+		}
+	}
+}
+
+.still-loading {
+	-webkit-app-region: drag;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	margin: auto;
+	z-index: 5000;
+	background: #212121 url(../img/header.jpg) ;
+	background-size: 100%;
+	background-repeat: no-repeat;
+	.redmusic {
+		font-weight: 400;
+		font-family: "Roboto Condensed", sans-serif;
+		text-transform: uppercase;
+		span {
+			font-variant: small-caps;
+			font-weight: 300;
+		}
+	}
+	display: -webkit-box;
+	 -webkit-box-orient: vertical;
+	 -webkit-box-pack: center;
+	 -webkit-box-align: center;
+
+	 display: -moz-box;
+	 -moz-box-orient: vertical;
+	 -moz-box-pack: center;
+	 -moz-box-align: center;
+
+	 display: box;
+	 box-orient: vertical;
+	 box-pack: center;
+	 box-align: center;
+}
+
+// Tabs
+.page-menu.right.menu {
+	color: #ccc;
+	.item.active {
+		background: rgba(33, 33, 33, 0.5);
+		color: #fff;
+		&:hover {
+			background: rgba(33, 33, 33, 0.5);
+			cursor: default;
+		}
+	}
+	.item, .ui.inverted.menu .item>a {
+		color: #ccc;
+	}
+}
+
+// Bottom Menu
+.bottom.fixed.menu {
+	.gradient(#262626, #212121);
+	border-top: 2px solid #464646;
+	border-left: 1px solid #464646;
+	border-right: 1px solid #464646;
+	.drop-shadow(0, -5px, 10px, 0.4);
+
+	.center.aligned {
+		text-align: center;
+		.item.active {
+			background: #212121;
+			font-weight: 400;
+			&:hover {
+				background: #212121;
+				cursor: default;
+			}
+		}
+	}
+	.left.menu {
+		min-width: 70%;
+		.title, .artist {
+			-webkit-user-select: text;
+			width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
+
+// Content
+.main-container.wrapper {
+	width: 100%;
+	height: calc(~"100% - 136px");
+	overflow-x: hidden;
+	overflow-y: auto;
+	position: fixed;
+	top: 90px;
+	.musicmenu {
+		//padding: 3px;
+		position: fixed;
+		height: calc(~"100% - 137px");
+		overflow-x: hidden;
+		overflow-y: auto;
+		z-index: 50;
+		.input.black {
+			.transition(0.15s, ease-out);
+			&.hidden {
+				position: fixed;
+				top: -100px;
+			}
+			&.visible {
+				position: relative;
+				top: 0px;
+			}
+			input {
+				background: rgba(0,0,0, .1);
+				color: rgba(255,255,255,.7)
+			}
+			&.focus input,  & input:focus {
+				color: rgba(255,255,255,.85)
+			}
+			color: rgba(255,255,255, .3);
+		}
+	}
+	.musicplaylist {
+		position: fixed;
+		right: 0px;
+		padding: 0px;
+		height: calc(~"100% - 137px");
+		overflow-x:hidden;
+		overflow-y: auto;
+		z-index: 60;
+		&.wide.column {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+	}
+	.playlist {
+		.item {
+			cursor: pointer;
+			&:hover {
+				a {
+					color: rgba(255,255,255,.9);
+					&:hover {
+						color: #FFF;
+					}
+				}
+			}
+			&.active {
+				cursor: default;
+			}
+			a {
+				color: rgba(255,255,255,.4);
+			}
+			.name {
+				color: #FFF;
+				line-height: 1.4;
+				font-size: 1.05em;
+				margin-bottom: 5px;
+			}
+		}
+	}
+}
+
+
+// Progress Bars
+.ui.progress.load-progress {
+		opacity: 0;
+		height: 1px;
+		.anim(opacity, 0.15s, ease-out);
+		.bar {
+			height: 1px;
+		}
+		&.activated {
+			opacity: 1;
+		}
+	}
+
+.ui.progress.music-progress {
+		opacity: 0;
+		height: 5px;
+		.anim(height, 0.15s, ease-out);
+		&.activated {
+			opacity: 1;
+			&:hover {
+				height: 10px;
+				.bar {
+					height: 10px;
+				}
+			}
+		}
+		.bar {
+			.anim(height, 0.15s, ease-out);
+			height: 5px;
+		}
+	}
+
+// Other
+.hidden.templates {
+	display: none;
+}
+
+.player.hidden {
+	width: 0px;
+	height: 0px;
+	position: fixed;
+	top: -1000px;
+	left: -1000px;
+	z-index: -100000;
+	margin-left: -100000px;
+}
+
+.windows-hidden {
+	display: none;
+	&.iswindows {
+		display: none !important;
+	}
+	&.notwindows {
+		display: inline-block !important;
+	}
+}
+.windows-only {
+	display: none !important;
+	&.iswindows {
+		display: inline-block !important;
+	}
+	&.notwindows {
+		display: none !important;
+	}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+	margin-right: 1px;
+    width: 8px;
+}
+
+::-webkit-scrollbar:vertical {
+	background: rgba(0,0,0,.1);
+	.transition(0.15s, ease-out);
+	&:hover {
+		background: rgba(0,0,0,.2)
+	}
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .1);
+    border-radius: 100px;
+    &:hover {
+    	background: rgba(255, 255, 255, .2);
+    }
+    &:active {
+    	background: rgba(255, 255, 255, .3);
+    }
+}
+

@@ -1,0 +1,25 @@
+.content.settings.ui.tab(data-tab='settings')
+	.ui.divided.grid
+		.five.musicmenu.wide.column
+			.ui.fluid.inverted.secondary.vertical.menu.settings-menu
+				.tabular.menu
+					a.item(href="#/settings/reddit", data-tab="settings/reddit")
+						i.setting.icon
+						| Reddit
+					a.item(href="#/settings/player", data-tab="settings/player")
+						i.headphones.icon
+						| Player
+					a.item(href="#/settings/lastfm", data-tab="settings/lastfm")
+						i.music.icon
+						| LastFM
+		.eleven.musicplaylist.wide.column
+			.ui.tab(data-tab='settings/reddit')
+				.ui.inverted.form
+					.grouped.inline.fields
+						.field
+							label Sort by: 
+							include ../includes/modules/subreddit-dropdown
+			.ui.tab(data-tab="settings/player")
+				p lel
+			.ui.tab(data-tab="settings/lastfm")
+				p nig

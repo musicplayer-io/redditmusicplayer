@@ -1,0 +1,21 @@
+{
+  "name": "RedditMusicPlayer",
+  "version": "0.0.1",
+  "description": "Reddit Music Player",
+  "main": "main.html",
+  "webkit": {
+    "plugin": true,
+    "no-edit-menu": true
+  },
+  "window": {
+    "toolbar": true,
+    "frame": true,
+    "width": 660,
+    "height": 500,
+    "position": "center",
+    "icon": "img/rmusic.png"
+  },
+  "dependencies": {
+    "nw-flash-trust": "git://github.com/szwacz/nw-flash-trust.git#master"
+  }
+}

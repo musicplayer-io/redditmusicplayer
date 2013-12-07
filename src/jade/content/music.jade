@@ -1,0 +1,10 @@
+.content.music.ui.tab(data-tab='music')
+	.ui.divided.grid
+		.five.musicmenu.wide.column
+			#searchSubs.ui.icon.input.black.fluid.hidden
+				input(type='text', placeholder='Subreddit...')
+				i.search.icon
+			//- Subreddits 
+			include subreddits
+		.eleven.musicplaylist.wide.column
+			.music.playlist.ui.inverted.fluid.vertical.selection.menu

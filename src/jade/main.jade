@@ -1,0 +1,25 @@
+!!! 5
+html(mlns:fb='http://ogp.me/ns/fb#', xmlns:og='http://ogp.me/ns#', itemscope='itemscope', itemtype='http://schema.org/Article')
+	head
+		meta(charset='utf-8')
+		title Reddit Music Player :: Reddit Playlister
+		include includes/meta
+		link(href='css/semantic.min.css', rel='stylesheet')
+		link(href='css/style.css', rel='stylesheet')
+	body
+		include includes/loading
+		include includes/titlebar
+		//- Content 
+		.main-container.wrapper
+			include content/content
+		include includes/bottombar
+			//- Hidden Controls 
+		.player.hidden
+			#youtube
+			iframe#sc(nwdisable, src="https://w.soundcloud.com/player/?url=http://api.soundcloud.com/users/1539950/favorites", width="100%", height="465", scrolling="no", frameborder="no")
+		//- Templates 
+		include includes/templates
+		//- Libraries
+		include includes/javascript
+		block livereload
+			<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>

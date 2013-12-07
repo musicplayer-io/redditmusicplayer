@@ -1,0 +1,40 @@
+.title.ui.top.fixed.inverted.menu
+	.top.menu.header
+		block macnative
+			//- Window Controls 
+			.left.active.menu.native.mac.windows-hidden
+				.close.button
+				.minimize.button
+				.maximize.button
+		//- Logo 
+		a.active.disabled.item.redmusic
+			span Reddit
+			| Music
+			span Player
+		//- Music / Radio Tabs 
+		.page-menu.right.tabular.menu
+			a.music-page.item.active(href='#/music/', data-tab='music')
+				i.icon.music
+			a.settings-page.item(href='#/settings/', data-tab='settings')
+				i.icon.settings
+			block windowsnative
+				//- Window Controls 
+				a.icon.item.native.windows-only.close(href='#/close/')
+					i.icon.circled.close
+		//- Load Progressbar 
+		.load-progress.ui.bottom.teal.striped.attached.progress
+			.bar(style='width: 0%;')
+	.sub.menu
+		.content.music.ui.tab(data-tab='music')
+			.ui.divided.grid
+				.five.wide.column
+					a.item.icon.search-subs
+						i.icon.search
+					a.item.icon.edit-subs
+						i.icon.pencil
+					a.item.icon.clear-subs
+						i.icon.remove
+				.eleven.wide.column
+					include modules/subreddit-dropdown
+		.content.settings.ui.tab(data-tab='settings')
+			.item.icon Settings

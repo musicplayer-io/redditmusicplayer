@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Ilias Ismanalijev",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~3.4.4",
+    "ejs": "~0.8.5",
+    "jade": "~0.35.0"
+  }
+}

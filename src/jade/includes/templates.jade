@@ -1,0 +1,16 @@
+.templates.hidden
+	//- Radio Playlist 
+	script(type='html/radioplaylist').
+		<div id="{id}" class="ui item">
+		<div class="name">{title}</div>
+		{artist} • {genre} • submitted by {redditor} • <a href="{reddit_url}" target="_blank" title="{reddit_title}">reddit</a>
+		</div>
+		</div>
+	//- Music Playlist
+	script(type='html/musicplaylist').
+		<div class="ui item" href="{file}">
+		<div class="name">{title}</div>
+		{origin}
+		<a href="{reddit}" target="_blank" title="{title}">view on reddit</a>
+		</div>
+		</div>
