@@ -78,12 +78,45 @@ $(function() {
 				};
 			};
 
+			var showActiveSubs = function() {
+				var lists = $(".subreddit-menu > .item");
+				for (var i = lists.length - 1; i >= 0; i--) {
+					var list = $(lists[i]);
+					list.find(".item:not(.active)").each(function(n, item) {
+						$(item).hide();
+					})
+					list.find(".item.active").each(function(n, item) {
+						$(item).show();
+					})
+				};
+			};
+
+			var showAllSubs = function() {
+				var lists = $(".subreddit-menu > .item");
+				for (var i = lists.length - 1; i >= 0; i--) {
+					var list = $(lists[i]);
+					list.find(".item").show();
+				};
+			}
+
+			var toggleActiveSubs = function(e) {
+				if (e) e.preventDefault();
+				$(".edit-subs").toggleClass("active");
+				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
+				if ($(".edit-subs").hasClass("active")) {
+					showActiveSubs();
+				} else {
+					showAllSubs();
+				}
+			}
+
 			// Search Subreddits
 			var toggleSearchSubs = function(e) {
 				if (e) e.preventDefault();
 				$("#searchSubs").toggleClass("visible");
 				$("#searchSubs").toggleClass("hidden");
 				if ($("#searchSubs").hasClass("visible")) {
+					$(".edit-subs").removeClass("active");
 					$("#searchSubs input").focus();
 					$("#searchSubs input").select();
 					$(".search-subs").addClass("active");
@@ -101,6 +134,9 @@ $(function() {
 			$("#searchSubs input").keyup(filterSubs);
 			// Clear
 			$(".clear-subs").click(function() {
+				$(".edit-subs").removeClass("active");
+				showAllSubs();
+				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
 				$(".musicmenu .selection.menu .item.active").each(function(e, item) {
 					var self = $(item);
 					var active = self.hasClass("active");
@@ -111,6 +147,8 @@ $(function() {
 				})
 				Player.Music.trigger("update");
 			})
+
+			$(".edit-subs").click(toggleActiveSubs);
 
 
 		// MUSIC
@@ -768,8 +806,6 @@ function OptionsModel() {
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
 module.exports=require('jLEaKv');
-},{}],"./js/modules/player":[function(require,module,exports){
-module.exports=require('L9FXUC');
 },{}],"L9FXUC":[function(require,module,exports){
 var MusicModel = require("./music");
 var RadioModel = require("./radio");
@@ -965,7 +1001,9 @@ function PlayerModel() {
 		})
 }
 module.exports = PlayerModel;
-},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"./js/modules/progressbar":[function(require,module,exports){
+},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"./js/modules/player":[function(require,module,exports){
+module.exports=require('L9FXUC');
+},{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
 
