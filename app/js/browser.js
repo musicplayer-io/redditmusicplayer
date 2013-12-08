@@ -38,6 +38,27 @@ $(function() {
 		}
 
 
+	// Helpers
+
+		String.prototype.fuzzy = function (s) {
+		    var hay = this.toLowerCase(), i = 0, n = 0, l;
+		    s = s.toLowerCase();
+		    for (; l = s[i++] ;) if ((n = hay.indexOf(l, n)) === -1) return false;
+		    return true;
+		};
+
+		String.prototype.fuzzyMark = function (s) {
+		    var hay = this.toLowerCase(), i = 0, n = 0, l;
+		    s = s.toLowerCase();
+		    for (; l = s[i++] ;) if ((n = hay.indexOf(l, n)) === -1) return false;
+		    var matches = [];
+			var i=0, n=0;
+		    for (; l = s[i++] ;) {
+		    	matches.push((n = hay.indexOf(l, n)));
+		    }
+		    return matches;
+		};
+
 	// User Events
 		// Music controls
 			// Play & Stop
@@ -57,6 +78,39 @@ $(function() {
 
 		// Subreddits
 			var filterSubs = function() {
+				var value = $("#searchSubs input").val();
+				var lists = $(".subreddit-menu > .item");
+				for (var i = lists.length - 1; i >= 0; i--) {
+					var list = $(lists[i]);
+					list.find(".item").each(function(n, item) {
+						var item = $(item);
+						if (!item.text().fuzzy(value)) {
+							item.hide();
+						} else {
+							var string = item.text().split("");
+							var marks = item.text().fuzzyMark(value);
+							for (var n = 0; n < string.length; n++) {
+								for (var m = 0; m < marks.length; m++) {
+									var mark = marks[m];
+									if (n==mark) {
+										string[n] = "<b>"+ string[n] +"</b>";
+									}
+								};
+							};
+							item.html(string.join(""))
+							item.show();
+							list.show();
+						}
+					})
+					if (list.find(".item:visible").length==0) {
+						list.hide();
+					} else {
+						list.show();
+					}
+				};
+			};
+
+			var _filterSubs = function() {
 				var value = $("#searchSubs input").val();
 				var lists = $(".subreddit-menu > .item");
 				for (var i = lists.length - 1; i >= 0; i--) {
@@ -171,10 +225,7 @@ $(function() {
 			.tab({
 				useCSS: false,
 				overlay: false,
-				duration: 500,
-				onTabLoad : function(tab) {
-					console.log(tab)
-				}
+				duration: 500
 			});
 
 			$("body .page-menu .item")
@@ -357,7 +408,6 @@ $(function() {
 			musicProgress.element.click(function(e) {
 				var maxWidth = musicProgress.element.outerWidth();
 				var myWidth = e.clientX;
-				console.log(Player.currentSong);
 				if (Player.currentSong.origin == "soundcloud.com") {
 					Player.Music.widget.getDuration(function(dur) {
 						Player.Music.widget.seekTo((myWidth/maxWidth) * dur);
@@ -391,9 +441,99 @@ $(function() {
 					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+"']").click();
 				}
 
+		
+		// Options
+
+				// Subreddits
+				var makeDefaultSubreddits = function() {
+					var root =  $(".subreddits-default");
+					root.html("");
+					var template = $(".templates [type='html/subredditlabel']").html();
+					var defaultSubs = Options.get("subreddits");
+					for (var i = defaultSubs.length - 1; i >= 0; i--) {
+						var sub = {"sub": defaultSubs[i], "name": defaultSubs[i], "icon": "remove"};
+						var el = $($.render(template, sub));
+						el.appendTo(root);
+						el.click(removeDefaultSub);
+					};
+				}
+				var addDefaultSub = function(e) {
+					var sub = $(this).data("sub");
+					if (Options.get("subreddits").indexOf(sub) === -1) {
+						var tOptions = Options.get("subreddits");
+						tOptions.push(sub.toLowerCase());
+						Options.set("subreddits", tOptions);
+					}
+					makeDefaultSubreddits();
+				}
+
+				var removeDefaultSub = function(e) {
+					var sub = $(this).data("sub");
+					if (Options.get("subreddits").indexOf(sub) > -1) {
+						var tOptions = Options.get("subreddits");
+						tOptions.splice(Options.get("subreddits").indexOf(sub), 1);
+						Options.set("subreddits", tOptions);
+					}
+					makeDefaultSubreddits();
+				}
+
+				makeDefaultSubreddits();
+
+				$(".subreddits-add input").keyup(function() {
+					var value = $(this).val();
+					var root =  $(".subreddits-search-add");
+					var template = $(".templates [type='html/subredditlabel']").html();
+					root.html("");
+					root.show("fade up in");
+					if (value.length >= 2) {
+						for (var i = Options.subreddits.length - 1; i >= 0; i--) {
+							var sub = Options.subreddits[i];
+							if (sub.fuzzy(value)) {
+								var string = sub.split("");
+								var marks = sub.fuzzyMark(value);
+								for (var n = 0; n < string.length; n++) {
+									for (var m = 0; m < marks.length; m++) {
+										var mark = marks[m];
+										if (n==mark) {
+											string[n] = "<b>"+ string[n] +"</b>";
+										}
+									};
+								};
+								var subData = {"sub": sub, "name": string.join(""), "icon": "add"};
+								var el = $($.render(template, subData));
+								el.appendTo(root);
+								el.click(addDefaultSub);
+							}
+						};
+					}
+						
+				})
+				$(".subreddits-add input").blur(function() {
+					var root =  $(".subreddits-search-add");
+					root.transition({
+						animation : 'fade up out',
+						duration  : '200ms',
+						complete  : function() {
+							root.html("");
+						}
+					});
+					$(".subreddits-add input").val("");
+				});
+
+
+				// Settings defaults | They're loaded in reddit.js anyway.
+					function initSubs() {
+						var subs =  Options.get("subreddits");
+						for (var i = subs.length - 1; i >= 0; i--) {
+							$(".subreddit-menu .item[data-value='"+subs[i]+"']").addClass("active");
+						};
+					}
+					initSubs();
+
+				// Go
 				$(".still-loading").transition({
 					animation: "slide up",
-					duration: "100ms"
+					duration: "200ms"
 				});
 })
 
@@ -587,7 +727,7 @@ function MusicModel() {
 		var self = this
 		var url = "",
 			index = 0,
-			Reddit = new RedditModel(),
+			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
 		self.widget = SC.Widget("sc");
@@ -759,7 +899,9 @@ function MusicModel() {
 module.exports = MusicModel;
 
 
-},{"./reddit":12}],"jLEaKv":[function(require,module,exports){
+},{"./reddit":12}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 function simpleStorage() {
 	var self = this;
@@ -779,11 +921,14 @@ function simpleStorage() {
 
 var defaults = {
 	sortMethod: "hot",
-	topMethod: "week"
+	topMethod: "week",
+	subreddits: []
 }
 
 function OptionsModel() {
 	var self = this;
+
+	self.subreddits = ["crustpunk","grunge","melodicmetal","postrock","punk","Punkskahardcore","ska","stonerrock","atmosphericdnb","bassheavy","breakbeat","breakcore","brostep","chillstep","chiptunes","classic_beats","complextro","darkstep","deephouse","dnb","dubstep","drumstep","electro","ElectronicJazz","electronicmusic","electrohouse","electropop","electroswing","fidget","footwork","frenchhouse","funkhouse","futurebeats","futurefunkairlines","futuregarage","futurepopmusic","glitch","glitchop","grime","happyhardcore","hardstyle","hardtek","house","idm","juke","jumpup","latinhouse","liquiddnb","minimaltech","moombahton","NeuroFunk","nudisco","proghouse","progressivetrance","psytrance","purplemusic","raggajungle","realdubstep","skweee","techno","tech_house","techstep","trance","trap","triphop","blues","DeepFunk","funk","FunkSouMusic","jazz","soul","soulies","altrap","hiphopheads","makinghiphop","nerdcore","rap","80sMusic","ambientmusic","asmr","AvantGardeMusic","calireggae","chillmusic","chillwave","classicalmusic","coversongs","Cyberpunk_Music","dub","djmixes","EcouteCa","freemusic","frisson","gamemusic","icm","industrialmusic","ipm","jazznoir","koreanmusic","liftingmusic","listentothis","listentous","minimal","mlptunes","motivatedmusic","music","musiccritics","musicnews","MusicVideosOnYouTube","orchestra","partymusic","queercore","redditmusicclub","reggae","reggaeton","RepublicOfMusic","rootsreggae","rhythmicnoise","soundtracks","SoundsVintage","soulof","SpaceMusic"];
 
 	if (!localStorage) var localStorage = global.window.localStorage || new simpleStorage();
 	self.local = localStorage;
@@ -793,6 +938,7 @@ function OptionsModel() {
 	}
 
 	self.set = function(key, value) {
+		console.log(key, value);
 		return self.local.setItem(key, JSON.stringify(value));
 	}
 
@@ -804,8 +950,8 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
+},{}],"./js/modules/player":[function(require,module,exports){
+module.exports=require('L9FXUC');
 },{}],"L9FXUC":[function(require,module,exports){
 var MusicModel = require("./music");
 var RadioModel = require("./radio");
@@ -1001,11 +1147,7 @@ function PlayerModel() {
 		})
 }
 module.exports = PlayerModel;
-},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"./js/modules/player":[function(require,module,exports){
-module.exports=require('L9FXUC');
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],"LtFNV5":[function(require,module,exports){
+},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"LtFNV5":[function(require,module,exports){
 
 
 function ProgressBar(link) {
@@ -1079,6 +1221,8 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
 },{}],11:[function(require,module,exports){
 
 
@@ -1235,9 +1379,9 @@ function RedditModel() {
 	var self = this;
 
 	var Options = new OptionsModel();
+	self.subreddits = Options.get("subreddits");
 	var last = "";
 
-	self.subreddits = [];
 	$.observable(self);
 
 	Object.defineProperty(self, "sortMethod", {

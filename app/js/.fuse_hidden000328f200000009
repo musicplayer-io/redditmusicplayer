@@ -460,7 +460,7 @@ $(function() {
 					var sub = $(this).data("sub");
 					if (Options.get("subreddits").indexOf(sub) === -1) {
 						var tOptions = Options.get("subreddits");
-						tOptions.push(sub.toLowerCase());
+						tOptions.push(sub);
 						Options.set("subreddits", tOptions);
 					}
 					makeDefaultSubreddits();
@@ -520,18 +520,11 @@ $(function() {
 				});
 
 
-				// Settings defaults | They're loaded in reddit.js anyway.
-					function initSubs() {
-						var subs =  Options.get("subreddits");
-						for (var i = subs.length - 1; i >= 0; i--) {
-							$(".subreddit-menu .item[data-value='"+subs[i]+"']").addClass("active");
-						};
-					}
-					initSubs();
+
 
 				// Go
 				$(".still-loading").transition({
 					animation: "slide up",
-					duration: "200ms"
+					duration: "100ms"
 				});
 })

@@ -15,10 +15,31 @@
 		.eleven.musicplaylist.wide.column
 			.ui.tab(data-tab='settings/reddit')
 				.ui.inverted.form
-					.grouped.inline.fields
+					label Sort by: 
+					.ui.menu.inverted.secondary
+						a.item.active(data-value='hot') Hot
+						.ui.dropdown.item
+							| Top
+							i.dropdown.icon
+							.menu
+								a.item(data-value='top:day') Top: Today
+								a.item(data-value='top:week') Top: This Week
+								a.item(data-value='top:month') Top: This Month
+								a.item(data-value='top:year') Top: This Year
+								a.item(data-value='top:all') Top: All Time
+						a.item(data-value='new') New
+				.ui.divider.inverted
+				.ui.inverted.form
+					label Default subreddits
+					.subreddits-default
+						.ui.label.black Atmosphericdnb
+							i.delete.icon
+					.two.fields
 						.field
-							label Sort by: 
-							include ../includes/modules/subreddit-dropdown
+							.ui.icon.input.subreddits-add
+								input(type=text, placeholder="subreddit...")
+								i.icon.inverted.search
+						.field.subreddits-search-add
 			.ui.tab(data-tab="settings/player")
 				h4.ui.header.divided Player Settings
 			.ui.tab(data-tab="settings/lastfm")

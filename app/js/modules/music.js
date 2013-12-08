@@ -28,7 +28,7 @@ function MusicModel() {
 		var self = this
 		var url = "",
 			index = 0,
-			Reddit = new RedditModel(),
+			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
 		self.widget = SC.Widget("sc");

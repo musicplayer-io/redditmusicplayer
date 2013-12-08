@@ -7,9 +7,9 @@ function RedditModel() {
 	var self = this;
 
 	var Options = new OptionsModel();
+	self.subreddits = Options.get("subreddits");
 	var last = "";
 
-	self.subreddits = [];
 	$.observable(self);
 
 	Object.defineProperty(self, "sortMethod", {
