@@ -6,6 +6,7 @@ function ContentModel() {
 
 	/// Content->Events
 	// :: playlist-select ("radio|music", element, song) : Playlist item is selected.
+	// :: playlist-more ("radio|music") : More requested.
 
 	/// Listeners->Content
 	// :: build ("radio|music", playlist[], song) : Builds Playlists.
@@ -65,9 +66,19 @@ function ContentModel() {
 					el.addClass("active");
 				}
 			}
-			//el.transition("fade down in")
+			//el.transition("fade down in");
 			el.click(function() {
 				self.trigger("playlist-select", "music", el, item);
+			})
+		}
+
+		var more = function() {
+			var newEl = $("<div class='item more'></div>");
+			newEl.append($("<div class='name'>Load More</div>"));
+			var el = newEl.appendTo(root);
+			//el.transition("fade down in"); 
+			el.click(function() {
+				self.trigger("playlist-more", "music");
 			})
 		}
 
@@ -86,6 +97,7 @@ function ContentModel() {
 		for (var i = 0; i < songs.length; i++) {
 			add(songs[i]);
 		};
+		more();
 	}
 
 	var musicSongSelect = function(song) {

@@ -342,6 +342,10 @@ $(function() {
 				}
 			})
 
+			Content.on("playlist-more", function(view) {
+				Player.trigger("playlist-more", view);
+			})
+
 			// Settings Defaults
 				if (Options.get("sortMethod") == "top") {
 					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();
@@ -355,7 +359,9 @@ $(function() {
 				});
 })
 
-},{"./js/modules/content":"kUqara","./js/modules/options":"jLEaKv","./js/modules/player":"L9FXUC","./js/modules/progressbar":"LtFNV5","__browserify_process":13}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/options":"jLEaKv","./js/modules/player":"L9FXUC","./js/modules/progressbar":"LtFNV5","__browserify_process":13}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 var ProgressBarModel = require("./progressbar");
 
 
@@ -364,6 +370,7 @@ function ContentModel() {
 
 	/// Content->Events
 	// :: playlist-select ("radio|music", element, song) : Playlist item is selected.
+	// :: playlist-more ("radio|music") : More requested.
 
 	/// Listeners->Content
 	// :: build ("radio|music", playlist[], song) : Builds Playlists.
@@ -423,9 +430,19 @@ function ContentModel() {
 					el.addClass("active");
 				}
 			}
-			//el.transition("fade down in")
+			//el.transition("fade down in");
 			el.click(function() {
 				self.trigger("playlist-select", "music", el, item);
+			})
+		}
+
+		var more = function() {
+			var newEl = $("<div class='item more'></div>");
+			newEl.append($("<div class='name'>Load More</div>"));
+			var el = newEl.appendTo(root);
+			//el.transition("fade down in"); 
+			el.click(function() {
+				self.trigger("playlist-more", "music");
 			})
 		}
 
@@ -444,6 +461,7 @@ function ContentModel() {
 		for (var i = 0; i < songs.length; i++) {
 			add(songs[i]);
 		};
+		more();
 	}
 
 	var musicSongSelect = function(song) {
@@ -500,9 +518,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],4:[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],4:[function(require,module,exports){
 var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -561,6 +577,13 @@ function MusicModel() {
 		self.currentSong = null;
 
 	// Methods
+		var isLastSong = function() {
+			if (self.currentSong == self.songs[self.songs.length-1]) {
+				console.log("last song");
+				self.trigger("playlist-more");
+			}
+		}
+
 		var playSong = function (song) {
 			self.stop();
 			if (song) {
@@ -579,6 +602,7 @@ function MusicModel() {
 					})
 					self.widget.load(song.track.uri, self.widgetOptions);
 				}
+				isLastSong();
 			}
 		}
 
@@ -645,6 +669,11 @@ function MusicModel() {
 			Reddit.trigger("update");
 		})
 
+		self.on("playlist-more", function() {
+			if (self.songs[self.songs.length-1])
+				Reddit.trigger("more", self.songs[self.songs.length-1].name);
+		})
+
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs
 		self.on("menu-selection-remove", function(el) {
@@ -677,6 +706,13 @@ function MusicModel() {
 		// New Playlist Received > Send Songs & Current Song > Rebuild View
 		Reddit.on("playlist-update", function(playlist) {
 			self.songs = playlist;
+			// New Playlist / Include: songs, current song.
+			self.trigger("playlist", self.songs, self.currentSong);
+		})
+
+		// More playlist items received > Send Songs & Current Song > Rebuild View
+		Reddit.on("playlist-add", function(playlist) {
+			self.songs.push(playlist);
 			// New Playlist / Include: songs, current song.
 			self.trigger("playlist", self.songs, self.currentSong);
 		})
@@ -732,6 +768,8 @@ function OptionsModel() {
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
 module.exports=require('jLEaKv');
+},{}],"./js/modules/player":[function(require,module,exports){
+module.exports=require('L9FXUC');
 },{}],"L9FXUC":[function(require,module,exports){
 var MusicModel = require("./music");
 var RadioModel = require("./radio");
@@ -880,6 +918,14 @@ function PlayerModel() {
 			}
 		})
 
+		// More Requested
+		self.on("playlist-more", function(view) {
+			if (channel == "Radio")
+				 player = self.Radio;
+			else player = self.Music;
+			player.trigger("playlist-more");
+		})
+
 		// Play / Pause button
 		self.on("play-btn", function() {
 			if (!self.isPlaying) {
@@ -919,9 +965,7 @@ function PlayerModel() {
 		})
 }
 module.exports = PlayerModel;
-},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"./js/modules/player":[function(require,module,exports){
-module.exports=require('L9FXUC');
-},{}],"./js/modules/progressbar":[function(require,module,exports){
+},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
 
@@ -1153,6 +1197,7 @@ function RedditModel() {
 	var self = this;
 
 	var Options = new OptionsModel();
+	var last = "";
 
 	self.subreddits = [];
 	$.observable(self);
@@ -1172,13 +1217,15 @@ function RedditModel() {
 	var fetchMusic = function(subreddits, callback) {
 		var playlist = [];
 		var topParams = self.sortMethod == "top" ? "sort=top&t="+self.topMethod+"&" : "";
-		$.getJSON("http://www.reddit.com/r/" + subreddits + "/"+self.sortMethod+"/.json?"+topParams+"jsonp=?", function(r) {
+		var more = last.length > 0 ? true : false;
+		var page = more ? "after="+last+"&" : "";
+		$.getJSON("http://www.reddit.com/r/" + subreddits + "/"+self.sortMethod+"/.json?"+topParams + page + "jsonp=?", function(r) {
 			console.log("total songs", r.data.children.length);
 			$.each(r.data.children, function (i, child) {
 				var post = child.data;
 				var media = post.media;
 				if (media) {
-					var data = { reddit: "http://reddit.com"+post.permalink, score: post.score, origin: media.type };
+					var data = { "name": post.name, "reddit": "http://reddit.com"+post.permalink, "score": post.score, "origin": media.type };
 					
 					switch (media.type) {
 						case "bandcamp.com":
@@ -1186,14 +1233,22 @@ function RedditModel() {
 								if(r.album_id){
 									$.getJSON(Bandcamp.base + "album/2/info?callback=?", {key: Bandcamp.key, album_id: r.album_id}, function(r){
 										$.each(r.tracks, function(i, track){
-											playlist.push($.extend({title: track.title, file: track.streaming_url}, data));
-											self.trigger("playlist-update", playlist)
+											if (more) {
+												self.trigger("playlist-add", $.extend({title: track.title, file: track.streaming_url}, data));
+											} else {
+												playlist.push($.extend({title: track.title, file: track.streaming_url}, data));
+												self.trigger("playlist-update", playlist)
+											}
 										});
 									});
 								}else if(r.track_id){
 									$.getJSON(Bandcamp.base + "track/1/info?callback=?", {key: Bandcamp.key, track_id: r.track_id}, function(track){
-										playlist.push($.extend({title: track.title, file: track.streaming_url}, data));
-										self.trigger("playlist-update", playlist)
+										if (more) {
+											self.trigger("playlist-add", $.extend({title: track.title, file: track.streaming_url}, data));
+										} else {
+											playlist.push($.extend({title: track.title, file: track.streaming_url}, data));
+											self.trigger("playlist-update", playlist)
+										}
 									});
 								}
 							});
@@ -1201,8 +1256,12 @@ function RedditModel() {
 
 						case "youtube.com":
 							var track = media.oembed;
-							playlist.push($.extend({title: track.title, file: track.url}, data));
-							self.trigger("playlist-update", playlist)
+							if (more) {
+								self.trigger("playlist-add", $.extend({title: track.title, file: track.url}, data));
+							} else {
+								playlist.push($.extend({title: track.title, file: track.url}, data));
+								self.trigger("playlist-update", playlist)
+							}
 						break;
 
 						case "soundcloud.com":
@@ -1210,8 +1269,12 @@ function RedditModel() {
 							if(track_id){
 								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function(track){
 									if(track.streamable){
-										playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
-										self.trigger("playlist-update", playlist)
+										if (more) {
+											self.trigger("playlist-add", $.extend({track: track, title: track.title, file: track.stream_url}, data));
+										} else {
+											playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
+											self.trigger("playlist-update", playlist)
+										}
 									}
 								});
 							}
@@ -1239,8 +1302,15 @@ function RedditModel() {
 
 	self.on("update", function() {
 		if (self.subreddits.length >= 1) {
+			last = "";
 			fetchMusic(self.getSubRedditList(self.subreddits));
 		}
+	})
+
+	self.on("more", function(lastId) {
+		console.log(lastId);
+		last = lastId;
+		fetchMusic(self.getSubRedditList(self.subreddits));
 	})
 
 }

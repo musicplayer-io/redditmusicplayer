@@ -145,6 +145,14 @@ function PlayerModel() {
 			}
 		})
 
+		// More Requested
+		self.on("playlist-more", function(view) {
+			if (channel == "Radio")
+				 player = self.Radio;
+			else player = self.Music;
+			player.trigger("playlist-more");
+		})
+
 		// Play / Pause button
 		self.on("play-btn", function() {
 			if (!self.isPlaying) {

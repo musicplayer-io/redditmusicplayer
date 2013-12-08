@@ -341,6 +341,10 @@ $(function() {
 				}
 			})
 
+			Content.on("playlist-more", function(view) {
+				Player.trigger("playlist-more", view);
+			})
+
 			// Settings Defaults
 				if (Options.get("sortMethod") == "top") {
 					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();

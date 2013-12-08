@@ -56,6 +56,13 @@ function MusicModel() {
 		self.currentSong = null;
 
 	// Methods
+		var isLastSong = function() {
+			if (self.currentSong == self.songs[self.songs.length-1]) {
+				console.log("last song");
+				self.trigger("playlist-more");
+			}
+		}
+
 		var playSong = function (song) {
 			self.stop();
 			if (song) {
@@ -74,6 +81,7 @@ function MusicModel() {
 					})
 					self.widget.load(song.track.uri, self.widgetOptions);
 				}
+				isLastSong();
 			}
 		}
 
@@ -140,6 +148,11 @@ function MusicModel() {
 			Reddit.trigger("update");
 		})
 
+		self.on("playlist-more", function() {
+			if (self.songs[self.songs.length-1])
+				Reddit.trigger("more", self.songs[self.songs.length-1].name);
+		})
+
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs
 		self.on("menu-selection-remove", function(el) {
@@ -172,6 +185,13 @@ function MusicModel() {
 		// New Playlist Received > Send Songs & Current Song > Rebuild View
 		Reddit.on("playlist-update", function(playlist) {
 			self.songs = playlist;
+			// New Playlist / Include: songs, current song.
+			self.trigger("playlist", self.songs, self.currentSong);
+		})
+
+		// More playlist items received > Send Songs & Current Song > Rebuild View
+		Reddit.on("playlist-add", function(playlist) {
+			self.songs.push(playlist);
 			// New Playlist / Include: songs, current song.
 			self.trigger("playlist", self.songs, self.currentSong);
 		})
