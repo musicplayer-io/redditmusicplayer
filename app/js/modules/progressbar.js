@@ -10,11 +10,11 @@ function ProgressBar(link) {
 
 	var shift = function() {
 		current += 5;
-		self.bar.animate({"width": current  + "%"}, 250);
+		self.bar.css({"width": current  + "%"});
 	}
 	var reset = function() {
 		current = 0;
-		self.bar.animate({"width": current  + "%"}, 0);
+		self.bar.css({"width": current  + "%"});
 		if (interval) {
 			window.clearInterval(interval)
 		}
@@ -42,19 +42,19 @@ function ProgressBar(link) {
 	}
 	self.end = function() {
 		current=100;
-		self.bar.animate({"width": "100%"}, 100);
+		self.bar.css({"width": "100%"});
 		window.setTimeout(disable, 200)
 	}
 
 	self.set = function(percent) {
 		current=percent;
-		self.bar.animate({"width": percent+"%"}, 100);
+		self.bar.css({"width": percent+"%"});
 	}
 
 	self.seek = function(percent) {
 		current=percent;
 		self.bar.stop(true, true);
-		self.bar.animate({"width": percent+"%"}, 100);
+		self.bar.css({"width": percent+"%"});
 	}
 
 	// Enable MVP pattern (this is the secret for everything)

@@ -195,6 +195,56 @@ function MusicModel() {
 			// New Playlist / Include: songs, current song.
 			self.trigger("playlist", self.songs, self.currentSong);
 		})
+
+
+
+
+
+
+		// Listeners::Music
+			self.on("song-playing", function(song) {
+				self.trigger("song", song);
+				self.trigger("loaded");
+			})
+			// If Music starts Playing;
+			self.on("playing", function(state) {
+				self.isPlaying = state;
+				self.trigger("playing", self.isPlaying);
+				self.trigger("loaded");
+				$(".play-btn").removeClass("stop");
+				$(".play-btn").addClass("play");
+			});
+
+		// Listeners
+
+			// Song Selected from Playlist
+			self.on("playlist-select", function(songEl, song) {
+				if (!songEl.hasClass("active")) {
+					$(".music.content .playlist .active").removeClass("active");
+					songEl.addClass("active");
+					self.trigger("loading");
+
+					$(".play-btn").removeClass("play");
+					$(".play-btn").addClass("stop");
+
+					self.trigger("song-switch", song);
+				}
+			})
+
+			// Play / Pause button
+			self.on("play-btn", function() {
+				if (!self.isPlaying) {
+					$(".play-btn").removeClass("play");
+					$(".play-btn").addClass("stop");
+					self.play();
+					self.trigger("loading");
+				} else if (self.isPlaying) {
+					$(".play-btn").removeClass("stop");
+					$(".play-btn").addClass("play");
+					self.stop();
+				}
+			});
+
 }
 
 module.exports = MusicModel;

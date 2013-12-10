@@ -1,46 +1,53 @@
 .content.settings.ui.tab(data-tab='settings')
-	.ui.divided.grid
-		.five.musicmenu.wide.column
-			.ui.fluid.inverted.secondary.vertical.menu.settings-menu
-				.tabular.menu
-					a.item(href="#/settings/reddit", data-tab="settings/reddit")
-						i.setting.icon
-						| Reddit
-					a.item(href="#/settings/player", data-tab="settings/player")
-						i.headphones.icon
-						| Player
-					a.item(href="#/settings/lastfm", data-tab="settings/lastfm")
-						i.music.icon
-						| LastFM
-		.eleven.musicplaylist.wide.column
-			.ui.tab(data-tab='settings/reddit')
-				.ui.inverted.form
-					label Sort by: 
-					.ui.menu.inverted.secondary
-						a.item.active(data-value='hot') Hot
-						.ui.dropdown.item
-							| Top
-							i.dropdown.icon
-							.menu
-								a.item(data-value='top:day') Top: Today
-								a.item(data-value='top:week') Top: This Week
-								a.item(data-value='top:month') Top: This Month
-								a.item(data-value='top:year') Top: This Year
-								a.item(data-value='top:all') Top: All Time
-						a.item(data-value='new') New
-				.ui.divider.inverted
-				.ui.inverted.form
-					label Default subreddits
-					.subreddits-default
-						.ui.label.black Atmosphericdnb
-							i.delete.icon
-					.two.fields
-						.field
-							.ui.icon.input.subreddits-add
-								input(type=text, placeholder="subreddit...")
-								i.icon.inverted.search
-						.field.subreddits-search-add
-			.ui.tab(data-tab="settings/player")
-				h4.ui.header.divided Player Settings
-			.ui.tab(data-tab="settings/lastfm")
-				h4.ui.header.divided LastFM
+
+	.ui.inverted.form.segment
+		label Sort by: 
+		.ui.menu.inverted.secondary
+			a.item.active(data-value='hot') Hot
+			.ui.dropdown.item
+				| Top
+				i.dropdown.icon
+				.menu
+					a.item(data-value='top:day') Top: Today
+					a.item(data-value='top:week') Top: This Week
+					a.item(data-value='top:month') Top: This Month
+					a.item(data-value='top:year') Top: This Year
+					a.item(data-value='top:all') Top: All Time
+			a.item(data-value='new') New
+	.ui.divider.horizontal.inverted
+		i.icon.setting.black
+	.ui.inverted.form.segment
+		label Default subreddits
+		.subreddits-default.ui.segment
+			.ui.label.black Atmosphericdnb
+				i.delete.icon
+		.field
+			.ui.icon.input.subreddits-add.fluid
+				input(type="text", placeholder="subreddit...")
+				i.icon.inverted.search
+		.field.subreddits-search-add.segment.ui
+	.ui.divider.horizontal.inverted
+		i.icon.setting.black
+	.ui.inverted.form.log-in.lastfm.segment
+		label LastFM
+		.ui.fields.two
+			.field
+				.ui.input.icon.lastfm-user
+					input(type="text", placeholder="username / e-mail")
+					i.icon.inverted.user
+			.field
+				.ui.input.icon.lastfm-pass
+					input(type="password", placeholder="password")
+					i.icon.inverted.lock
+		.ui.button.teal.lastfm-btn.icon.fluid
+			| Authenticate
+			i.icon.lock
+	.ui.inverted.form.logged-in.lastfm.segment
+		label LastFM
+		.field
+			.ui.input.icon.disabled.lastfm-name.fluid
+				input(type="text", value="user", disabled)
+		.field
+			.ui.button.purple.lastfm-logout-btn.icon.fluid
+				i.icon.off
+				|  Log Out

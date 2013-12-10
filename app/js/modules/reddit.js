@@ -1,5 +1,5 @@
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
-var SoundCloud = {base: "http://api.soundcloud.com/", key: "e350357eef0347515be167f33dd3240d"};
+var SoundCloud = {base: "http://api.soundcloud.com/", key: "5441b373256bae7895d803c7c23e59d9"};
 
 var OptionsModel = require("./options");
 

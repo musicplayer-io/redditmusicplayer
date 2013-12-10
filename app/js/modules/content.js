@@ -16,42 +16,6 @@ function ContentModel() {
 
 	var musicProgress = new ProgressBarModel(".music-progress");
 
-	// Radio
-	var buildRadioView = function(songs, currentSong) {
-		var root = $(".radio.content .playlist");
-		var template = $(".templates [type='html/radioplaylist']").html();
-
-		var add = function(item) {
-			var newEl = $($.render(template, item));
-			var el = newEl.appendTo(root);
-			if (currentSong) {
-				if (item.title == currentSong.title) {
-					el.addClass("active");
-				}
-			}
-			el.transition("fade down in")
-			el.click(function() {
-				self.trigger("playlist-select", "radio", el, item);
-			})
-		}
-
-		// Remove all old songs...
-		$(".radio.content .playlist .item")
-		.transition({
-			animation: "fade up out",
-			duration: "100ms",
-			complete: function() {
-				$(this).remove();
-			}
-		});
-
-		// For all the new songs...
-		for (var i = 0; i < songs.length; i++) {
-			add(songs[i]);
-		};
-
-	}
-
 	// MUSIC
 	var buildMusicView = function(songs, currentSong) {
 		var root = $(".music.content .playlist");
@@ -68,7 +32,7 @@ function ContentModel() {
 			}
 			//el.transition("fade down in");
 			el.click(function() {
-				self.trigger("playlist-select", "music", el, item);
+				self.trigger("playlist-select", el, item);
 			})
 		}
 
@@ -78,7 +42,7 @@ function ContentModel() {
 			var el = newEl.appendTo(root);
 			//el.transition("fade down in"); 
 			el.click(function() {
-				self.trigger("playlist-more", "music");
+				self.trigger("playlist-more");
 			})
 		}
 
@@ -109,9 +73,7 @@ function ContentModel() {
 	$.observable(self);
 
 	self.on("build", function(view, content, currentSong) {
-		if (view == "radio playlist" ) {
-			buildRadioView(content, currentSong);
-		} else if (view == "music playlist") {
+		if (view == "music playlist") {
 			buildMusicView(content, currentSong);
 		}
 	})
@@ -128,28 +90,23 @@ function ContentModel() {
 	}
 
 
-	self.on("music-progress", function(view, currentSong, data) {
-		if (view == "music") {
-			console.log(currentSong.origin);
-			if (currentSong.origin == "soundcloud.com") {
-				try {
-					musicProgress.set(data.relativePosition*100);
-				} catch(err) {
-					//console.error(currentSong);
-				}
-			} else {
-				updateProgressBar(function() {
-					var data = $("#youtube").tubeplayer("data");
-					return data.currentTime / data.duration * 100;
-				})
+	self.on("music-progress", function(currentSong, data) {
+		if (currentSong.origin == "soundcloud.com") {
+			try {
+				musicProgress.set(data.relativePosition*100);
+			} catch(err) {
+				//console.error(currentSong);
 			}
+		} else {
+			updateProgressBar(function() {
+				var data = $("#youtube").tubeplayer("data");
+				return data.currentTime / data.duration * 100;
+			})
 		}
 	})
 
-	self.on("new-song", function(view, currentSong) {
-		if (view == "music") {
-			musicSongSelect(currentSong);
-		}
+	self.on("new-song", function(currentSong) {
+		musicSongSelect(currentSong);
 	})
 }
 

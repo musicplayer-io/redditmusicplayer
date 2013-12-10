@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         src: ['app/js/main.js'],
         dest: 'app/js/browser.js',
         options: {
-          alias: 'app/js/modules/player.js:./js/modules/player,app/js/modules/content.js:./js/modules/content,app/js/modules/progressbar.js:./js/modules/progressbar,app/js/modules/options.js:./js/modules/options'
+          alias: 'app/js/modules/music.js:./js/modules/music,app/js/modules/content.js:./js/modules/content,app/js/modules/progressbar.js:./js/modules/progressbar,app/js/modules/options.js:./js/modules/options'
         }
       }
     },
@@ -61,6 +61,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.registerTask('default', ["less", "jade", 'watch']);
-  grunt.registerTask('server', ["less", "jade", "browserify", "watch"]);
+  grunt.registerTask('server', ["less", "browserify", "watch"]);
   grunt.registerTask('build', ["less", "jade", "browserify"]);
 }

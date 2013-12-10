@@ -5,7 +5,7 @@ var process=require("__browserify_process"),global=typeof self !== "undefined" ?
 
 // Model Dependencies
 	// Music
-	var PlayerModel = require("./js/modules/player");
+	var MusicModel = require("./js/modules/music");
 
 	// UI
 	var ContentModel = require("./js/modules/content");
@@ -17,13 +17,11 @@ var process=require("__browserify_process"),global=typeof self !== "undefined" ?
 $(function() {
 
 	// Initialize
-		
-		var Player = new PlayerModel();
+		var Music = new MusicModel();
 		var loadProgress = new ProgressBarModel(".load-progress");
 		var musicProgress = new ProgressBarModel(".music-progress");
 		var Content = new ContentModel();
 		var Options = new OptionsModel();
-		global.window.Player = Player;
 
 	// Some work
 
@@ -63,17 +61,17 @@ $(function() {
 		// Music controls
 			// Play & Stop
 			$(".play-btn").click(function() {
-				Player.trigger("play-btn");
+				Music.trigger("play-btn");
 			})
 
 			// Next button
 			$(".next-btn").click(function() {
-				Player.trigger("next-btn");
+				Music.trigger("song-next");
 			})
 
 			// Previous button
 			$(".prev-btn").click(function() {
-				Player.trigger("prev-btn");
+				Music.trigger("song-previous");
 			})
 
 		// Subreddits
@@ -195,11 +193,11 @@ $(function() {
 					var self = $(item);
 					var active = self.hasClass("active");
 					if (active) {
-						Player.Music.trigger("menu-selection-clear", self);
+						Music.trigger("menu-selection-clear", self);
 						self.removeClass("active");
 					}
 				})
-				Player.Music.trigger("update");
+				Music.trigger("update");
 			})
 
 			$(".edit-subs").click(toggleActiveSubs);
@@ -211,10 +209,10 @@ $(function() {
 				var self = $(this);
 				var active = self.hasClass("active");
 				if (active) {
-					Player.Music.trigger("menu-selection-remove", self);
+					Music.trigger("menu-selection-remove", self);
 					self.removeClass("active");
 				} else if (!active) {
-					Player.Music.trigger("menu-selection-add", self);
+					Music.trigger("menu-selection-add", self);
 					self.addClass("active");
 				}
 			})
@@ -236,12 +234,10 @@ $(function() {
 				onTabLoad : function(tab) {
 					if (tab == "music") {
 						$(".page-menu .music-page").addClass("active");
-						$(".page-menu .radio-page").removeClass("active");
-						Player.trigger("channel", "Music");
-					} else {
-						$(".page-menu .radio-page").addClass("active");
+						$(".page-menu .settings-page").removeClass("active");
+					} else if (tab=="settings") {
+						$(".page-menu .settings-page").addClass("active");
 						$(".page-menu .music-page").removeClass("active");
-						Player.trigger("channel", "Radio");
 					}
 				}
 			});
@@ -261,7 +257,7 @@ $(function() {
 					} else {
 						Options.set("sortMethod", value);
 					}
-					Player.trigger("update");
+					Music.trigger("update");
 				}
 			});
 
@@ -279,24 +275,23 @@ $(function() {
 				onPlayerEnded: function() {
 					$(".play-btn").removeClass("stop");
 					$(".play-btn").addClass("play");
-					Player.isPlaying = false;
+					Music.isPlaying = false;
 					console.log("yt played ended");
-					Player.Music.trigger("song-next");
+					Music.trigger("song-next");
 					musicProgress.end();
 				},
 				onPlayerUnstarted: function() {
-					Player.isPlaying = false;
+					Music.isPlaying = false;
 					timeOut = window.setTimeout(function() {
-						console.log("timed out");
-						if (Player.isPlaying == false) {
-							Player.trigger("next-btn");
+						if (Music.isPlaying == false) {
+							Music.trigger("song-next");
 						}
 					}, 5000);
 				},
 				onPlayerPlaying: function() {
 					$(".play-btn").addClass("stop");
 					$(".play-btn").removeClass("play");
-					Player.isPlaying = true;
+					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
 					console.log("yt played playing");
@@ -309,34 +304,34 @@ $(function() {
 			});
 		// Soundclould Player
 			SC.initialize({
-				client_id: "e350357eef0347515be167f33dd3240d"
+				client_id: "5441b373256bae7895d803c7c23e59d9"
 			});
 
-			Player.Music.widget.bind(SC.Widget.Events.READY, function() {
-				Player.Music.widget.bind(SC.Widget.Events.FINISH, function() {
+			Music.widget.bind(SC.Widget.Events.READY, function() {
+				Music.widget.bind(SC.Widget.Events.FINISH, function() {
 					$(".play-btn").removeClass("stop");
 					$(".play-btn").addClass("play");
-					Player.isPlaying = false;
+					Music.isPlaying = false;
 					console.log("sc played ended");
-					Player.Music.trigger("song-next");
+					Plaer.Music.trigger("song-next");
 					musicProgress.end();
 				})
-				Player.Music.widget.bind(SC.Widget.Events.PLAY, function() {
-					Player.Music.trigger("soundcloud-ready");
+				Music.widget.bind(SC.Widget.Events.PLAY, function() {
+					Music.trigger("soundcloud-ready");
 					$(".play-btn").addClass("stop");
 					$(".play-btn").removeClass("play");
 					loadProgress.trigger("end");
-					Player.isPlaying = true;
+					Music.isPlaying = true;
 					musicProgress.start();
 					console.log("sc played playing");
 				})
-				Player.Music.widget.bind(SC.Widget.Events.ERROR, function() {
+				Music.widget.bind(SC.Widget.Events.ERROR, function() {
 					console.log("errorwidget")
 				})
-				Player.Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(data) {
-					Content.trigger("music-progress", "music", Player.currentSong, data);
+				Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(data) {
+					Content.trigger("music-progress", "music", Music.currentSong, data);
 				})
-				Player.Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function() {
+				Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function() {
 					console.log("LOAD_PROGRESS")
 				})
 			})
@@ -345,13 +340,13 @@ $(function() {
 			
 			// Music Controls
 				KeyboardJS.on("space", function() {
-					Player.trigger("play-btn");
+					Music.trigger("play-btn");
 				})
 				KeyboardJS.on("right", function() {
-					Player.trigger("next-btn");
+					Music.trigger("song-next");
 				})
 				KeyboardJS.on("left", function() {
-					Player.trigger("previous-btn");
+					Music.trigger("song-previous");
 				})
 
 				KeyboardJS.on("f2", function() {
@@ -374,33 +369,23 @@ $(function() {
 	// Model Events
 		// Player
 			// New song :: Set Title & Progressbar
-			Player.on("song", function(channel, song) {
-				if (channel === "radio") {
-					console.log("Now Playing: " + song.title);
-					$(".bottom.menu .radio.tab .title").html(song.title);
-					$(".bottom.menu .radio.tab .artist").html(song.artist);
-				} else if (channel === "music") {
-					console.log("Now Playing: " + song.title);
-					$(".bottom.menu .music.tab .title").html(song.title);
-				}
-				Content.trigger("new-song", channel, song);
+			Music.on("song", function(song) {
+				console.log("Now Playing: " + song.title);
+				$(".bottom.menu .music.tab .title").html(song.title);
+				Content.trigger("new-song", song);
 			})
 
 			// Music started playing
-			Player.on("playing", function(view, isPlaying) {
+			Music.on("playing", function(isPlaying) {
 				if (isPlaying) {
 					//loadProgress.trigger("end");
-					Content.trigger("music-progress", view, Player.currentSong);
+					Content.trigger("music-progress", Music.currentSong);
 				}
 			})
 
-			// New Playlist on the Radio
-			Player.Radio.on("newsongs", function(songs) {
-				Content.trigger("build", "radio playlist", songs, Player.currentSong);
-			})
 			// New Playlist on the Music / New Subreddits
-			Player.Music.on("playlist", function(songs) {
-				Content.trigger("build", "music playlist", songs, Player.currentSong);
+			Music.on("playlist", function(songs) {
+				Content.trigger("build", "music playlist", songs, Music.currentSong);
 			})
 
 		// Progressbar
@@ -408,9 +393,9 @@ $(function() {
 			musicProgress.element.click(function(e) {
 				var maxWidth = musicProgress.element.outerWidth();
 				var myWidth = e.clientX;
-				if (Player.currentSong.origin == "soundcloud.com") {
-					Player.Music.widget.getDuration(function(dur) {
-						Player.Music.widget.seekTo((myWidth/maxWidth) * dur);
+				if (Music.currentSong.origin == "soundcloud.com") {
+					Music.widget.getDuration(function(dur) {
+						Music.widget.seekTo((myWidth/maxWidth) * dur);
 					})
 				} else {
 					var data = $("#youtube").tubeplayer("data");
@@ -420,18 +405,50 @@ $(function() {
 				musicProgress.seek(myWidth/maxWidth * 100);
 			})
 
+		// Last FM
+
+			$(".lastfm-btn").click(function() {
+				var lastfm_key = "5627a9006241747e2d462a15685b27ac";
+				var secret = "e4ac152e4201f7032a020b8e5f70495a";
+				var user = $(".lastfm-user input").val();
+				var pass = $(".lastfm-pass input").val();
+				var sig = "api_key"+lastfm_key+"methodauth.getMobileSessionpassword"+pass+"username"+user+secret;
+				var md5_sig = hex_md5(sig);
+				$.post("https://ws.audioscrobbler.com/2.0/", {
+					method: "auth.getMobileSession",
+					username: user,
+					password: pass,
+					api_key: lastfm_key,
+					api_sig: md5_sig
+				}, function(data) {
+					var lastData = $(data);
+					Options.set("lastfm_name", lastData.find("name").text());
+					Options.set("lastfm_key", lastData.find("key").text());
+					isLoggedInLastFM();
+				})
+			})
+
+			$(".lastfm-logout-btn").click(function() {
+				Options.clear("lastfm_key");
+				Options.clear("lastfm_name");
+				$(".lastfm.log-in").show();
+				$(".lastfm.logged-in").hide();
+
+				$(".lastfm-user input").val("");
+				$(".lastfm-pass input").val("");
+			})
 			
 
 		// Content
-			Content.on("playlist-select", function(view, element, song) {
+			Content.on("playlist-select", function(element, song) {
 				if (!element.hasClass("active")) {
 					loadProgress.trigger("start");
-					Player.trigger("playlist-select", view, element, song);
+					Music.trigger("playlist-select", element, song);
 				}
 			})
 
-			Content.on("playlist-more", function(view) {
-				Player.trigger("playlist-more", view);
+			Content.on("playlist-more", function() {
+				Music.trigger("playlist-more");
 			})
 
 			// Settings Defaults
@@ -529,6 +546,14 @@ $(function() {
 						};
 					}
 					initSubs();
+					function isLoggedInLastFM() {
+						if (Options.get("lastfm_key")) {
+							$(".lastfm.log-in").hide();
+							$(".lastfm.logged-in").show();
+							$(".lastfm.logged-in input").val(Options.get("lastfm_name"));
+						}
+					}
+					isLoggedInLastFM();
 
 				// Go
 				$(".still-loading").transition({
@@ -537,9 +562,7 @@ $(function() {
 				});
 })
 
-},{"./js/modules/content":"kUqara","./js/modules/options":"jLEaKv","./js/modules/player":"L9FXUC","./js/modules/progressbar":"LtFNV5","__browserify_process":13}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","__browserify_process":11}],"kUqara":[function(require,module,exports){
 var ProgressBarModel = require("./progressbar");
 
 
@@ -558,42 +581,6 @@ function ContentModel() {
 
 	var musicProgress = new ProgressBarModel(".music-progress");
 
-	// Radio
-	var buildRadioView = function(songs, currentSong) {
-		var root = $(".radio.content .playlist");
-		var template = $(".templates [type='html/radioplaylist']").html();
-
-		var add = function(item) {
-			var newEl = $($.render(template, item));
-			var el = newEl.appendTo(root);
-			if (currentSong) {
-				if (item.title == currentSong.title) {
-					el.addClass("active");
-				}
-			}
-			el.transition("fade down in")
-			el.click(function() {
-				self.trigger("playlist-select", "radio", el, item);
-			})
-		}
-
-		// Remove all old songs...
-		$(".radio.content .playlist .item")
-		.transition({
-			animation: "fade up out",
-			duration: "100ms",
-			complete: function() {
-				$(this).remove();
-			}
-		});
-
-		// For all the new songs...
-		for (var i = 0; i < songs.length; i++) {
-			add(songs[i]);
-		};
-
-	}
-
 	// MUSIC
 	var buildMusicView = function(songs, currentSong) {
 		var root = $(".music.content .playlist");
@@ -610,7 +597,7 @@ function ContentModel() {
 			}
 			//el.transition("fade down in");
 			el.click(function() {
-				self.trigger("playlist-select", "music", el, item);
+				self.trigger("playlist-select", el, item);
 			})
 		}
 
@@ -620,7 +607,7 @@ function ContentModel() {
 			var el = newEl.appendTo(root);
 			//el.transition("fade down in"); 
 			el.click(function() {
-				self.trigger("playlist-more", "music");
+				self.trigger("playlist-more");
 			})
 		}
 
@@ -651,9 +638,7 @@ function ContentModel() {
 	$.observable(self);
 
 	self.on("build", function(view, content, currentSong) {
-		if (view == "radio playlist" ) {
-			buildRadioView(content, currentSong);
-		} else if (view == "music playlist") {
+		if (view == "music playlist") {
 			buildMusicView(content, currentSong);
 		}
 	})
@@ -670,33 +655,30 @@ function ContentModel() {
 	}
 
 
-	self.on("music-progress", function(view, currentSong, data) {
-		if (view == "music") {
-			console.log(currentSong.origin);
-			if (currentSong.origin == "soundcloud.com") {
-				try {
-					musicProgress.set(data.relativePosition*100);
-				} catch(err) {
-					//console.error(currentSong);
-				}
-			} else {
-				updateProgressBar(function() {
-					var data = $("#youtube").tubeplayer("data");
-					return data.currentTime / data.duration * 100;
-				})
+	self.on("music-progress", function(currentSong, data) {
+		if (currentSong.origin == "soundcloud.com") {
+			try {
+				musicProgress.set(data.relativePosition*100);
+			} catch(err) {
+				//console.error(currentSong);
 			}
+		} else {
+			updateProgressBar(function() {
+				var data = $("#youtube").tubeplayer("data");
+				return data.currentTime / data.duration * 100;
+			})
 		}
 	})
 
-	self.on("new-song", function(view, currentSong) {
-		if (view == "music") {
-			musicSongSelect(currentSong);
-		}
+	self.on("new-song", function(currentSong) {
+		musicSongSelect(currentSong);
 	})
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],4:[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"USwVCS":[function(require,module,exports){
 var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -894,15 +876,66 @@ function MusicModel() {
 			// New Playlist / Include: songs, current song.
 			self.trigger("playlist", self.songs, self.currentSong);
 		})
+
+
+
+
+
+
+		// Listeners::Music
+			self.on("song-playing", function(song) {
+				self.trigger("song", song);
+				self.trigger("loaded");
+			})
+			// If Music starts Playing;
+			self.on("playing", function(state) {
+				self.isPlaying = state;
+				self.trigger("playing", self.isPlaying);
+				self.trigger("loaded");
+				$(".play-btn").removeClass("stop");
+				$(".play-btn").addClass("play");
+			});
+
+		// Listeners
+
+			// Song Selected from Playlist
+			self.on("playlist-select", function(songEl, song) {
+				if (!songEl.hasClass("active")) {
+					$(".music.content .playlist .active").removeClass("active");
+					songEl.addClass("active");
+					self.trigger("loading");
+
+					$(".play-btn").removeClass("play");
+					$(".play-btn").addClass("stop");
+
+					self.trigger("song-switch", song);
+				}
+			})
+
+			// Play / Pause button
+			self.on("play-btn", function() {
+				if (!self.isPlaying) {
+					$(".play-btn").removeClass("play");
+					$(".play-btn").addClass("stop");
+					self.play();
+					self.trigger("loading");
+				} else if (self.isPlaying) {
+					$(".play-btn").removeClass("stop");
+					$(".play-btn").addClass("play");
+					self.stop();
+				}
+			});
+
 }
 
 module.exports = MusicModel;
 
 
-},{"./reddit":12}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
+},{"./reddit":10}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
 },{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
+
 function simpleStorage() {
 	var self = this;
 
@@ -950,204 +983,11 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/player":[function(require,module,exports){
-module.exports=require('L9FXUC');
-},{}],"L9FXUC":[function(require,module,exports){
-var MusicModel = require("./music");
-var RadioModel = require("./radio");
-
-var ProgressBarModel = require("./progressbar");
-
-// Player
-function PlayerModel() {
-	/// Controls Music & Radio
-
-	/// Content > Events
-		// :: loaded : Done Loading
-		// :: loading : Done Loading
-		// :: song-switch (song) : Song is switched
-		// :: song-previous : Previous song
-		// :: song-next : Next song
-		// :: update : Get new songs
-
-	/// Listeners > Content
-		// :: playlist-select ("radio|music", element, song) : Playlist item is selected.
-		// :: play-btn : Play button is pressed
-		// :: prev-btn : Previous button is pressed
-		// :: next-btn : Next button is pressed
-		// :: channel : Channel switched : Update content
-
-	/// Redirects (Music/Radio > Player > Events)
-		/// Music
-		// :: song (song) : Song is playing
-		// :: playing (isPlaying) : State of the playing system
-		/// Radio
-		// :: song (song) : Song is playing
-		// :: playing (isPlaying) : State of the playing system
-
-	// Initialize
-		var self = this;
-
-		self.Radio = new RadioModel("http://radioreddit.com/api/status.json");
-		self.Music = new MusicModel();
-
-		var channel = "Radio";
-
-	// Methods
-		self.play = function() {
-			var player;
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			self.one("playing", function(isPlaying) {
-				if (isPlaying) self.trigger("loaded");
-			});
-			player.play();
-		};
-
-		self.stop = function() {
-			var player;
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			player.stop();
-		}
-
-		Object.defineProperty(self, "isPlaying", {
-			get: function() {
-				var player;
-				if (channel == "Radio")
-					 player = self.Radio;
-				else player = self.Music;
-				return player.isPlaying;
-			},
-			set: function(value) {
-				var player;
-				if (channel == "Radio")
-					 player = self.Radio;
-				else player = self.Music;
-				return player.isPlaying = value;
-			}
-		})
-
-		Object.defineProperty(self, "currentSong", {
-			get: function() {
-				var player;
-				if (channel == "Radio")
-					 player = self.Radio;
-				else player = self.Music;
-				return player.currentSong;
-			}
-		})
-
-	$.observable(self);
-
-	// Listeners::Music
-		self.Music.on("song-playing", function(song) {
-			self.trigger("song", "music", song);
-			self.trigger("loaded");
-		})
-		// If Music starts Playing;
-		self.Music.on("playing", function(state) {
-			self.isPlaying = state;
-			self.trigger("playing", "music", self.isPlaying);
-			self.trigger("loaded");
-			$(".play-btn").removeClass("stop");
-			$(".play-btn").addClass("play");
-		});
-	// Listeners::Radio
-		self.Radio.on("song", function(song) {
-			console.log("New Song")
-			self.trigger("song", "radio", song);
-			self.trigger("loaded");
-		})
-		// If Radio starts Playing;
-		self.Radio.on("playing", function(state) {
-			self.isPlaying = state;
-			self.trigger("playing", "radio", self.isPlaying);
-			self.trigger("loaded");
-			$(".play-btn").removeClass("stop");
-			$(".play-btn").addClass("play");
-		});
-
-	// Listeners
-		self.on("update", function() {
-			var player;
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			player.trigger("update");
-		})
-
-		// Song Selected from Playlist
-		self.on("playlist-select", function(view, songEl, song) {
-			if (!songEl.hasClass("active")) {
-				if (view == "radio") {
-					$(".radio.content .playlist .active").removeClass("active");
-				} else if (view == "music") {
-					$(".music.content .playlist .active").removeClass("active");
-				}
-				songEl.addClass("active");
-				self.trigger("loading");
-
-				$(".play-btn").removeClass("play");
-				$(".play-btn").addClass("stop");
-
-				if (channel == "Radio")
-					 player = self.Radio;
-				else player = self.Music;
-				player.trigger("song-switch", song);
-			}
-		})
-
-		// More Requested
-		self.on("playlist-more", function(view) {
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			player.trigger("playlist-more");
-		})
-
-		// Play / Pause button
-		self.on("play-btn", function() {
-			if (!self.isPlaying) {
-				$(".play-btn").removeClass("play");
-				$(".play-btn").addClass("stop");
-				self.play();
-				self.trigger("loading");
-			} else if (self.isPlaying) {
-				$(".play-btn").removeClass("stop");
-				$(".play-btn").addClass("play");
-				self.stop();
-			}
-		});
-
-		// Previous Button
-		self.on("prev-btn", function() {
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			player.trigger("song-previous");
-		});
-		// Next Button
-		self.on("next-btn", function() {
-			if (channel == "Radio")
-				 player = self.Radio;
-			else player = self.Music;
-			player.trigger("song-next");
-		});
-		// Tab Switch
-		self.on("channel", function(newChannel) {
-			channel = newChannel;
-			if (channel == "Radio") {
-				self.Radio.trigger("update");
-			} else if (channel == "Music") {
-				self.Music.trigger("update");
-			}
-		})
-}
-module.exports = PlayerModel;
-},{"./music":4,"./progressbar":"LtFNV5","./radio":11}],"LtFNV5":[function(require,module,exports){
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
+},{}],"LtFNV5":[function(require,module,exports){
 
 
 function ProgressBar(link) {
@@ -1160,11 +1000,11 @@ function ProgressBar(link) {
 
 	var shift = function() {
 		current += 5;
-		self.bar.animate({"width": current  + "%"}, 250);
+		self.bar.css({"width": current  + "%"});
 	}
 	var reset = function() {
 		current = 0;
-		self.bar.animate({"width": current  + "%"}, 0);
+		self.bar.css({"width": current  + "%"});
 		if (interval) {
 			window.clearInterval(interval)
 		}
@@ -1192,19 +1032,19 @@ function ProgressBar(link) {
 	}
 	self.end = function() {
 		current=100;
-		self.bar.animate({"width": "100%"}, 100);
+		self.bar.css({"width": "100%"});
 		window.setTimeout(disable, 200)
 	}
 
 	self.set = function(percent) {
 		current=percent;
-		self.bar.animate({"width": percent+"%"}, 100);
+		self.bar.css({"width": percent+"%"});
 	}
 
 	self.seek = function(percent) {
 		current=percent;
 		self.bar.stop(true, true);
-		self.bar.animate({"width": percent+"%"}, 100);
+		self.bar.css({"width": percent+"%"});
 	}
 
 	// Enable MVP pattern (this is the secret for everything)
@@ -1221,157 +1061,9 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],11:[function(require,module,exports){
-
-
-// RADIO
-function RadioModel(url) {
-	/// Controls Radio
-
-	/// Events
-		// :: playing (isPlaying) : Event on state change
-		// :: newsongs (songs[]) : New songs received
-		// :: song (song) : song selected
-
-	/// Listeners
-		// :: song-switch (song) : Song was selected > Play this song
-		// :: song-previous : Go back an index
-		// :: song-next : Go forward an index
-		// :: update : Get New Songs
-		/// Player
-		// :: playing (isPlaying) : Event on state changes
-		// :: loaded (isAutoPlaying) : If loaded, play
-
-	// Initialize
-		var self = this;
-
-		var online = false;
-		var listeners = 0;
-		var all_listeners = 0;
-		var playlist = "main";
-		var index = 0;
-
-		self.currentSong = null;
-		self.isPlaying = false;
-		self.songs = [];
-
-		var player = {
-			load: function(url) {},
-			end: function() {}
-		};
-		$.observable(player);
-
-	// Methods
-		var getSongs = function () {
-			$.get(url, function(status) {
-				if (status) {
-					listeners = status.listeners;
-					if (status.online === "TRUE") {
-						online = true;
-					}
-					else {
-						online = false;
-					}
-					playlist = status.playlist;
-					all_listeners = status.all_listeners;
-					self.songs = status.songs.song;
-					self.trigger("newsongs", self.songs);
-				}
-			});
-		};
-
-		var playSong = function (song) {
-			player.load(song.download_url || song.preview_url);
-			self.currentSong = song;
-			index = self.songs.indexOf(self.currentSong);
-			self.trigger("song", song);
-		};
-
-		self.stop = function() {
-			if (self.isPlaying) {
-				player.end();
-			}
-		};
-
-		self.play = function() {
-			if (self.songs.length > 0) {
-				playSong(self.songs[index]);
-			} else {
-				self.one("newsongs", function() {
-					playSong(self.songs[index]);
-				})
-				getSongs();
-			}
-		};
-
-	$.observable(self);
-
-	// Listeners
-		// New Song Selected
-		self.on("song-switch", function(song) {
-			if (song) {
-				self.stop();
-				playSong(song);
-			}
-		})
-		// Previous Song
-		self.on("song-previous", function() {
-			var indexMin = index - 1;
-			self.stop();
-			if (indexMin >= 0) {
-				index--;
-				self.play();
-			}
-		})
-		// Next Song
-		self.on("song-next", function() {
-			var indexMin = index + 1;
-			self.stop();
-			if (indexMin <= self.songs.length) {
-				index++;
-				self.play();
-			}
-		})
-
-		// Update Songs
-		self.on("update", function() {
-			getSongs();
-		})
-
-		// Playing
-		player.on("playing", function(isPlaying) {
-			self.isPlaying = isPlaying;
-			self.trigger("playing", isPlaying);
-		});
-
-		// Loaded
-		player.on("loaded", function(autoPlaying) {
-			if (!autoPlaying) {
-				self.play();
-			}
-	});
-}
-
-/*
-
-artist: "Boys Boys Boys"
-genre: "Pop/Rock"
-id: "387"
-preview_url: "http://radioreddit.com/preview/?mp3=Boys_Boys_Boys_%28fletch44%29_Mountains.mp3"
-reddit_title: "Mountains by Boys Boys Boys (fletch44)"
-reddit_url: "http://www.radioreddit.com/songs/?song=Boys_Boys_Boys_%28fletch44%29_Mountains"
-redditor: "fletch44"
-score: "31"
-title: "Mountains"
-
-*/
-
-module.exports = RadioModel;
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
-var SoundCloud = {base: "http://api.soundcloud.com/", key: "e350357eef0347515be167f33dd3240d"};
+var SoundCloud = {base: "http://api.soundcloud.com/", key: "5441b373256bae7895d803c7c23e59d9"};
 
 var OptionsModel = require("./options");
 
@@ -1499,7 +1191,7 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv"}],13:[function(require,module,exports){
+},{"./options":"jLEaKv"}],11:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};

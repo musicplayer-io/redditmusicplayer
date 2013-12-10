@@ -1,4 +1,5 @@
 
+
 function simpleStorage() {
 	var self = this;
 
