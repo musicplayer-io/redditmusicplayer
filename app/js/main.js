@@ -293,6 +293,7 @@ $(function() {
 					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
+					Content.trigger("music-progress", Music.currentSong);
 					console.log("yt played playing");
 					timeOut = window.clearTimeout(timeOut);
 				},
@@ -328,7 +329,7 @@ $(function() {
 					console.log("errorwidget")
 				})
 				Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(data) {
-					Content.trigger("music-progress", "music", Music.currentSong, data);
+					Content.trigger("music-progress", Music.currentSong, data);
 				})
 				Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function() {
 					console.log("LOAD_PROGRESS")
@@ -368,7 +369,7 @@ $(function() {
 	// Model Events
 		// Player
 			// New song :: Set Title & Progressbar
-			Music.on("song", function(song) {
+			Music.on("song-playing", function(song) {
 				console.log("Now Playing: " + song.title);
 				$(".bottom.menu .music.tab .title").html(song.title);
 				Content.trigger("new-song", song);

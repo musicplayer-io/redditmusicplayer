@@ -294,6 +294,7 @@ $(function() {
 					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
+					Content.trigger("music-progress", Music.currentSong);
 					console.log("yt played playing");
 					timeOut = window.clearTimeout(timeOut);
 				},
@@ -329,7 +330,7 @@ $(function() {
 					console.log("errorwidget")
 				})
 				Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(data) {
-					Content.trigger("music-progress", "music", Music.currentSong, data);
+					Content.trigger("music-progress", Music.currentSong, data);
 				})
 				Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function() {
 					console.log("LOAD_PROGRESS")
@@ -369,7 +370,7 @@ $(function() {
 	// Model Events
 		// Player
 			// New song :: Set Title & Progressbar
-			Music.on("song", function(song) {
+			Music.on("song-playing", function(song) {
 				console.log("Now Playing: " + song.title);
 				$(".bottom.menu .music.tab .title").html(song.title);
 				Content.trigger("new-song", song);
@@ -562,7 +563,9 @@ $(function() {
 				});
 })
 
-},{"./js/modules/content":"kUqara","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","__browserify_process":11}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","__browserify_process":11}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 var ProgressBarModel = require("./progressbar");
 
 
@@ -676,9 +679,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"USwVCS":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"USwVCS":[function(require,module,exports){
 var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -878,19 +879,9 @@ function MusicModel() {
 		})
 
 
-
-
-
-
-		// Listeners::Music
-			self.on("song-playing", function(song) {
-				self.trigger("song", song);
-				self.trigger("loaded");
-			})
 			// If Music starts Playing;
 			self.on("playing", function(state) {
 				self.isPlaying = state;
-				self.trigger("playing", self.isPlaying);
 				self.trigger("loaded");
 				$(".play-btn").removeClass("stop");
 				$(".play-btn").addClass("play");

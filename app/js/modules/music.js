@@ -197,19 +197,9 @@ function MusicModel() {
 		})
 
 
-
-
-
-
-		// Listeners::Music
-			self.on("song-playing", function(song) {
-				self.trigger("song", song);
-				self.trigger("loaded");
-			})
 			// If Music starts Playing;
 			self.on("playing", function(state) {
 				self.isPlaying = state;
-				self.trigger("playing", self.isPlaying);
 				self.trigger("loaded");
 				$(".play-btn").removeClass("stop");
 				$(".play-btn").addClass("play");
