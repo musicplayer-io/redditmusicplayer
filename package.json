@@ -1,0 +1,23 @@
+{
+  "name": "redditmusicplayer-build",
+  "version": "0.0.0",
+  "description": "Builder for Reddit",
+  "dependencies": {
+    "express": "~3.4.4",
+    "jade": "~0.35.0",
+    "browserify": "~2.36.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-browserify": "~1.2.11",
+    "grunt-contrib-jade": "~0.8.0",
+    "grunt-contrib-less": "~0.8.1",
+    "grunt-contrib-watch": "~0.5.3"
+    },
+  "repository": {
+    "type": "git",
+    "url": "me@il.ly:/git/redditmusicplayer"
+  },
+  "author": "",
+  "license": "BSD-2-Clause"
+}
