@@ -556,8 +556,10 @@ $(function() {
 					isLoggedInLastFM();
 
 				// Go
-				$(".still-loading").transition({
-					animation: "slide up",
-					duration: "200ms"
-				});
+				window.setTimeout(function() {
+					$(".still-loading").transition({
+						animation: "scale out",
+						duration: "1000ms"
+					});
+				}, 1000);
 })

@@ -31,6 +31,7 @@ function MusicModel() {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
+		if (!SC) var SC = global.SC || window.SC;
 		self.widget = SC.Widget("sc");
 		self.widgetOptions = {
 			auto_advance: false,

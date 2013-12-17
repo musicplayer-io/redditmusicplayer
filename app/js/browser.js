@@ -1,58 +1,4 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            if (ev.source === window && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],2:[function(require,module,exports){
 var process=require("__browserify_process"),global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};try {
 	if (global) global.$ = $;
 } catch(err) {}
@@ -611,15 +557,15 @@ $(function() {
 					isLoggedInLastFM();
 
 				// Go
-				$(".still-loading").transition({
-					animation: "slide up",
-					duration: "200ms"
-				});
+				window.setTimeout(function() {
+					$(".still-loading").transition({
+						animation: "scale out",
+						duration: "1000ms"
+					});
+				}, 1000);
 })
 
-},{"./js/modules/content":"JTiXJJ","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/progressbar":"t9+Ge2","__browserify_process":1}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('JTiXJJ');
-},{}],"JTiXJJ":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","__browserify_process":11}],"kUqara":[function(require,module,exports){
 var ProgressBarModel = require("./progressbar");
 
 
@@ -733,8 +679,10 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"t9+Ge2"}],"NzQZ2+":[function(require,module,exports){
-var RedditModel = require("./reddit")
+},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"USwVCS":[function(require,module,exports){
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var RedditModel = require("./reddit")
 
 function MusicModel() {
 	/// Controls Music & Radio
@@ -767,6 +715,7 @@ function MusicModel() {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
+		if (!SC) var SC = global.SC || window.SC;
 		self.widget = SC.Widget("sc");
 		self.widgetOptions = {
 			auto_advance: false,
@@ -976,9 +925,9 @@ function MusicModel() {
 module.exports = MusicModel;
 
 
-},{"./reddit":11}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('NzQZ2+');
-},{}],"xbP5ff":[function(require,module,exports){
+},{"./reddit":10}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
+},{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
 function simpleStorage() {
@@ -1029,10 +978,10 @@ function OptionsModel() {
 
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('xbP5ff');
+module.exports=require('jLEaKv');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('t9+Ge2');
-},{}],"t9+Ge2":[function(require,module,exports){
+module.exports=require('LtFNV5');
+},{}],"LtFNV5":[function(require,module,exports){
 
 
 function ProgressBar(link) {
@@ -1106,7 +1055,7 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
 var SoundCloud = {base: "http://api.soundcloud.com/", key: "5441b373256bae7895d803c7c23e59d9"};
 
@@ -1236,5 +1185,59 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"xbP5ff"}]},{},[2])
+},{"./options":"jLEaKv"}],11:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            if (ev.source === window && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}]},{},[1])
 ;

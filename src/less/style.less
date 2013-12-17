@@ -400,3 +400,62 @@ a {
     }
 }
 
+
+.spinner {
+  margin: 100px auto;
+  width: 300px;
+  height: 250px;
+  text-align: center;
+  font-size: 10px;
+}
+
+.spinner > div {
+  background-color: #bbb;
+  height: 100%;
+  width: 50px;
+  margin: 0px 2px;
+  display: inline-block;
+  
+  -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+  -moz-animation: stretchdelay 1.2s infinite ease-in-out;
+  -ms-animation: stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  -moz-animation-delay: -1.1s;
+  -ms-animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  -moz-animation-delay: -1.0s;
+  -ms-animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  -moz-animation-delay: -0.9s;
+  -ms-animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  -moz-animation-delay: -0.8s;
+  -ms-animation-delay: -0.8s;
+}
+
+@-webkit-keyframes stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@-moz-keyframes stretchdelay {
+  0%, 40%, 100% { -moz-transform: scaleY(0.4) }  
+  20% { -moz-transform: scaleY(1.0) }
+}
+
+@-ms-keyframes stretchdelay {
+  0%, 40%, 100% { -ms-transform: scaleY(0.4) }  
+  20% { -ms-transform: scaleY(1.0) }
+}

@@ -8,12 +8,12 @@
     "no-edit-menu": true
   },
   "window": {
-    "toolbar": true,
-    "frame": true,
+    "toolbar": false,
+    "frame": false,
     "width": 660,
     "height": 500,
     "position": "center",
-    "icon": "img/rmusic.png"
+    "icon": "img/favicon/favicon-256.png"
   },
   "dependencies": {
     "nw-flash-trust": "git://github.com/szwacz/nw-flash-trust.git#master"
