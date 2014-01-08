@@ -470,13 +470,6 @@ $(function() {
 				Music.trigger("playlist-more");
 			})
 
-			// Settings Defaults
-				if (Options.get("sortMethod") == "top") {
-					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();
-				} else {
-					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+"']").click();
-				}
-
 		
 		// Options
 
@@ -563,8 +556,16 @@ $(function() {
 						for (var i = subs.length - 1; i >= 0; i--) {
 							$(".subreddit-menu .item[data-value='"+subs[i]+"']").addClass("active");
 						};
+						$(".music .title").text("Hit Play!");
 					}
 					initSubs();
+
+					if (Options.get("sortMethod") == "top") {
+						$(".sorting.column .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();
+					} else {
+						$(".sorting.column .item[data-value='"+Options.get("sortMethod")+"']").click();
+					}
+
 })
 
 },{"./js/modules/content":"RnGEbA","./js/modules/music":"xajvsc","./js/modules/options":"DZy7qV","./js/modules/progressbar":"9msWud","__browserify_process":11}],"./js/modules/content":[function(require,module,exports){
@@ -683,7 +684,9 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"9msWud"}],"xajvsc":[function(require,module,exports){
+},{"./progressbar":"9msWud"}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('xajvsc');
+},{}],"xajvsc":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -945,8 +948,8 @@ function MusicModel() {
 module.exports = MusicModel;
 
 
-},{"./reddit":10}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('xajvsc');
+},{"./reddit":10}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('DZy7qV');
 },{}],"DZy7qV":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
@@ -997,8 +1000,6 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('DZy7qV');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('9msWud');
 },{}],"9msWud":[function(require,module,exports){
@@ -1177,11 +1178,13 @@ function RedditModel() {
 
 	self.addSubReddit = function(value) {
 		self.subreddits.push(value);
+		Options.set("subreddits", self.subreddits);
 	}
 
 	self.removeSubReddit = function(value) {
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
+		Options.set("subreddits", self.subreddits);
 	}
 
 	self.getSubRedditList = function() {

@@ -99,11 +99,13 @@ function RedditModel() {
 
 	self.addSubReddit = function(value) {
 		self.subreddits.push(value);
+		Options.set("subreddits", self.subreddits);
 	}
 
 	self.removeSubReddit = function(value) {
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
+		Options.set("subreddits", self.subreddits);
 	}
 
 	self.getSubRedditList = function() {

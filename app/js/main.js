@@ -469,13 +469,6 @@ $(function() {
 				Music.trigger("playlist-more");
 			})
 
-			// Settings Defaults
-				if (Options.get("sortMethod") == "top") {
-					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();
-				} else {
-					$(".ui.dropdown .item[data-value='"+Options.get("sortMethod")+"']").click();
-				}
-
 		
 		// Options
 
@@ -562,6 +555,14 @@ $(function() {
 						for (var i = subs.length - 1; i >= 0; i--) {
 							$(".subreddit-menu .item[data-value='"+subs[i]+"']").addClass("active");
 						};
+						$(".music .title").text("Hit Play!");
 					}
 					initSubs();
+
+					if (Options.get("sortMethod") == "top") {
+						$(".sorting.column .item[data-value='"+Options.get("sortMethod")+":"+Options.get("topMethod")+"']").click();
+					} else {
+						$(".sorting.column .item[data-value='"+Options.get("sortMethod")+"']").click();
+					}
+
 })
