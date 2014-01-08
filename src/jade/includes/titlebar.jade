@@ -13,10 +13,15 @@
 			span Player
 		//- Music / Radio Tabs 
 		.page-menu.right.tabular.menu
+			a.item(href="http://reddit.music.player.il.ly", target="_blank")
+				i.icon.home
 			a.music-page.item.active(href='#/music/', data-tab='music')
 				i.icon.music
-			a.settings-page.item(href='#/settings/', data-tab='settings')
-				i.icon.settings
+			//- a.settings-page.item(href='#/settings/', data-tab='settings')
+			//- 	i.icon.settings
+			a.item(href="http://reddit.com/r/musicplayer", target="_blank")
+				i.icon.help
+			a.item.redmusic(href="http://il.ly", target="_blank") Ilias Ismanalijev
 			block windowsnative
 				//- Window Controls 
 				a.icon.item.native.windows-only.close(href='#/close/')
@@ -32,9 +37,9 @@
 						i.icon.search
 					a.item.icon.edit-subs
 						i.icon.pencil
-					a.item.icon.clear-subs
+					a.item.icon.clear-subs.hidden
 						i.icon.remove
-				.eleven.wide.column
+				.eleven.wide.column.sorting
 					include modules/subreddit-dropdown
-		.content.settings.ui.tab(data-tab='settings')
-			.item.icon Settings
+		//- .content.settings.ui.tab(data-tab='settings')
+		//- 	.item.icon Settings

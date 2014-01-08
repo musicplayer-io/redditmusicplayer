@@ -13,12 +13,13 @@
 	.ui.tab.music(data-tab='music')
 		.left.menu
 			.item.title
-				| Select some subreddits!
+				| Select Subreddits
 	//- Player Controls 
 	.right.menu
-		a.item.prev-btn
+		a.item.prev-btn.disabled
 			i.fast.backward.icon
 		a.item.play-btn
 			i.play.icon
+			i.stop.icon.hidden
 		a.item.next-btn
 			i.fast.forward.icon

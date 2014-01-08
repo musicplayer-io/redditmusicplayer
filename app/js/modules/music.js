@@ -58,11 +58,20 @@ function MusicModel() {
 
 	// Methods
 		var isLastSong = function() {
+			if (self.currentSong == self.songs[0]) {
+				console.log("first song");
+				$(".prev-btn").addClass("disabled");
+			} else {
+				$(".prev-btn").removeClass("disabled");
+			}
+		};
+
+		var isFirstSong = function() {
 			if (self.currentSong == self.songs[self.songs.length-1]) {
 				console.log("last song");
 				self.trigger("playlist-more");
 			}
-		}
+		};
 
 		var playSong = function (song) {
 			self.stop();
@@ -83,6 +92,7 @@ function MusicModel() {
 					self.widget.load(song.track.uri, self.widgetOptions);
 				}
 				isLastSong();
+				isFirstSong();
 			}
 		}
 
@@ -112,6 +122,18 @@ function MusicModel() {
 				self.widget.pause();
 				$("#youtube").tubeplayer("stop");
 				self.trigger("playing", false);
+			}
+		}
+
+		self.togglePlayBtn = function(value) {
+			$(".play-btn").removeClass("stop").removeClass("play");
+			$(".play-btn .icon").addClass("hidden");
+			if (value === "play") {
+				$(".play-btn").addClass("play");
+				$(".play-btn .play").removeClass("hidden");
+			} else if (value === "stop") {
+				$(".play-btn").addClass("stop");
+				$(".play-btn .stop").removeClass("hidden");
 			}
 		}
 
@@ -202,8 +224,7 @@ function MusicModel() {
 			self.on("playing", function(state) {
 				self.isPlaying = state;
 				self.trigger("loaded");
-				$(".play-btn").removeClass("stop");
-				$(".play-btn").addClass("play");
+				self.togglePlayBtn("play");
 			});
 
 		// Listeners
@@ -215,8 +236,7 @@ function MusicModel() {
 					songEl.addClass("active");
 					self.trigger("loading");
 
-					$(".play-btn").removeClass("play");
-					$(".play-btn").addClass("stop");
+					self.togglePlayBtn("stop");
 
 					self.trigger("song-switch", song);
 				}
@@ -225,13 +245,11 @@ function MusicModel() {
 			// Play / Pause button
 			self.on("play-btn", function() {
 				if (!self.isPlaying) {
-					$(".play-btn").removeClass("play");
-					$(".play-btn").addClass("stop");
+					self.togglePlayBtn("stop");
 					self.play();
 					self.trigger("loading");
 				} else if (self.isPlaying) {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					self.togglePlayBtn("play");
 					self.stop();
 				}
 			});

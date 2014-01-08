@@ -157,8 +157,10 @@ $(function() {
 				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
 				if ($(".edit-subs").hasClass("active")) {
 					showActiveSubs();
+					$(".clear-subs").removeClass("hidden");
 				} else {
 					showAllSubs();
+					$(".clear-subs").addClass("hidden");
 				}
 			}
 
@@ -180,12 +182,7 @@ $(function() {
 				}
 			};
 
-			// Show Search
-			$(".search-subs").click(toggleSearchSubs)
-			// On Input
-			$("#searchSubs input").keyup(filterSubs);
-			// Clear
-			$(".clear-subs").click(function() {
+			var clearSubs = function() {
 				$(".edit-subs").removeClass("active");
 				showAllSubs();
 				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
@@ -198,7 +195,14 @@ $(function() {
 					}
 				})
 				Music.trigger("update");
-			})
+			}
+
+			// Show Search
+			$(".search-subs").click(toggleSearchSubs)
+			// On Input
+			$("#searchSubs input").keyup(filterSubs);
+			// Clear
+			$(".clear-subs").click(clearSubs);
 
 			$(".edit-subs").click(toggleActiveSubs);
 
@@ -242,24 +246,42 @@ $(function() {
 				}
 			});
 
-			// Dropdowns
-			$('.ui.dropdown').dropdown({
-				metadata: {
-				  value : 'value'
-				},
-				transition: "fade",
-				duration: 100,
-				onChange: function(value, text) {
-					if (value.substr(0,3) == "top") {
-						var topvalue = value.split(":");
-						Options.set("sortMethod", topvalue[0]);
-						Options.set("topMethod", topvalue[1]);
-					} else {
-						Options.set("sortMethod", value);
-					}
+			// Sorting
+				$(".sorting.column .sort.item").click(function(e) {
+					var target = $(e.target);
+					var sortingMethod = target.data("value");
+					
+					// Make button active
+					$(".sorting.column .sort.item").removeClass("active");
+					target.addClass("active");
+
+					// Set Sorting Method
+					Options.set("sortMethod", sortingMethod);
 					Music.trigger("update");
-				}
-			});
+				})
+
+				// Dropdowns
+				$('.top.dropdown').dropdown({
+					metadata: {
+					  value : 'value'
+					},
+					transition: "fade",
+					duration: 100,
+					onChange: function(sortingMethod, text) {
+						if (sortingMethod.substr(0,3) == "top") {
+							var topvalue = sortingMethod.split(":");
+							Options.set("sortMethod", topvalue[0]);
+							Options.set("topMethod", topvalue[1]);
+
+							// Make button active
+							$(".sorting.column .sort.item").removeClass("active");
+							$(".sorting.column .sort.item.top").addClass("active");
+						} else {
+							Options.set("sortMethod", sortingMethod);
+						}
+						Music.trigger("update");
+					}
+				});
 
 			$('.ui.checkbox')
 			  .checkbox()
@@ -273,8 +295,7 @@ $(function() {
 				initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
 				preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
 				onPlayerEnded: function() {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					Music.togglePlayBtn("play");
 					Music.isPlaying = false;
 					console.log("yt played ended");
 					Music.trigger("song-next");
@@ -289,8 +310,7 @@ $(function() {
 					}, 5000);
 				},
 				onPlayerPlaying: function() {
-					$(".play-btn").addClass("stop");
-					$(".play-btn").removeClass("play");
+					Music.togglePlayBtn("stop");
 					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
@@ -310,8 +330,7 @@ $(function() {
 
 			Music.widget.bind(SC.Widget.Events.READY, function() {
 				Music.widget.bind(SC.Widget.Events.FINISH, function() {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					Music.togglePlayBtn("play");
 					Music.isPlaying = false;
 					console.log("sc played ended");
 					Plaer.Music.trigger("song-next");
@@ -319,8 +338,7 @@ $(function() {
 				})
 				Music.widget.bind(SC.Widget.Events.PLAY, function() {
 					Music.trigger("soundcloud-ready");
-					$(".play-btn").addClass("stop");
-					$(".play-btn").removeClass("play");
+					Music.togglePlayBtn("stop");
 					loadProgress.trigger("end");
 					Music.isPlaying = true;
 					musicProgress.start();
@@ -547,25 +565,11 @@ $(function() {
 						};
 					}
 					initSubs();
-					function isLoggedInLastFM() {
-						if (Options.get("lastfm_key")) {
-							$(".lastfm.log-in").hide();
-							$(".lastfm.logged-in").show();
-							$(".lastfm.logged-in input").val(Options.get("lastfm_name"));
-						}
-					}
-					isLoggedInLastFM();
-
-				// Go
-				window.setTimeout(function() {
-					$(".still-loading").transition({
-						animation: "scale out",
-						duration: "1000ms"
-					});
-				}, 1000);
 })
 
-},{"./js/modules/content":"kUqara","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","__browserify_process":11}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"RnGEbA","./js/modules/music":"xajvsc","./js/modules/options":"DZy7qV","./js/modules/progressbar":"9msWud","__browserify_process":11}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('RnGEbA');
+},{}],"RnGEbA":[function(require,module,exports){
 var ProgressBarModel = require("./progressbar");
 
 
@@ -679,9 +683,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"USwVCS":[function(require,module,exports){
+},{"./progressbar":"9msWud"}],"xajvsc":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -742,11 +744,20 @@ function MusicModel() {
 
 	// Methods
 		var isLastSong = function() {
+			if (self.currentSong == self.songs[0]) {
+				console.log("first song");
+				$(".prev-btn").addClass("disabled");
+			} else {
+				$(".prev-btn").removeClass("disabled");
+			}
+		};
+
+		var isFirstSong = function() {
 			if (self.currentSong == self.songs[self.songs.length-1]) {
 				console.log("last song");
 				self.trigger("playlist-more");
 			}
-		}
+		};
 
 		var playSong = function (song) {
 			self.stop();
@@ -767,6 +778,7 @@ function MusicModel() {
 					self.widget.load(song.track.uri, self.widgetOptions);
 				}
 				isLastSong();
+				isFirstSong();
 			}
 		}
 
@@ -796,6 +808,18 @@ function MusicModel() {
 				self.widget.pause();
 				$("#youtube").tubeplayer("stop");
 				self.trigger("playing", false);
+			}
+		}
+
+		self.togglePlayBtn = function(value) {
+			$(".play-btn").removeClass("stop").removeClass("play");
+			$(".play-btn .icon").addClass("hidden");
+			if (value === "play") {
+				$(".play-btn").addClass("play");
+				$(".play-btn .play").removeClass("hidden");
+			} else if (value === "stop") {
+				$(".play-btn").addClass("stop");
+				$(".play-btn .stop").removeClass("hidden");
 			}
 		}
 
@@ -886,8 +910,7 @@ function MusicModel() {
 			self.on("playing", function(state) {
 				self.isPlaying = state;
 				self.trigger("loaded");
-				$(".play-btn").removeClass("stop");
-				$(".play-btn").addClass("play");
+				self.togglePlayBtn("play");
 			});
 
 		// Listeners
@@ -899,8 +922,7 @@ function MusicModel() {
 					songEl.addClass("active");
 					self.trigger("loading");
 
-					$(".play-btn").removeClass("play");
-					$(".play-btn").addClass("stop");
+					self.togglePlayBtn("stop");
 
 					self.trigger("song-switch", song);
 				}
@@ -909,13 +931,11 @@ function MusicModel() {
 			// Play / Pause button
 			self.on("play-btn", function() {
 				if (!self.isPlaying) {
-					$(".play-btn").removeClass("play");
-					$(".play-btn").addClass("stop");
+					self.togglePlayBtn("stop");
 					self.play();
 					self.trigger("loading");
 				} else if (self.isPlaying) {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					self.togglePlayBtn("play");
 					self.stop();
 				}
 			});
@@ -926,8 +946,8 @@ module.exports = MusicModel;
 
 
 },{"./reddit":10}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"jLEaKv":[function(require,module,exports){
+module.exports=require('xajvsc');
+},{}],"DZy7qV":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
 function simpleStorage() {
@@ -978,10 +998,10 @@ function OptionsModel() {
 
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
+module.exports=require('DZy7qV');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],"LtFNV5":[function(require,module,exports){
+module.exports=require('9msWud');
+},{}],"9msWud":[function(require,module,exports){
 
 
 function ProgressBar(link) {
@@ -1185,7 +1205,7 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv"}],11:[function(require,module,exports){
+},{"./options":"DZy7qV"}],11:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};

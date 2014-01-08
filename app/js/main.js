@@ -156,8 +156,10 @@ $(function() {
 				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
 				if ($(".edit-subs").hasClass("active")) {
 					showActiveSubs();
+					$(".clear-subs").removeClass("hidden");
 				} else {
 					showAllSubs();
+					$(".clear-subs").addClass("hidden");
 				}
 			}
 
@@ -179,12 +181,7 @@ $(function() {
 				}
 			};
 
-			// Show Search
-			$(".search-subs").click(toggleSearchSubs)
-			// On Input
-			$("#searchSubs input").keyup(filterSubs);
-			// Clear
-			$(".clear-subs").click(function() {
+			var clearSubs = function() {
 				$(".edit-subs").removeClass("active");
 				showAllSubs();
 				if ($("#searchSubs").hasClass("visible")) toggleSearchSubs();
@@ -197,7 +194,14 @@ $(function() {
 					}
 				})
 				Music.trigger("update");
-			})
+			}
+
+			// Show Search
+			$(".search-subs").click(toggleSearchSubs)
+			// On Input
+			$("#searchSubs input").keyup(filterSubs);
+			// Clear
+			$(".clear-subs").click(clearSubs);
 
 			$(".edit-subs").click(toggleActiveSubs);
 
@@ -241,24 +245,42 @@ $(function() {
 				}
 			});
 
-			// Dropdowns
-			$('.ui.dropdown').dropdown({
-				metadata: {
-				  value : 'value'
-				},
-				transition: "fade",
-				duration: 100,
-				onChange: function(value, text) {
-					if (value.substr(0,3) == "top") {
-						var topvalue = value.split(":");
-						Options.set("sortMethod", topvalue[0]);
-						Options.set("topMethod", topvalue[1]);
-					} else {
-						Options.set("sortMethod", value);
-					}
+			// Sorting
+				$(".sorting.column .sort.item").click(function(e) {
+					var target = $(e.target);
+					var sortingMethod = target.data("value");
+					
+					// Make button active
+					$(".sorting.column .sort.item").removeClass("active");
+					target.addClass("active");
+
+					// Set Sorting Method
+					Options.set("sortMethod", sortingMethod);
 					Music.trigger("update");
-				}
-			});
+				})
+
+				// Dropdowns
+				$('.top.dropdown').dropdown({
+					metadata: {
+					  value : 'value'
+					},
+					transition: "fade",
+					duration: 100,
+					onChange: function(sortingMethod, text) {
+						if (sortingMethod.substr(0,3) == "top") {
+							var topvalue = sortingMethod.split(":");
+							Options.set("sortMethod", topvalue[0]);
+							Options.set("topMethod", topvalue[1]);
+
+							// Make button active
+							$(".sorting.column .sort.item").removeClass("active");
+							$(".sorting.column .sort.item.top").addClass("active");
+						} else {
+							Options.set("sortMethod", sortingMethod);
+						}
+						Music.trigger("update");
+					}
+				});
 
 			$('.ui.checkbox')
 			  .checkbox()
@@ -272,8 +294,7 @@ $(function() {
 				initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
 				preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
 				onPlayerEnded: function() {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					Music.togglePlayBtn("play");
 					Music.isPlaying = false;
 					console.log("yt played ended");
 					Music.trigger("song-next");
@@ -288,8 +309,7 @@ $(function() {
 					}, 5000);
 				},
 				onPlayerPlaying: function() {
-					$(".play-btn").addClass("stop");
-					$(".play-btn").removeClass("play");
+					Music.togglePlayBtn("stop");
 					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
@@ -309,8 +329,7 @@ $(function() {
 
 			Music.widget.bind(SC.Widget.Events.READY, function() {
 				Music.widget.bind(SC.Widget.Events.FINISH, function() {
-					$(".play-btn").removeClass("stop");
-					$(".play-btn").addClass("play");
+					Music.togglePlayBtn("play");
 					Music.isPlaying = false;
 					console.log("sc played ended");
 					Plaer.Music.trigger("song-next");
@@ -318,8 +337,7 @@ $(function() {
 				})
 				Music.widget.bind(SC.Widget.Events.PLAY, function() {
 					Music.trigger("soundcloud-ready");
-					$(".play-btn").addClass("stop");
-					$(".play-btn").removeClass("play");
+					Music.togglePlayBtn("stop");
 					loadProgress.trigger("end");
 					Music.isPlaying = true;
 					musicProgress.start();
@@ -546,20 +564,4 @@ $(function() {
 						};
 					}
 					initSubs();
-					function isLoggedInLastFM() {
-						if (Options.get("lastfm_key")) {
-							$(".lastfm.log-in").hide();
-							$(".lastfm.logged-in").show();
-							$(".lastfm.logged-in input").val(Options.get("lastfm_name"));
-						}
-					}
-					isLoggedInLastFM();
-
-				// Go
-				window.setTimeout(function() {
-					$(".still-loading").transition({
-						animation: "scale out",
-						duration: "1000ms"
-					});
-				}, 1000);
 })
