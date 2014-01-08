@@ -2,14 +2,15 @@
 	//- Music Playlist
 	script(type='html/musicplaylist').
 		<div class="ui item" href="{file}">
-		<div class="name">{title}</div>
-		<span class="ups">{ups}</span>/<span class="downs">{downs}</span> &#8226; 
-		<span class="author">{author}</span> &#8226; 
-		<span class="created">{created} ago</span> &#8226; 
-		<span class="subreddit">{subreddit}</span> &#8226; 
-		<span class="origin">{origin}</span> &#8226; 
-		<a href="{reddit}" target="_blank" title="{title}"><u>permalink</u></a>
-		</div>
+			<div class="name">{title}</div>
+			<span class="ups">{ups}</span>/<span class="downs">{downs}</span> &#8226; 
+			<span class="author">{author}</span> &#8226; 
+			<span class="created">{created} ago</span> &#8226; 
+			<span class="subreddit">{subreddit}</span> &#8226; 
+			<span class="origin">{origin}</span> &#8226; 
+			<a href="{reddit}" target="_blank" title="{title}">
+				<u>permalink</u>
+			</a>
 		</div>
 	script(type="html/subredditlabel").
 		<a data-sub="{sub}" class="ui label black">{name} &emsp;<i class="{icon} icon"></i></a>

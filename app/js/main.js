@@ -294,13 +294,14 @@ $(function() {
 				initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
 				preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
 				onPlayerEnded: function() {
+					console.log("YT PLAYED > Ended")
 					Music.togglePlayBtn("play");
 					Music.isPlaying = false;
-					console.log("yt played ended");
 					Music.trigger("song-next");
 					musicProgress.end();
 				},
 				onPlayerUnstarted: function() {
+					console.log("YT PLAYED > Unstarted")
 					Music.isPlaying = false;
 					timeOut = window.setTimeout(function() {
 						if (Music.isPlaying == false) {
@@ -309,17 +310,17 @@ $(function() {
 					}, 5000);
 				},
 				onPlayerPlaying: function() {
+					console.log("YT PLAYED > Playing")
 					Music.togglePlayBtn("stop");
 					Music.isPlaying = true;
 					loadProgress.trigger("end");
 					musicProgress.start();
 					Content.trigger("music-progress", Music.currentSong);
-					console.log("yt played playing");
 					timeOut = window.clearTimeout(timeOut);
 				},
 				onPlayerBuffering: function() {
+					console.log("YT PLAYED > Buffering")
 					loadProgress.trigger("start");
-					console.log("yt played buffering");
 				}
 			});
 		// Soundclould Player

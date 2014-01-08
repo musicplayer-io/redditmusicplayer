@@ -78,7 +78,7 @@ function MusicModel() {
 			if (song) {
 				self.currentSong = song;
 				index = self.songs.indexOf(self.currentSong);
-				if (song.origin == "<i class='icon youtube play'></i>") {
+				if (song.origin == "youtube.com") {
 					var songId = song.file.substr(31);
 					$("#youtube").tubeplayer("play", songId);
 					self.trigger("playing", true);
