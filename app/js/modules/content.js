@@ -22,7 +22,6 @@ function ContentModel() {
 		var template = $(".templates [type='html/musicplaylist']").html();
 
 		var add = function(item) {
-			if (item.origin == "youtube.com") item.origin = "<i class='icon youtube play'></i>";
 			var newEl = $($.render(template, item));
 			var el = newEl.appendTo(root);
 			if (currentSong) {// New Playlist Received > Send Songs & Current Song > Rebuild View
@@ -49,13 +48,6 @@ function ContentModel() {
 		
 		// Remove all old songs...
 		$(".music.content .playlist .item").remove()
-		// .transition({
-		// 	animation: "fade up out",
-		// 	duration: "100ms",
-		// 	complete: function() {
-		// 		$(this).remove();
-		// 	}
-		// });
 
 		// For all the new songs...
 		for (var i = 0; i < songs.length; i++) {

@@ -595,7 +595,6 @@ function ContentModel() {
 		var template = $(".templates [type='html/musicplaylist']").html();
 
 		var add = function(item) {
-			if (item.origin == "youtube.com") item.origin = "<i class='icon youtube play'></i>";
 			var newEl = $($.render(template, item));
 			var el = newEl.appendTo(root);
 			if (currentSong) {// New Playlist Received > Send Songs & Current Song > Rebuild View
@@ -622,13 +621,6 @@ function ContentModel() {
 		
 		// Remove all old songs...
 		$(".music.content .playlist .item").remove()
-		// .transition({
-		// 	animation: "fade up out",
-		// 	duration: "100ms",
-		// 	complete: function() {
-		// 		$(this).remove();
-		// 	}
-		// });
 
 		// For all the new songs...
 		for (var i = 0; i < songs.length; i++) {
@@ -684,9 +676,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"9msWud"}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('xajvsc');
-},{}],"xajvsc":[function(require,module,exports){
+},{"./progressbar":"9msWud"}],"xajvsc":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var RedditModel = require("./reddit")
 
 function MusicModel() {
@@ -948,8 +938,8 @@ function MusicModel() {
 module.exports = MusicModel;
 
 
-},{"./reddit":10}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('DZy7qV');
+},{"./reddit":10}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('xajvsc');
 },{}],"DZy7qV":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
@@ -1000,6 +990,8 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('DZy7qV');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('9msWud');
 },{}],"9msWud":[function(require,module,exports){
@@ -1103,6 +1095,34 @@ function RedditModel() {
 		}
 	})
 
+	var timeSince = function(date) {
+
+	    var seconds = Math.floor((new Date() - date) / 1000);
+
+	    var interval = Math.floor(seconds / 31536000);
+
+	    if (interval > 1) {
+	        return interval + " years";
+	    }
+	    interval = Math.floor(seconds / 2592000);
+	    if (interval > 1) {
+	        return interval + " months";
+	    }
+	    interval = Math.floor(seconds / 86400);
+	    if (interval > 1) {
+	        return interval + " days";
+	    }
+	    interval = Math.floor(seconds / 3600);
+	    if (interval > 1) {
+	        return interval + " hours";
+	    }
+	    interval = Math.floor(seconds / 60);
+	    if (interval > 1) {
+	        return interval + " minutes";
+	    }
+	    return Math.floor(seconds) + " seconds";
+	};
+
 	var fetchMusic = function(subreddits, callback) {
 		var playlist = [];
 		var topParams = self.sortMethod == "top" ? "sort=top&t="+self.topMethod+"&" : "";
@@ -1114,7 +1134,10 @@ function RedditModel() {
 				var post = child.data;
 				var media = post.media;
 				if (media) {
-					var data = { "name": post.name, "reddit": "http://reddit.com"+post.permalink, "score": post.score, "origin": media.type };
+					var time = new Date();
+					time.setTime(parseInt(post.created)*1000);
+					post.created = timeSince(time);
+					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com"+post.permalink, "score": post.score, "origin": media.type };
 					
 					switch (media.type) {
 						case "bandcamp.com":

@@ -24,6 +24,34 @@ function RedditModel() {
 		}
 	})
 
+	var timeSince = function(date) {
+
+	    var seconds = Math.floor((new Date() - date) / 1000);
+
+	    var interval = Math.floor(seconds / 31536000);
+
+	    if (interval > 1) {
+	        return interval + " years";
+	    }
+	    interval = Math.floor(seconds / 2592000);
+	    if (interval > 1) {
+	        return interval + " months";
+	    }
+	    interval = Math.floor(seconds / 86400);
+	    if (interval > 1) {
+	        return interval + " days";
+	    }
+	    interval = Math.floor(seconds / 3600);
+	    if (interval > 1) {
+	        return interval + " hours";
+	    }
+	    interval = Math.floor(seconds / 60);
+	    if (interval > 1) {
+	        return interval + " minutes";
+	    }
+	    return Math.floor(seconds) + " seconds";
+	};
+
 	var fetchMusic = function(subreddits, callback) {
 		var playlist = [];
 		var topParams = self.sortMethod == "top" ? "sort=top&t="+self.topMethod+"&" : "";
@@ -35,7 +63,10 @@ function RedditModel() {
 				var post = child.data;
 				var media = post.media;
 				if (media) {
-					var data = { "name": post.name, "reddit": "http://reddit.com"+post.permalink, "score": post.score, "origin": media.type };
+					var time = new Date();
+					time.setTime(parseInt(post.created)*1000);
+					post.created = timeSince(time);
+					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com"+post.permalink, "score": post.score, "origin": media.type };
 					
 					switch (media.type) {
 						case "bandcamp.com":
