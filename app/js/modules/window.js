@@ -1,3 +1,5 @@
+"use strict";
+
 // Window
 function WindowModel(gui) {
 	var self = this;
@@ -15,15 +17,19 @@ function WindowModel(gui) {
 		var menuItem = new self.gui.MenuItem({label: 'Zoom'});
 		menuItem.click = function () {
 			self.gui.Window.get().maximize();
-		}
+		};
 		menu.submenu.append(menuItem);
 		return menu;
-	}
+	};
 
-	self.close = function() {self.window.close()};
-	self.minimize = function() {self.window.minimize()};
+	self.close = function () {
+		self.window.close();
+	};
+	self.minimize = function () {
+		self.window.minimize();
+	};
 	self.isMaximized = false;
-	self.maximize = function() {
+	self.maximize = function () {
 		if (self.isMaximized) {
 			self.window.unmaximize();	
 			self.isMaximized = false;

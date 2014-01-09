@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "Reddit Music Player",
+  "version": "0.1.1",
+  "permissions": ["storage", "<all_urls>"],
+  "icons": { "128": "img/favicon/favicon-128.png" },
+  "sandbox": {
+  	"pages": ["sandbox.html"]
+  },
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}

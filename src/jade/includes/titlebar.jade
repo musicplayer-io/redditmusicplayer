@@ -17,8 +17,6 @@
 				i.icon.home
 			a.music-page.item.active(href='#/music/', data-tab='music')
 				i.icon.music
-			//- a.settings-page.item(href='#/settings/', data-tab='settings')
-			//- 	i.icon.settings
 			a.item(href="http://reddit.com/r/musicplayer", target="_blank")
 				i.icon.help
 			a.item.redmusic(href="http://il.ly", target="_blank") Ilias Ismanalijev
@@ -30,7 +28,7 @@
 		.load-progress.ui.bottom.teal.striped.attached.progress
 			.bar(style='width: 0%;')
 	.sub.menu
-		.content.music.ui.tab(data-tab='music')
+		.content.music
 			.ui.divided.grid
 				.five.wide.column
 					a.item.icon.search-subs
@@ -41,5 +39,3 @@
 						i.icon.remove
 				.eleven.wide.column.sorting
 					include modules/subreddit-dropdown
-		//- .content.settings.ui.tab(data-tab='settings')
-		//- 	.item.icon Settings

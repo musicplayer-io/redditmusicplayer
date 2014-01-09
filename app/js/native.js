@@ -1,62 +1,76 @@
-if (global) global.$ = $;
+"use strict";
+
+if (global) {
+	global.$ = $;
+}
 
 // Model Dependencies
-	var gui = require("nw.gui");
-	var WindowModel = require("./js/modules/window");
+var gui = require("nw.gui");
+var WindowModel = require("./js/modules/window");
 
-$(function() {
+$(function () {
 	// Init
 		var musicWindow = new WindowModel(gui);
 
+		if (process.platform === "win32") {
+			console.log(process.platform);
+			$(".windows-only").addClass("iswindows");
+			$(".windows-hidden").addClass("iswindows");
+		} else {
+			console.log(process.platform);
+			$(".windows-only").addClass("notwindows");
+			$(".windows-hidden").addClass("notwindows");
+		}
+
 	//Native Window Controls
 		// Close
-		$(".native .close.button").click(function() {
+		$(".native .close.button").click(function () {
 			musicWindow.close();
-		})
-		$(".native.windows-only.close").on("click", function() {
+		});
+		$(".native.windows-only.close").on("click", function () {
 			musicWindow.close();
-		})
+		});
 
 		// Minimize
-		$(".native .minimize.button").click(function() {
+		$(".native .minimize.button").click(function () {
 			musicWindow.minimize();
-		})
+		});
 
 		// Maximize
-		$(".native .maximize.button").click(function() {
+		$(".native .maximize.button").click(function () {
 			musicWindow.maximize();
-		})
+		});
 
 	// Window
-		KeyboardJS.on('ctrl+w', function() {
+		KeyboardJS.on('ctrl+w', function () {
 		    musicWindow.close();
 		});
-		KeyboardJS.on('ctrl+shift+w', function() {
+		KeyboardJS.on('ctrl+shift+w', function () {
 		    gui.App.closeAllWindows();
 		});
-		KeyboardJS.on("ctrl+q", function() {
+		KeyboardJS.on("ctrl+q", function () {
 			gui.App.quit();
 		});
 
 	//Links
-		KeyboardJS.on("f1", function() {
+		KeyboardJS.on("f1", function () {
 			gui.Shell.openExternal("http://reddit.music.player.il.ly");
-		})
-		KeyboardJS.on("f12", function() {
+		});
+		KeyboardJS.on("f12", function () {
 			musicWindow.window.showDevTools();
-		})
+		});
 
 	// Window
 		// Window Focus
-		musicWindow.window.on('focus', function() {
+		musicWindow.window.on('focus', function () {
 			$(".ui.menu.top .native").addClass("active");
 		});
 
 		// Window Blur
-		musicWindow.window.on('blur', function() {
+		musicWindow.window.on('blur', function () {
 			$(".ui.menu.top .native").removeClass("active");
 		});
-});
+	});
 
 // Flash
 if (process) {
@@ -77,7 +91,7 @@ if (process) {
 	    trustManager.add('player.soundcloud.com');
 	    trustManager.add('*.soundcloud.com');
 	    trustManager.add('http://player.soundcloud.com/player.swf');
-	} catch(err) {
+	} catch (err) {
 		console.error(err);
 	}	
 }
