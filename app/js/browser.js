@@ -150,6 +150,7 @@ $(function () {
 
 		var subs = Options.get("subreddits");
 		if ("undefined" !== typeof(defaults)) {
+			/*global defaults:true */
 			subs = defaults.split(",");
 		}
 		for (var i = subs.length - 1; i >= 0; i--) {
@@ -165,17 +166,15 @@ $(function () {
 
 		if ("undefined" !== typeof(autoplay)) {
 			if (subs.length > 0) {
-				Content.one("build-ready", function() {
+				Content.one("build-ready", function () {
 					$(".music.playlist .item").click();
-				})
+				});
 			}
 		}
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/players":"6cd8lO","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/players":"6cd8lO","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -287,7 +286,9 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"RgAvKX":[function(require,module,exports){
 "use strict";
 /*global KeyboardJS:false */
 
@@ -403,13 +404,13 @@ function UserEventsModel(Music, Options) {
 		});
 
 		// Clear subreddits
-		KeyboardJS.on("ctrl+x", function(e) {
+		KeyboardJS.on("ctrl+x", function (e) {
 			self.trigger("clearSubs", e);
-		})
+		});
 
-		KeyboardJS.on("ctrl+e", function(e) {
+		KeyboardJS.on("ctrl+e", function (e) {
 			self.trigger("toggleActiveSubs", e);
-		})
+		});
 
 		// Search
 		KeyboardJS.on("ctrl+f", function (e) {
@@ -436,8 +437,6 @@ function UserEventsModel(Music, Options) {
 module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
 module.exports=require('RgAvKX');
-},{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
 },{}],"USwVCS":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global SC:true */
@@ -717,7 +716,11 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":14}],"jLEaKv":[function(require,module,exports){
+},{"./reddit":14}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 function simpleStorage() {
@@ -766,10 +769,6 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){
 "use strict";
 /*global SC:true */
@@ -874,6 +873,8 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 }
 
 module.exports = PlayersModel;
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('6cd8lO');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
@@ -964,6 +965,7 @@ function RedditModel() {
 	var Options = new OptionsModel();
 	self.subreddits = Options.get("subreddits");
 	if ("undefined" !== typeof(defaults)) {
+		/*global defaults:true */
 		self.subreddits = defaults.split(",");
 	}
 	var last = "";

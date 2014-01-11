@@ -1,7 +1,6 @@
 "use strict";
 
 module.exports = function (grunt) {
-
 	var modules = [
 		"music", "players",
 		"content", "progressbar", "subreddits",

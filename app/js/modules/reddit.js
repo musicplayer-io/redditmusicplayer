@@ -11,6 +11,7 @@ function RedditModel() {
 	var Options = new OptionsModel();
 	self.subreddits = Options.get("subreddits");
 	if ("undefined" !== typeof(defaults)) {
+		/*global defaults:true */
 		self.subreddits = defaults.split(",");
 	}
 	var last = "";

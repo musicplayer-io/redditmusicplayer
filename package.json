@@ -17,9 +17,12 @@
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-jshint": "~0.8.0"
   },
+  "scripts": {
+      "start": "node server/server"
+    },
   "repository": {
     "type": "git",
-    "url": "me@il.ly:/git/redditmusicplayer"
+    "url": "git@github.com:Illyism/redditmusicplayer.git"
   },
   "author": "",
   "license": "BSD-2-Clause"

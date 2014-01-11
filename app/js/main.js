@@ -149,6 +149,7 @@ $(function () {
 
 		var subs = Options.get("subreddits");
 		if ("undefined" !== typeof(defaults)) {
+			/*global defaults:true */
 			subs = defaults.split(",");
 		}
 		for (var i = subs.length - 1; i >= 0; i--) {
@@ -164,9 +165,9 @@ $(function () {
 
 		if ("undefined" !== typeof(autoplay)) {
 			if (subs.length > 0) {
-				Content.one("build-ready", function() {
+				Content.one("build-ready", function () {
 					$(".music.playlist .item").click();
-				})
+				});
 			}
 		}
 

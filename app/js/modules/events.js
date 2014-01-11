@@ -113,13 +113,13 @@ function UserEventsModel(Music, Options) {
 		});
 
 		// Clear subreddits
-		KeyboardJS.on("ctrl+x", function(e) {
+		KeyboardJS.on("ctrl+x", function (e) {
 			self.trigger("clearSubs", e);
-		})
+		});
 
-		KeyboardJS.on("ctrl+e", function(e) {
+		KeyboardJS.on("ctrl+e", function (e) {
 			self.trigger("toggleActiveSubs", e);
-		})
+		});
 
 		// Search
 		KeyboardJS.on("ctrl+f", function (e) {
