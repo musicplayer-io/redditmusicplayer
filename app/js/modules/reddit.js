@@ -10,6 +10,9 @@ function RedditModel() {
 
 	var Options = new OptionsModel();
 	self.subreddits = Options.get("subreddits");
+	if ("undefined" !== typeof(defaults)) {
+		self.subreddits = defaults.split(",");
+	}
 	var last = "";
 
 	$.observable(self);
@@ -60,7 +63,7 @@ function RedditModel() {
 		var more = last.length > 0 ? true : false;
 		var page = more ? "after=" + last + "&" : "";
 		$.getJSON("http://www.reddit.com/r/" + subreddits + "/" + self.sortMethod + "/.json?" + topParams + page + "jsonp=?", function (r) {
-			console.log("total songs", r.data.children.length);
+			console.log("REDDIT > Total:", r.data.children.length);
 			$.each(r.data.children, function (i, child) {
 				var post = child.data;
 				var media = post.media;
@@ -125,7 +128,7 @@ function RedditModel() {
 					}
 				}
 			});
-			console.log("playlist length", playlist.length);
+			console.log("REDDIT > Songs:", playlist.length);
 		});
 	};
 
@@ -141,6 +144,8 @@ function RedditModel() {
 	};
 
 	self.getSubRedditList = function () {
+		var stateObj = { subreddits: self.subreddits };
+		history.replaceState(stateObj, "Reddit Music Player", "/r/" + self.subreddits.join("+"));
 		return self.subreddits.join("+");
 	};
 
@@ -148,11 +153,13 @@ function RedditModel() {
 		if (self.subreddits.length >= 1) {
 			last = "";
 			fetchMusic(self.getSubRedditList(self.subreddits));
+		} else {
+			var stateObj = { subreddits: self.subreddits };
+			history.replaceState(stateObj, "Reddit Music Player", "/");
 		}
 	});
 
 	self.on("more", function (lastId) {
-		console.log(lastId);
 		last = lastId;
 		fetchMusic(self.getSubRedditList(self.subreddits));
 	});

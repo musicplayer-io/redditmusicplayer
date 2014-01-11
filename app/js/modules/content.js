@@ -56,6 +56,7 @@ function ContentModel() {
 			add(songs[i]);
 		}
 		more();
+		self.trigger("build-ready");
 	};
 
 	var musicSongSelect = function (song) {

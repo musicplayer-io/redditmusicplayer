@@ -1,13 +1,17 @@
 "use strict";
 
+// Version manifest
+
 var version = {
-	win32: 0.1,
-	osx: 0.1,
-	linux: 0.1
+	win32: "0.1.2",
+	osx: "0.1.2",
+	linux: "0.1.2",
 };
 
 var express = require('express');
 var app = express();
+
+// Configuration
 
 var env = process.env.NODE_ENV || 'dev';
 
@@ -38,9 +42,32 @@ app.use("/js", express.static(__appdir + '/js'));
 app.set("views", __srcdir + "/jade");
 app.engine('jade', require('jade').renderFile);
 
-app.get("/", function (req, res) {
-	res.render('server.jade');
-});
+// Methods
+
+var withSubreddits = function (req, res) {
+	var subreddits = req.params.subreddit.split("+");
+	var data = {subreddits: subreddits};
+	if (req.query.autoplay) {
+		data.autoplay = true;
+	}
+	res.render('server.jade', data);
+};
+
+var justIndex = function (req, res) {
+	var data = {};
+	if (req.query.autoplay) {
+		data.autoplay = true;
+	}
+	res.render('server.jade', data);
+};
+
+
+// Routes
+
+app.get("/", justIndex);
+app.get("/r/:subreddit", withSubreddits);
+app.get("/player", justIndex);
+app.get("/player/r/:subreddit", withSubreddits);
 
 app.get("/update.xml", function (req, res) {
 	if (req.query.v && req.query.os) {
@@ -50,5 +77,7 @@ app.get("/update.xml", function (req, res) {
 	}
 });
 
+
+// Init
 app.listen(4005);
 console.log("listening on 4005");

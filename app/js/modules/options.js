@@ -35,7 +35,6 @@ function OptionsModel() {
 	};
 
 	self.set = function (key, value) {
-		console.log(key, value);
 		return self.local.setItem(key, JSON.stringify(value));
 	};
 

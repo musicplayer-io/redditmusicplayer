@@ -101,6 +101,7 @@ $(function () {
 		Music.on("song-playing", function (song) {
 			console.log("Now Playing: " + song.title);
 			$(".bottom.menu .title").html(song.title);
+			document.title = song.title + " | " + "Reddit Music Player";
 			Content.trigger("new-song", song);
 		});
 
@@ -146,7 +147,10 @@ $(function () {
 		Players.init();
 		Events.init();
 
-		var subs =  Options.get("subreddits");
+		var subs = Options.get("subreddits");
+		if ("undefined" !== typeof(defaults)) {
+			subs = defaults.split(",");
+		}
 		for (var i = subs.length - 1; i >= 0; i--) {
 			$(".subreddit-menu .item[data-value='" + subs[i] + "']").addClass("active");
 		}
@@ -157,4 +161,13 @@ $(function () {
 		} else {
 			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + "']").click();
 		}
+
+		if ("undefined" !== typeof(defaults)) {
+			if (subs.length > 0) {
+				Content.one("build-ready", function() {
+					$(".music.playlist .item").click();
+				})
+			}
+		}
+
 	});

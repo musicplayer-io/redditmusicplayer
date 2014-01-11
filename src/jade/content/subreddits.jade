@@ -1,5 +1,5 @@
 mixin subreddit(sub)
-	a.item(data-value=sub) #{sub}
+	a.item(data-value=sub.toLowerCase()) #{sub}
 
 .ui.fluid.secondary.inverted.vertical.menu.subreddit-menu
 	.item
@@ -123,11 +123,13 @@ mixin subreddit(sub)
 			+subreddit("liftingmusic")
 			+subreddit("listentothis")
 			+subreddit("listentous")
+			+subreddit("mashups")
 			+subreddit("minimal")
 			+subreddit("mlptunes")
 			+subreddit("motivatedmusic")
 			+subreddit("music")
 			+subreddit("musiccritics")
+			+subreddit("musicforconcentration")
 			+subreddit("musicnews")
 			+subreddit("MusicVideosOnYouTube")
 			+subreddit("orchestra")

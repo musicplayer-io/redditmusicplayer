@@ -105,17 +105,25 @@ function UserEventsModel(Music, Options) {
 		KeyboardJS.on("space", function () {
 			Music.trigger("play-btn");
 		});
-		KeyboardJS.on("right", function () {
+		KeyboardJS.on("right,down", function () {
 			Music.trigger("song-next");
 		});
-		KeyboardJS.on("left", function () {
+		KeyboardJS.on("left,up", function () {
 			Music.trigger("song-previous");
 		});
 
+		// Clear subreddits
+		KeyboardJS.on("ctrl+x", function(e) {
+			self.trigger("clearSubs", e);
+		})
+
+		KeyboardJS.on("ctrl+e", function(e) {
+			self.trigger("toggleActiveSubs", e);
+		})
 
 		// Search
-		KeyboardJS.on("ctrl+f", function () {
-			self.trigger("toggleSearchSubs");
+		KeyboardJS.on("ctrl+f", function (e) {
+			self.trigger("toggleSearchSubs", e);
 		});
 
 		// Espace
