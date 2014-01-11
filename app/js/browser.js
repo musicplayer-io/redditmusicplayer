@@ -163,7 +163,7 @@ $(function () {
 			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + "']").click();
 		}
 
-		if ("undefined" !== typeof(defaults)) {
+		if ("undefined" !== typeof(autoplay)) {
 			if (subs.length > 0) {
 				Content.one("build-ready", function() {
 					$(".music.playlist .item").click();
@@ -717,9 +717,7 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":14}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"jLEaKv":[function(require,module,exports){
+},{"./reddit":14}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 function simpleStorage() {
@@ -768,6 +766,10 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){
 "use strict";
 /*global SC:true */
@@ -872,8 +874,8 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
 "use strict";
 
@@ -948,8 +950,6 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
 },{}],14:[function(require,module,exports){
 "use strict";
 

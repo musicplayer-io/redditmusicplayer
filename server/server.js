@@ -47,7 +47,7 @@ app.engine('jade', require('jade').renderFile);
 var withSubreddits = function (req, res) {
 	var subreddits = req.params.subreddit.split("+");
 	var data = {subreddits: subreddits};
-	if (req.query.autoplay) {
+	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
 	res.render('server.jade', data);
@@ -55,7 +55,7 @@ var withSubreddits = function (req, res) {
 
 var justIndex = function (req, res) {
 	var data = {};
-	if (req.query.autoplay) {
+	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
 	res.render('server.jade', data);

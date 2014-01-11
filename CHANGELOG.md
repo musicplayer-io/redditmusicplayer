@@ -1,6 +1,8 @@
 
 ## Future
 
+* Multireddit support
+* Comments threads support
 * Make a landing page for the website and move the player to /player/
 * Chrome App build
 * Windows 8 store build

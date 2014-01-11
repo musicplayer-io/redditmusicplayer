@@ -162,7 +162,7 @@ $(function () {
 			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + "']").click();
 		}
 
-		if ("undefined" !== typeof(defaults)) {
+		if ("undefined" !== typeof(autoplay)) {
 			if (subs.length > 0) {
 				Content.one("build-ready", function() {
 					$(".music.playlist .item").click();
