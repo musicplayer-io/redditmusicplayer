@@ -34,6 +34,7 @@ function ContentModel() {
 		var add = function (item) {
 			var newEl = $($.render(template, item));
 			if (item.markdown) {
+				/*global markdown:true */
 				newEl.find(".name").html(markdown.toHTML(newEl.find(".name").html()));
 				newEl.find(".name a").attr("href", "#");
 			}

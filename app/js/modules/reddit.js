@@ -126,7 +126,10 @@ function RedditModel() {
 								}
 							});
 							break;
-						case "youtube.com": case "youtu.be":
+
+						case "youtube.com":
+						case "youtu.be":
+							data.origin = "youtube.com";
 							var track = media.oembed;
 							if (more) {
 								self.trigger("playlist-add", $.extend({title: track.title, file: track.url}, data));
@@ -137,8 +140,7 @@ function RedditModel() {
 							break;
 
 						case "soundcloud.com":
-							var track_id = unescape(media.oembed.html).match(/\/tracks\/(\d+)/);
-							console.log(media.oembed);
+							var track_id = decodeURIComponent(decodeURIComponent(media.oembed.html)).match(/\/tracks\/(\d+)/);
 							if (track_id) {
 								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
 									if (track.streamable) {
@@ -161,6 +163,7 @@ function RedditModel() {
 		});
 	};
 
+	/*global pushState:true */
 	var shouldPush = false;
 	if ("undefined" === typeof(pushState)) {
 		shouldPush = true;
@@ -172,7 +175,6 @@ function RedditModel() {
 		}
 	}
 	var state = function (url) {
-		/*global pushState:true */
 		if (shouldPush === true) {
 			var stateObj = { subreddits: self.subreddits };
 			history.replaceState(stateObj, "Reddit Music Player", url);

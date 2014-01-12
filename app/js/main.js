@@ -152,8 +152,8 @@ $(function () {
 			/*global defaults:true */
 			subs = defaults.split(",");
 		}
+		/*global comment_server:true */
 		if ("undefined" === typeof(comment_server)) {
-			/*global comments_server:true */
 			for (var i = 0; i < subs.length; i++) {
 				var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
 				if (thisSub.length === 0) {
@@ -167,8 +167,10 @@ $(function () {
 		} else {
 			Music.Reddit.trigger("comments", comment_server);
 			Music.Reddit.one("playlist-update", function () {
-				$(".musicplaylist .item.more").remove();
-			})
+				Content.one("build-ready", function () {
+					$(".musicplaylist .item.more").remove();
+				});
+			});
 		}
 
 		if (Options.get("sortMethod") === "top") {
