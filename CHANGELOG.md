@@ -22,6 +22,8 @@
 ### 0.1.3 - 12 January 2014
 
 * Multi multireddit support. [user/br1anfry3r/m/music+user/Rakielis/m/electronica](http://reddit.music.player.il.ly/user/br1anfry3r/m/music+user/Rakielis/m/electronica).
+* Soundcloud fix
+* Youtu.be support
 
 ### 0.1.2 - 11 January 2014
 
