@@ -101,6 +101,7 @@ function RedditModel() {
 					
 					switch (media.type) {
 						case "bandcamp.com":
+							console.log("bandcamp");
 							$.getJSON(Bandcamp.base + "url/1/info?callback=?", {key: Bandcamp.key, url: post.url}, function (r) {
 								if (r.album_id) {
 									$.getJSON(Bandcamp.base + "album/2/info?callback=?", {key: Bandcamp.key, album_id: r.album_id}, function (r) {
@@ -125,8 +126,7 @@ function RedditModel() {
 								}
 							});
 							break;
-
-						case "youtube.com":
+						case "youtube.com": case "youtu.be":
 							var track = media.oembed;
 							if (more) {
 								self.trigger("playlist-add", $.extend({title: track.title, file: track.url}, data));
@@ -137,7 +137,8 @@ function RedditModel() {
 							break;
 
 						case "soundcloud.com":
-							var track_id = decodeURI(media.oembed.html).match(/\/tracks\/(\d+)/);
+							var track_id = unescape(media.oembed.html).match(/\/tracks\/(\d+)/);
+							console.log(media.oembed);
 							if (track_id) {
 								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
 									if (track.streamable) {
@@ -151,6 +152,8 @@ function RedditModel() {
 								});
 							}
 							break;
+						default:
+							console.log(media);
 					}
 				}
 			});
@@ -158,18 +161,18 @@ function RedditModel() {
 		});
 	};
 
-	var state = function (url) {
-		/*global pushState:true */
-		var shouldPush = false;
-		if ("undefined" === typeof(pushState)) {
+	var shouldPush = false;
+	if ("undefined" === typeof(pushState)) {
+		shouldPush = true;
+	} else {
+		if (pushState === true) {
 			shouldPush = true;
 		} else {
-			if (pushState === true) {
-				shouldPush = true;
-			} else {
-				shouldPush = false;
-			}
+			shouldPush = false;
 		}
+	}
+	var state = function (url) {
+		/*global pushState:true */
 		if (shouldPush === true) {
 			var stateObj = { subreddits: self.subreddits };
 			history.replaceState(stateObj, "Reddit Music Player", url);
@@ -177,13 +180,13 @@ function RedditModel() {
 	};
 
 	self.addSubReddit = function (value) {
-		pushState = true;
+		shouldPush = true;
 		self.subreddits.push(value);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.removeSubReddit = function (value) {
-		pushState = true;
+		shouldPush = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
 		Options.set("subreddits", self.subreddits);

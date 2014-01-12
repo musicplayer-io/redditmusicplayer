@@ -188,9 +188,7 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/players":"5QOjA2","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('JTiXJJ');
-},{}],"JTiXJJ":[function(require,module,exports){
+},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/players":"5QOjA2","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"JTiXJJ":[function(require,module,exports){
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -314,7 +312,11 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
+},{"./progressbar":"t9+Ge2"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('JTiXJJ');
+},{}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('gtc4uL');
+},{}],"gtc4uL":[function(require,module,exports){
 "use strict";
 /*global KeyboardJS:false */
 
@@ -461,8 +463,6 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('gtc4uL');
 },{}],"./js/modules/music":[function(require,module,exports){
 module.exports=require('NzQZ2+');
 },{}],"NzQZ2+":[function(require,module,exports){
@@ -744,7 +744,9 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":14}],"xbP5ff":[function(require,module,exports){
+},{"./reddit":14}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('xbP5ff');
+},{}],"xbP5ff":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 function simpleStorage() {
@@ -793,8 +795,6 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('xbP5ff');
 },{}],"./js/modules/players":[function(require,module,exports){
 module.exports=require('5QOjA2');
 },{}],"5QOjA2":[function(require,module,exports){
@@ -1081,6 +1081,7 @@ function RedditModel() {
 					
 					switch (media.type) {
 						case "bandcamp.com":
+							console.log("bandcamp");
 							$.getJSON(Bandcamp.base + "url/1/info?callback=?", {key: Bandcamp.key, url: post.url}, function (r) {
 								if (r.album_id) {
 									$.getJSON(Bandcamp.base + "album/2/info?callback=?", {key: Bandcamp.key, album_id: r.album_id}, function (r) {
@@ -1105,8 +1106,7 @@ function RedditModel() {
 								}
 							});
 							break;
-
-						case "youtube.com":
+						case "youtube.com": case "youtu.be":
 							var track = media.oembed;
 							if (more) {
 								self.trigger("playlist-add", $.extend({title: track.title, file: track.url}, data));
@@ -1117,7 +1117,8 @@ function RedditModel() {
 							break;
 
 						case "soundcloud.com":
-							var track_id = decodeURI(media.oembed.html).match(/\/tracks\/(\d+)/);
+							var track_id = unescape(media.oembed.html).match(/\/tracks\/(\d+)/);
+							console.log(media.oembed);
 							if (track_id) {
 								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
 									if (track.streamable) {
@@ -1131,6 +1132,8 @@ function RedditModel() {
 								});
 							}
 							break;
+						default:
+							console.log(media);
 					}
 				}
 			});
@@ -1138,18 +1141,18 @@ function RedditModel() {
 		});
 	};
 
-	var state = function (url) {
-		/*global pushState:true */
-		var shouldPush = false;
-		if ("undefined" === typeof(pushState)) {
+	var shouldPush = false;
+	if ("undefined" === typeof(pushState)) {
+		shouldPush = true;
+	} else {
+		if (pushState === true) {
 			shouldPush = true;
 		} else {
-			if (pushState === true) {
-				shouldPush = true;
-			} else {
-				shouldPush = false;
-			}
+			shouldPush = false;
 		}
+	}
+	var state = function (url) {
+		/*global pushState:true */
 		if (shouldPush === true) {
 			var stateObj = { subreddits: self.subreddits };
 			history.replaceState(stateObj, "Reddit Music Player", url);
@@ -1157,13 +1160,13 @@ function RedditModel() {
 	};
 
 	self.addSubReddit = function (value) {
-		pushState = true;
+		shouldPush = true;
 		self.subreddits.push(value);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.removeSubReddit = function (value) {
-		pushState = true;
+		shouldPush = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
 		Options.set("subreddits", self.subreddits);
