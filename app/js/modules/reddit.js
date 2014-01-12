@@ -140,18 +140,20 @@ function RedditModel() {
 							break;
 
 						case "soundcloud.com":
-							var track_id = decodeURIComponent(decodeURIComponent(media.oembed.html)).match(/\/tracks\/(\d+)/);
-							if (track_id) {
-								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
-									if (track.streamable) {
-										if (more) {
-											self.trigger("playlist-add", $.extend({track: track, title: track.title, file: track.stream_url}, data));
-										} else {
-											playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
-											self.trigger("playlist-update", playlist);
+							if (!process.platform) {
+								var track_id = decodeURIComponent(decodeURIComponent(media.oembed.html)).match(/\/tracks\/(\d+)/);
+								if (track_id) {
+									$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
+										if (track.streamable) {
+											if (more) {
+												self.trigger("playlist-add", $.extend({track: track, title: track.title, file: track.stream_url}, data));
+											} else {
+												playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
+												self.trigger("playlist-update", playlist);
+											}
 										}
-									}
-								});
+									});
+								}
 							}
 							break;
 						default:
@@ -176,8 +178,10 @@ function RedditModel() {
 	}
 	var state = function (url) {
 		if (shouldPush === true) {
-			var stateObj = { subreddits: self.subreddits };
-			history.replaceState(stateObj, "Reddit Music Player", url);
+			if ("undefined" !== typeof(pushState)) {
+				var stateObj = { subreddits: self.subreddits };
+				history.replaceState(stateObj, "Reddit Music Player", url);
+			}
 		}
 	};
 

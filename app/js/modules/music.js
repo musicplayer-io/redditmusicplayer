@@ -34,10 +34,8 @@ function MusicModel(musicProgress) {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
-		if (!SC) {
-			SC = global.SC || window.SC;
-		}
-		self.widget = SC.Widget("sc");
+		var SoundCloud = window.SC || global.SC;
+		self.widget = SoundCloud.Widget("sc");
 		self.widgetOptions = {
 			"auto_advance": false,
 			"auto_play": false,

@@ -1,4 +1,58 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            if (ev.source === window && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],2:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 try {
@@ -318,8 +372,8 @@ function ContentModel() {
 
 module.exports = ContentModel;
 },{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
-"use strict";
-/*global KeyboardJS:false */
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+/*global KeyboardJS:true */
 
 function UserEventsModel(Music, Options) {
 
@@ -421,33 +475,34 @@ function UserEventsModel(Music, Options) {
 
 	// Keyboard
 	var KeyboardEvents = function () {
+		var Keyboard = window.KeyboardJS || global.KeyboardJS;
 		// Music Controls
-		KeyboardJS.on("space", function () {
+		Keyboard.on("space", function () {
 			Music.trigger("play-btn");
 		});
-		KeyboardJS.on("right,down", function () {
+		Keyboard.on("right,down", function () {
 			Music.trigger("song-next");
 		});
-		KeyboardJS.on("left,up", function () {
+		Keyboard.on("left,up", function () {
 			Music.trigger("song-previous");
 		});
 
 		// Clear subreddits
-		KeyboardJS.on("ctrl+x", function (e) {
+		Keyboard.on("ctrl+x", function (e) {
 			self.trigger("clearSubs", e);
 		});
 
-		KeyboardJS.on("ctrl+e", function (e) {
+		Keyboard.on("ctrl+e", function (e) {
 			self.trigger("toggleActiveSubs", e);
 		});
 
 		// Search
-		KeyboardJS.on("ctrl+f", function (e) {
+		Keyboard.on("ctrl+f", function (e) {
 			self.trigger("toggleSearchSubs", e);
 		});
 
 		// Espace
-		KeyboardJS.on("escape", function () {
+		Keyboard.on("escape", function () {
 			if ($("#searchSubs").hasClass("visible")) {
 				self.trigger("toggleSearchSubs");
 			}
@@ -505,10 +560,8 @@ function MusicModel(musicProgress) {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
-		if (!SC) {
-			SC = global.SC || window.SC;
-		}
-		self.widget = SC.Widget("sc");
+		var SoundCloud = window.SC || global.SC;
+		self.widget = SoundCloud.Widget("sc");
 		self.widgetOptions = {
 			"auto_advance": false,
 			"auto_play": false,
@@ -747,7 +800,7 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":14}],"xbP5ff":[function(require,module,exports){
+},{"./reddit":15}],"xbP5ff":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 function simpleStorage() {
@@ -801,7 +854,7 @@ module.exports=require('xbP5ff');
 },{}],"./js/modules/players":[function(require,module,exports){
 module.exports=require('5QOjA2');
 },{}],"5QOjA2":[function(require,module,exports){
-"use strict";
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global SC:true */
 
 function PlayersModel(Music, loadProgress, musicProgress) {
@@ -864,19 +917,20 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 
 	// Soundcloud Player
 	var Soundcloud = function () {
-		SC.initialize({
+		var SoundCloud = window.SC || global.SC;
+		SoundCloud.initialize({
 			client_id: "5441b373256bae7895d803c7c23e59d9"
 		});
 
-		Music.widget.bind(SC.Widget.Events.READY, function () {
-			Music.widget.bind(SC.Widget.Events.FINISH, function () {
+		Music.widget.bind(SoundCloud.Widget.Events.READY, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
 				console.log("SC > Ended");
 				Music.togglePlayBtn("play");
 				Music.isPlaying = false;
 				Music.trigger("song-next");
 				musicProgress.end();
 			});
-			Music.widget.bind(SC.Widget.Events.PLAY, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
 				console.log("SC > Playing");
 				Music.trigger("soundcloud-ready");
 				Music.togglePlayBtn("stop");
@@ -884,13 +938,13 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 				Music.isPlaying = true;
 				musicProgress.start();
 			});
-			Music.widget.bind(SC.Widget.Events.ERROR, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
 				console.log("SC > Error");
 			});
-			Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (data) {
+			Music.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
 				self.trigger("music-progress", Music.currentSong, data);
 			});
-			Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
 				console.log("SC > Loading");
 			});
 		});
@@ -980,8 +1034,8 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],14:[function(require,module,exports){
-"use strict";
+},{}],15:[function(require,module,exports){
+var process=require("__browserify_process");"use strict";
 
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
 var SoundCloud = {base: "http://api.soundcloud.com/", key: "5441b373256bae7895d803c7c23e59d9"};
@@ -1123,18 +1177,20 @@ function RedditModel() {
 							break;
 
 						case "soundcloud.com":
-							var track_id = decodeURIComponent(decodeURIComponent(media.oembed.html)).match(/\/tracks\/(\d+)/);
-							if (track_id) {
-								$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
-									if (track.streamable) {
-										if (more) {
-											self.trigger("playlist-add", $.extend({track: track, title: track.title, file: track.stream_url}, data));
-										} else {
-											playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
-											self.trigger("playlist-update", playlist);
+							if (!process.platform) {
+								var track_id = decodeURIComponent(decodeURIComponent(media.oembed.html)).match(/\/tracks\/(\d+)/);
+								if (track_id) {
+									$.getJSON(SoundCloud.base + "tracks/" + track_id[1] + ".json", {client_id: SoundCloud.key}, function (track) {
+										if (track.streamable) {
+											if (more) {
+												self.trigger("playlist-add", $.extend({track: track, title: track.title, file: track.stream_url}, data));
+											} else {
+												playlist.push($.extend({track: track, title: track.title, file: track.stream_url}, data));
+												self.trigger("playlist-update", playlist);
+											}
 										}
-									}
-								});
+									});
+								}
 							}
 							break;
 						default:
@@ -1159,8 +1215,10 @@ function RedditModel() {
 	}
 	var state = function (url) {
 		if (shouldPush === true) {
-			var stateObj = { subreddits: self.subreddits };
-			history.replaceState(stateObj, "Reddit Music Player", url);
+			if ("undefined" !== typeof(pushState)) {
+				var stateObj = { subreddits: self.subreddits };
+				history.replaceState(stateObj, "Reddit Music Player", url);
+			}
 		}
 	};
 
@@ -1203,7 +1261,7 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"xbP5ff"}],"./js/modules/subreddits":[function(require,module,exports){
+},{"./options":"xbP5ff","__browserify_process":1}],"./js/modules/subreddits":[function(require,module,exports){
 module.exports=require('62hrOi');
 },{}],"62hrOi":[function(require,module,exports){
 "use strict";
@@ -1338,5 +1396,5 @@ function SubredditsModel(Music) {
 }
 
 module.exports = SubredditsModel;
-},{}]},{},[1])
+},{}]},{},[2])
 ;

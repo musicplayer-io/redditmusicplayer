@@ -10,8 +10,8 @@
   "window": {
     "toolbar": false,
     "frame": false,
-    "width": 660,
-    "height": 500,
+    "width": 800,
+    "height": 600,
     "position": "center",
     "icon": "img/favicon/favicon-256.png"
   },

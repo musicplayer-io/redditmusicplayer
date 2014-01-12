@@ -42,21 +42,22 @@ $(function () {
 		});
 
 	// Window
-		KeyboardJS.on('ctrl+w', function () {
+		var Keyboard = window.KeyboardJS || global.KeyboardJS;
+		Keyboard.on('ctrl+w', function () {
 		    musicWindow.close();
 		});
-		KeyboardJS.on('ctrl+shift+w', function () {
+		Keyboard.on('ctrl+shift+w', function () {
 		    gui.App.closeAllWindows();
 		});
-		KeyboardJS.on("ctrl+q", function () {
+		Keyboard.on("ctrl+q", function () {
 			gui.App.quit();
 		});
 
 	//Links
-		KeyboardJS.on("f1", function () {
+		Keyboard.on("f1", function () {
 			gui.Shell.openExternal("http://reddit.music.player.il.ly");
 		});
-		KeyboardJS.on("f12", function () {
+		Keyboard.on("f12", function () {
 			musicWindow.window.showDevTools();
 		});
 

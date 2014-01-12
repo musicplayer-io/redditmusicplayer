@@ -34,7 +34,7 @@ module.exports = function (grunt) {
 					}
 				},
 				files: {
-					"app/main.html": ["src/jade/server.jade"]
+					"app/main.html": ["src/jade/native.jade"]
 				}
 			}
 		},
@@ -98,6 +98,16 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		uglify: {
+			options: {
+				mangle: false
+			},
+			my_target: {
+				files: {
+					'app/js/browser.js': ['app/js/browser.js']
+				}
+			}
+		}
 	});
 	
 	grunt.loadNpmTasks('grunt-contrib-jshint');

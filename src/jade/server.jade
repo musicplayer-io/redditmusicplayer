@@ -3,6 +3,29 @@ block livereload
 block native
 block macnative
 block windowsnative
+block styles
+	link(href='/css/semantic.min.css', rel='stylesheet')
+	link(href='/css/style.css', rel='stylesheet')
+block libraries
+	//- Jquery
+	script(type='text/javascript', src='/js/lib/jquery.min.js')
+	script(type='text/javascript', src='/js/lib/jquery-migrate.min.js')
+	script(type='text/javascript', src='/js/lib/jquery.address.min.js')
+	script(type='text/javascript', src='/js/lib/jquery.easing.min.js')
+	//- Player
+	script(type="text/javascript", src="/js/lib/soundcloud.api.js")
+	script(type='text/javascript', src='/js/lib/jquery.tubeplayer.js')
+	//- TweenMax
+	script(type='text/javascript', src='/js/lib/TweenMax.min.js')
+	script(type='text/javascript', src='/js/lib/jquery.gsap.min.js')
+	//- swfobjet
+	script(type='text/javascript', src='/js/lib/swfobject.js')
+	//- MVP
+	script(type='text/javascript', src='/js/lib/riot.js')
+	//- Keyboard & UI
+	script(type='text/javascript', src='/js/lib/keyboard.js')
+	script(type='text/javascript', src='/js/lib/semantic.min.js')
+	script(type='text/javascript', src='/js/lib/md5-min.js')
 block mainscript
 	if (pushState === false)
 		script(type="text/javascript").

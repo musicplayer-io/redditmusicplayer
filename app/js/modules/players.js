@@ -61,19 +61,20 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 
 	// Soundcloud Player
 	var Soundcloud = function () {
-		SC.initialize({
+		var SoundCloud = window.SC || global.SC;
+		SoundCloud.initialize({
 			client_id: "5441b373256bae7895d803c7c23e59d9"
 		});
 
-		Music.widget.bind(SC.Widget.Events.READY, function () {
-			Music.widget.bind(SC.Widget.Events.FINISH, function () {
+		Music.widget.bind(SoundCloud.Widget.Events.READY, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
 				console.log("SC > Ended");
 				Music.togglePlayBtn("play");
 				Music.isPlaying = false;
 				Music.trigger("song-next");
 				musicProgress.end();
 			});
-			Music.widget.bind(SC.Widget.Events.PLAY, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
 				console.log("SC > Playing");
 				Music.trigger("soundcloud-ready");
 				Music.togglePlayBtn("stop");
@@ -81,13 +82,13 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 				Music.isPlaying = true;
 				musicProgress.start();
 			});
-			Music.widget.bind(SC.Widget.Events.ERROR, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
 				console.log("SC > Error");
 			});
-			Music.widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (data) {
+			Music.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
 				self.trigger("music-progress", Music.currentSong, data);
 			});
-			Music.widget.bind(SC.Widget.Events.LOAD_PROGRESS, function () {
+			Music.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
 				console.log("SC > Loading");
 			});
 		});

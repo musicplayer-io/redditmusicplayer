@@ -1,5 +1,5 @@
 "use strict";
-/*global KeyboardJS:false */
+/*global KeyboardJS:true */
 
 function UserEventsModel(Music, Options) {
 
@@ -101,33 +101,34 @@ function UserEventsModel(Music, Options) {
 
 	// Keyboard
 	var KeyboardEvents = function () {
+		var Keyboard = window.KeyboardJS || global.KeyboardJS;
 		// Music Controls
-		KeyboardJS.on("space", function () {
+		Keyboard.on("space", function () {
 			Music.trigger("play-btn");
 		});
-		KeyboardJS.on("right,down", function () {
+		Keyboard.on("right,down", function () {
 			Music.trigger("song-next");
 		});
-		KeyboardJS.on("left,up", function () {
+		Keyboard.on("left,up", function () {
 			Music.trigger("song-previous");
 		});
 
 		// Clear subreddits
-		KeyboardJS.on("ctrl+x", function (e) {
+		Keyboard.on("ctrl+x", function (e) {
 			self.trigger("clearSubs", e);
 		});
 
-		KeyboardJS.on("ctrl+e", function (e) {
+		Keyboard.on("ctrl+e", function (e) {
 			self.trigger("toggleActiveSubs", e);
 		});
 
 		// Search
-		KeyboardJS.on("ctrl+f", function (e) {
+		Keyboard.on("ctrl+f", function (e) {
 			self.trigger("toggleSearchSubs", e);
 		});
 
 		// Espace
-		KeyboardJS.on("escape", function () {
+		Keyboard.on("escape", function () {
 			if ($("#searchSubs").hasClass("visible")) {
 				self.trigger("toggleSearchSubs");
 			}
