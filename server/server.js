@@ -69,7 +69,7 @@ var justIndex = function (req, res) {
 
 function multiListener() {
 	/*jshint validthis:true */
-	events.EventEmitter.call(this);
+	events.call(this);
 }
 
 multiListener.super_ = events;
