@@ -47,6 +47,11 @@ function SubredditsModel(Music) {
 			$(".search-subs").removeClass("active");
 			filterSubs();
 		}
+		if ($(".edit-subs").hasClass("active")) {
+			$(".clear-subs").removeClass("hidden");
+		} else {
+			$(".clear-subs").addClass("hidden");
+		}
 	};
 
 	var toggleActiveSubs = function (e) {

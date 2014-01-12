@@ -32,30 +32,55 @@ function RedditModel() {
 
 	var timeSince = function (date) {
 
-	    var seconds = Math.floor((new Date() - date) / 1000);
+		var seconds = Math.floor((new Date() - date) / 1000);
 
-	    var interval = Math.floor(seconds / 31536000);
+		var interval = Math.floor(seconds / 31536000);
 
-	    if (interval > 1) {
-	        return interval + " years";
-	    }
-	    interval = Math.floor(seconds / 2592000);
-	    if (interval > 1) {
-	        return interval + " months";
-	    }
-	    interval = Math.floor(seconds / 86400);
-	    if (interval > 1) {
-	        return interval + " days";
-	    }
-	    interval = Math.floor(seconds / 3600);
-	    if (interval > 1) {
-	        return interval + " hours";
-	    }
-	    interval = Math.floor(seconds / 60);
-	    if (interval > 1) {
-	        return interval + " minutes";
-	    }
-	    return Math.floor(seconds) + " seconds";
+		if (interval > 1) {
+			return interval + " years";
+		}
+		interval = Math.floor(seconds / 2592000);
+		if (interval > 1) {
+			return interval + " months";
+		}
+		interval = Math.floor(seconds / 86400);
+		if (interval > 1) {
+			return interval + " days";
+		}
+		interval = Math.floor(seconds / 3600);
+		if (interval > 1) {
+			return interval + " hours";
+		}
+		interval = Math.floor(seconds / 60);
+		if (interval > 1) {
+			return interval + " minutes";
+		}
+		return Math.floor(seconds) + " seconds";
+	};
+
+	var fetchComments = function (commentUrl) {
+		var playlist = [];
+		$.getJSON("http://www.reddit.com/" + commentUrl + "/.json?depth=0&limit=100&sort=" + self.sortMethod + "&jsonp=?", function (r) {
+			r = r[1];
+			$.each(r.data.children, function (i, child) {
+				var post = child.data;
+				var media = post.body;
+
+				var time = new Date();
+				time.setTime(parseInt(post.created_utc) * 1000);
+				post.created = timeSince(time);
+				var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + commentUrl };
+
+				var youtubeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*\)/;
+				var match = media.match(youtubeRegex);
+				if (match && match[2].length === 11) {
+					data.origin = "youtube.com";
+					var youtubeUrl = match[2];
+					playlist.push($.extend({markdown: true, title: media, file: "http://www.youtube.com/watch?v=" + youtubeUrl}, data));
+					self.trigger("playlist-update", playlist);
+				}
+			});
+		});
 	};
 
 	var fetchMusic = function (subreddits, callback) {
@@ -70,7 +95,7 @@ function RedditModel() {
 				var media = post.media;
 				if (media) {
 					var time = new Date();
-					time.setTime(parseInt(post.created) * 1000);
+					time.setTime(parseInt(post.created_utc) * 1000);
 					post.created = timeSince(time);
 					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
 					
@@ -133,20 +158,39 @@ function RedditModel() {
 		});
 	};
 
+	var state = function (url) {
+		/*global pushState:true */
+		var shouldPush = false;
+		if ("undefined" === typeof(pushState)) {
+			shouldPush = true;
+		} else {
+			if (pushState === true) {
+				shouldPush = true;
+			} else {
+				shouldPush = false;
+			}
+		}
+		if (shouldPush === true) {
+			var stateObj = { subreddits: self.subreddits };
+			history.replaceState(stateObj, "Reddit Music Player", url);
+		}
+	};
+
 	self.addSubReddit = function (value) {
+		pushState = true;
 		self.subreddits.push(value);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.removeSubReddit = function (value) {
+		pushState = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.getSubRedditList = function () {
-		var stateObj = { subreddits: self.subreddits };
-		history.replaceState(stateObj, "Reddit Music Player", "/r/" + self.subreddits.join("+"));
+		state("/r/" + self.subreddits.join("+"));
 		return self.subreddits.join("+");
 	};
 
@@ -155,9 +199,12 @@ function RedditModel() {
 			last = "";
 			fetchMusic(self.getSubRedditList(self.subreddits));
 		} else {
-			var stateObj = { subreddits: self.subreddits };
-			history.replaceState(stateObj, "Reddit Music Player", "/");
+			state("/");
 		}
+	});
+
+	self.on("comments", function (commentUrl) {
+		fetchComments(commentUrl);
 	});
 
 	self.on("more", function (lastId) {

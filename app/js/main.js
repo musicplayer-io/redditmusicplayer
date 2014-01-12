@@ -152,17 +152,24 @@ $(function () {
 			/*global defaults:true */
 			subs = defaults.split(",");
 		}
-		for (var i = 0; i < subs.length; i++) {
-			var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
-			if (thisSub.length === 0) {
-				// If it doesn't exist in the default listing, add it to extras.
-				thisSub = Content.addToExtras(subs[i]);
-				console.log(thisSub);
-				$(".subreddit-menu .extra.hidden").removeClass("hidden");
+		if ("undefined" === typeof(comment_server)) {
+			/*global comments_server:true */
+			for (var i = 0; i < subs.length; i++) {
+				var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
+				if (thisSub.length === 0) {
+					// If it doesn't exist in the default listing, add it to extras.
+					thisSub = Content.addToExtras(subs[i]);
+					console.log(thisSub);
+					$(".subreddit-menu .extra.hidden").removeClass("hidden");
+				}
+				thisSub.addClass("active");
 			}
-			thisSub.addClass("active");
+		} else {
+			Music.Reddit.trigger("comments", comment_server);
+			Music.Reddit.one("playlist-update", function () {
+				$(".musicplaylist .item.more").remove();
+			})
 		}
-		$(".music .title").text("Hit Play!");
 
 		if (Options.get("sortMethod") === "top") {
 			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + ":" + Options.get("topMethod") + "']").click();

@@ -33,6 +33,10 @@ function ContentModel() {
 
 		var add = function (item) {
 			var newEl = $($.render(template, item));
+			if (item.markdown) {
+				newEl.find(".name").html(markdown.toHTML(newEl.find(".name").html()));
+				newEl.find(".name a").attr("href", "#");
+			}
 			var el = newEl.appendTo(root);
 			if (currentSong) {// New Playlist Received > Send Songs & Current Song > Rebuild View
 				if (item.title === currentSong.title) {

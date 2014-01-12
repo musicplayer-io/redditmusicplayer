@@ -4,10 +4,17 @@ block native
 block macnative
 block windowsnative
 block mainscript
+	if (pushState === false)
+		script(type="text/javascript").
+			var pushState = false;
 	if (subreddits)
 		script(type="text/javascript").
 			var defaults = "#{subreddits}";
 	if (autoplay)
 		script(type="text/javascript").
 			var autoplay = true;
+	if (comment)
+		script(type="text/javascript").
+			var comment_server = "#{comment}";
+	script(type='text/javascript', src='/js/lib/markdown.js')
 	script(type='text/javascript', src='/js/browser.js')

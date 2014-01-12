@@ -8,6 +8,7 @@
 
 ## Further Future
 * Go Native (Started as native, but couldn't handle soundcloud properly)
+* Chrome Extension
 * Radio Reddit (I've had this before but deleted it to concentrate on the rest)
 * Logging in: upvoting, downvoting
 * Last.fm scrobbling
@@ -17,6 +18,10 @@
  * Sync multiple players (for a living room + kitchen setup for example)
 
 ## Changelog
+
+### 0.1.3 - 12 January 2014
+
+* Multi multireddit support. [user/br1anfry3r/m/music+user/Rakielis/m/electronica](http://reddit.music.player.il.ly/user/br1anfry3r/m/music+user/Rakielis/m/electronica).
 
 ### 0.1.2 - 11 January 2014
 

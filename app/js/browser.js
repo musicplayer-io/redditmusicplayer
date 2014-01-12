@@ -153,17 +153,24 @@ $(function () {
 			/*global defaults:true */
 			subs = defaults.split(",");
 		}
-		for (var i = 0; i < subs.length; i++) {
-			var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
-			if (thisSub.length === 0) {
-				// If it doesn't exist in the default listing, add it to extras.
-				thisSub = Content.addToExtras(subs[i]);
-				console.log(thisSub);
-				$(".subreddit-menu .extra.hidden").removeClass("hidden");
+		if ("undefined" === typeof(comment_server)) {
+			/*global comments_server:true */
+			for (var i = 0; i < subs.length; i++) {
+				var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
+				if (thisSub.length === 0) {
+					// If it doesn't exist in the default listing, add it to extras.
+					thisSub = Content.addToExtras(subs[i]);
+					console.log(thisSub);
+					$(".subreddit-menu .extra.hidden").removeClass("hidden");
+				}
+				thisSub.addClass("active");
 			}
-			thisSub.addClass("active");
+		} else {
+			Music.Reddit.trigger("comments", comment_server);
+			Music.Reddit.one("playlist-update", function () {
+				$(".musicplaylist .item.more").remove();
+			})
 		}
-		$(".music .title").text("Hit Play!");
 
 		if (Options.get("sortMethod") === "top") {
 			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + ":" + Options.get("topMethod") + "']").click();
@@ -181,9 +188,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/players":"6cd8lO","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/players":"5QOjA2","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('JTiXJJ');
+},{}],"JTiXJJ":[function(require,module,exports){
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -219,6 +226,10 @@ function ContentModel() {
 
 		var add = function (item) {
 			var newEl = $($.render(template, item));
+			if (item.markdown) {
+				newEl.find(".name").html(markdown.toHTML(newEl.find(".name").html()));
+				newEl.find(".name a").attr("href", "#");
+			}
 			var el = newEl.appendTo(root);
 			if (currentSong) {// New Playlist Received > Send Songs & Current Song > Rebuild View
 				if (item.title === currentSong.title) {
@@ -303,7 +314,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
 "use strict";
 /*global KeyboardJS:false */
 
@@ -451,8 +462,10 @@ function UserEventsModel(Music, Options) {
 
 module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
-},{}],"USwVCS":[function(require,module,exports){
+module.exports=require('gtc4uL');
+},{}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('NzQZ2+');
+},{}],"NzQZ2+":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global SC:true */
 
@@ -731,9 +744,7 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":14}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"jLEaKv":[function(require,module,exports){
+},{"./reddit":14}],"xbP5ff":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 function simpleStorage() {
@@ -783,8 +794,10 @@ function OptionsModel() {
 
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"6cd8lO":[function(require,module,exports){
+module.exports=require('xbP5ff');
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('5QOjA2');
+},{}],"5QOjA2":[function(require,module,exports){
 "use strict";
 /*global SC:true */
 
@@ -888,11 +901,9 @@ function PlayersModel(Music, loadProgress, musicProgress) {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],"LtFNV5":[function(require,module,exports){
+module.exports=require('t9+Ge2');
+},{}],"t9+Ge2":[function(require,module,exports){
 "use strict";
 
 function ProgressBar(link) {
@@ -1001,30 +1012,55 @@ function RedditModel() {
 
 	var timeSince = function (date) {
 
-	    var seconds = Math.floor((new Date() - date) / 1000);
+		var seconds = Math.floor((new Date() - date) / 1000);
 
-	    var interval = Math.floor(seconds / 31536000);
+		var interval = Math.floor(seconds / 31536000);
 
-	    if (interval > 1) {
-	        return interval + " years";
-	    }
-	    interval = Math.floor(seconds / 2592000);
-	    if (interval > 1) {
-	        return interval + " months";
-	    }
-	    interval = Math.floor(seconds / 86400);
-	    if (interval > 1) {
-	        return interval + " days";
-	    }
-	    interval = Math.floor(seconds / 3600);
-	    if (interval > 1) {
-	        return interval + " hours";
-	    }
-	    interval = Math.floor(seconds / 60);
-	    if (interval > 1) {
-	        return interval + " minutes";
-	    }
-	    return Math.floor(seconds) + " seconds";
+		if (interval > 1) {
+			return interval + " years";
+		}
+		interval = Math.floor(seconds / 2592000);
+		if (interval > 1) {
+			return interval + " months";
+		}
+		interval = Math.floor(seconds / 86400);
+		if (interval > 1) {
+			return interval + " days";
+		}
+		interval = Math.floor(seconds / 3600);
+		if (interval > 1) {
+			return interval + " hours";
+		}
+		interval = Math.floor(seconds / 60);
+		if (interval > 1) {
+			return interval + " minutes";
+		}
+		return Math.floor(seconds) + " seconds";
+	};
+
+	var fetchComments = function (commentUrl) {
+		var playlist = [];
+		$.getJSON("http://www.reddit.com/" + commentUrl + "/.json?depth=0&limit=100&sort=" + self.sortMethod + "&jsonp=?", function (r) {
+			r = r[1];
+			$.each(r.data.children, function (i, child) {
+				var post = child.data;
+				var media = post.body;
+
+				var time = new Date();
+				time.setTime(parseInt(post.created_utc) * 1000);
+				post.created = timeSince(time);
+				var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + commentUrl };
+
+				var youtubeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*\)/;
+				var match = media.match(youtubeRegex);
+				if (match && match[2].length === 11) {
+					data.origin = "youtube.com";
+					var youtubeUrl = match[2];
+					playlist.push($.extend({markdown: true, title: media, file: "http://www.youtube.com/watch?v=" + youtubeUrl}, data));
+					self.trigger("playlist-update", playlist);
+				}
+			});
+		});
 	};
 
 	var fetchMusic = function (subreddits, callback) {
@@ -1039,7 +1075,7 @@ function RedditModel() {
 				var media = post.media;
 				if (media) {
 					var time = new Date();
-					time.setTime(parseInt(post.created) * 1000);
+					time.setTime(parseInt(post.created_utc) * 1000);
 					post.created = timeSince(time);
 					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
 					
@@ -1102,20 +1138,39 @@ function RedditModel() {
 		});
 	};
 
+	var state = function (url) {
+		/*global pushState:true */
+		var shouldPush = false;
+		if ("undefined" === typeof(pushState)) {
+			shouldPush = true;
+		} else {
+			if (pushState === true) {
+				shouldPush = true;
+			} else {
+				shouldPush = false;
+			}
+		}
+		if (shouldPush === true) {
+			var stateObj = { subreddits: self.subreddits };
+			history.replaceState(stateObj, "Reddit Music Player", url);
+		}
+	};
+
 	self.addSubReddit = function (value) {
+		pushState = true;
 		self.subreddits.push(value);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.removeSubReddit = function (value) {
+		pushState = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
 		Options.set("subreddits", self.subreddits);
 	};
 
 	self.getSubRedditList = function () {
-		var stateObj = { subreddits: self.subreddits };
-		history.replaceState(stateObj, "Reddit Music Player", "/r/" + self.subreddits.join("+"));
+		state("/r/" + self.subreddits.join("+"));
 		return self.subreddits.join("+");
 	};
 
@@ -1124,9 +1179,12 @@ function RedditModel() {
 			last = "";
 			fetchMusic(self.getSubRedditList(self.subreddits));
 		} else {
-			var stateObj = { subreddits: self.subreddits };
-			history.replaceState(stateObj, "Reddit Music Player", "/");
+			state("/");
 		}
+	});
+
+	self.on("comments", function (commentUrl) {
+		fetchComments(commentUrl);
 	});
 
 	self.on("more", function (lastId) {
@@ -1137,9 +1195,9 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv"}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('2l+GxM');
-},{}],"2l+GxM":[function(require,module,exports){
+},{"./options":"xbP5ff"}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('62hrOi');
+},{}],"62hrOi":[function(require,module,exports){
 "use strict";
 
 function SubredditsModel(Music) {
@@ -1188,6 +1246,11 @@ function SubredditsModel(Music) {
 			$("#searchSubs input").val("");
 			$(".search-subs").removeClass("active");
 			filterSubs();
+		}
+		if ($(".edit-subs").hasClass("active")) {
+			$(".clear-subs").removeClass("hidden");
+		} else {
+			$(".clear-subs").addClass("hidden");
 		}
 	};
 
