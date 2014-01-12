@@ -1,7 +1,6 @@
 
 ## Future
 
-* Multireddit support
 * Comments threads support
 * Make a landing page for the website and move the player to /player/
 * Chrome App build
@@ -25,6 +24,7 @@
 * To make this easy, the url gets updated if you add or remove subreddits. Remember that the currently selected subreddits will stay for the next session. So on reload you load this set again until you change it by clearing, adding or removing subreddits.
 * Autoplay support. [/r/dnb+postrock?autoplay](http://reddit.music.player.il.ly/r/dnb+postrock?autoplay)
 * Can also use website via: reddit.il.ly, www.reddit.il.ly, redditmusicplayer.il.ly. This makes it easy to load subreddits. Just change .com to .il.ly in a reddit overview and it'll load the right subreddits.
+* Multireddit support
 
 ### 0.1.1 - 8 January 2014
 

@@ -18,6 +18,14 @@ function ContentModel() {
 
 	var musicProgress = new ProgressBarModel(".music-progress");
 
+	// Subreddits
+
+	self.addToExtras = function (subreddit) {
+		var element = $("<a class='item' data-value='" + subreddit.toLowerCase() + "'>" + subreddit + "</a>");
+		element.appendTo($(".subreddit-menu .extra .extra.menu"));
+		return element;
+	};
+
 	// MUSIC
 	var buildMusicView = function (songs, currentSong) {
 		var root = $(".music.content .playlist");

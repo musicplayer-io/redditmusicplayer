@@ -11,6 +11,9 @@ var version = {
 var express = require('express');
 var app = express();
 
+var request = require('request');
+var cheerio = require('cheerio');
+
 // Configuration
 
 var env = process.env.NODE_ENV || 'dev';
@@ -61,6 +64,21 @@ var justIndex = function (req, res) {
 	res.render('server.jade', data);
 };
 
+var multiReddit = function (req, res) {
+	var url = 'http://www.reddit.com/user/' + req.params.user + "/m/" + req.params.reddit;
+	request(url, function (error, response, html) {
+		if (!error && response.statusCode === 200) {
+			var $ = cheerio.load(html);
+			var subs = [];
+			$(".side .subreddits a").each(function (i, element) {
+				subs.push(element.attribs.href.substr(3));
+			});
+			var data = {subreddits: subs};
+			res.render("server.jade", data);
+		}
+	});
+};
+
 
 // Routes
 
@@ -68,6 +86,8 @@ app.get("/", justIndex);
 app.get("/r/:subreddit", withSubreddits);
 app.get("/player", justIndex);
 app.get("/player/r/:subreddit", withSubreddits);
+
+app.get("/user/:user/m/:reddit", multiReddit);
 
 app.get("/update.xml", function (req, res) {
 	if (req.query.v && req.query.os) {

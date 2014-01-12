@@ -153,8 +153,15 @@ $(function () {
 			/*global defaults:true */
 			subs = defaults.split(",");
 		}
-		for (var i = subs.length - 1; i >= 0; i--) {
-			$(".subreddit-menu .item[data-value='" + subs[i] + "']").addClass("active");
+		for (var i = 0; i < subs.length; i++) {
+			var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
+			if (thisSub.length === 0) {
+				// If it doesn't exist in the default listing, add it to extras.
+				thisSub = Content.addToExtras(subs[i]);
+				console.log(thisSub);
+				$(".subreddit-menu .extra.hidden").removeClass("hidden");
+			}
+			thisSub.addClass("active");
 		}
 		$(".music .title").text("Hit Play!");
 
@@ -174,7 +181,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/players":"6cd8lO","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/players":"6cd8lO","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -194,6 +203,14 @@ function ContentModel() {
 	var self = this;
 
 	var musicProgress = new ProgressBarModel(".music-progress");
+
+	// Subreddits
+
+	self.addToExtras = function (subreddit) {
+		var element = $("<a class='item' data-value='" + subreddit.toLowerCase() + "'>" + subreddit + "</a>");
+		element.appendTo($(".subreddit-menu .extra .extra.menu"));
+		return element;
+	};
 
 	// MUSIC
 	var buildMusicView = function (songs, currentSong) {
@@ -286,9 +303,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
 "use strict";
 /*global KeyboardJS:false */
 
@@ -718,8 +733,6 @@ module.exports = MusicModel;
 
 },{"./reddit":14}],"./js/modules/music":[function(require,module,exports){
 module.exports=require('USwVCS');
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
 },{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
@@ -769,6 +782,8 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
 },{}],"6cd8lO":[function(require,module,exports){
 "use strict";
 /*global SC:true */
