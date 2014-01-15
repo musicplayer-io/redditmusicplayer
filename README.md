@@ -33,3 +33,17 @@ Here are the grunt tasks you can run using grunt-cli.
 
 Your files need to be validated by jshint.
 You can run the server by **npm start**.
+
+# License
+
+Copyright (C) 2014 Ilias Ismanalijev
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
