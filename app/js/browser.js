@@ -199,6 +199,10 @@ $(function () {
 			});
 		}
 
+		/*global ga:true*/
+		ga('create', 'UA-45488207-5', 'il.ly');
+		ga('send', 'pageview');
+
 	});
 
 },{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
@@ -358,6 +362,8 @@ function ContentModel() {
 module.exports = ContentModel;
 },{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
 module.exports=require('kUqara');
+},{}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('RgAvKX');
 },{}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global KeyboardJS:true */
@@ -508,8 +514,8 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
+},{}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
 },{}],"USwVCS":[function(require,module,exports){
 "use strict";
 /*global SC:true */
@@ -827,9 +833,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"./js/modules/options":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"./js/modules/options":[function(require,module,exports){
 module.exports=require('jLEaKv');
 },{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
@@ -1225,6 +1229,8 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
 "use strict";
 
@@ -1299,8 +1305,6 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
 },{}],14:[function(require,module,exports){
 var process=require("__browserify_process");"use strict";
 
@@ -1526,7 +1530,9 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv","__browserify_process":17}],"2l+GxM":[function(require,module,exports){
+},{"./options":"jLEaKv","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('2l+GxM');
+},{}],"2l+GxM":[function(require,module,exports){
 "use strict";
 
 function SubredditsModel(Music) {
@@ -1659,8 +1665,6 @@ function SubredditsModel(Music) {
 }
 
 module.exports = SubredditsModel;
-},{}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('2l+GxM');
 },{}],17:[function(require,module,exports){
 // shim for using process in browser
 
