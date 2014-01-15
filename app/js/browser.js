@@ -362,8 +362,6 @@ function ContentModel() {
 module.exports = ContentModel;
 },{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
 module.exports=require('kUqara');
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
 },{}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global KeyboardJS:true */
@@ -514,8 +512,8 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
+},{}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('RgAvKX');
 },{}],"USwVCS":[function(require,module,exports){
 "use strict";
 /*global SC:true */
@@ -833,7 +831,9 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"./js/modules/options":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
+},{}],"./js/modules/options":[function(require,module,exports){
 module.exports=require('jLEaKv');
 },{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
@@ -1029,9 +1029,12 @@ function OptionsModel() {
 	var self = this;
 
 	/*global chrome:true */
-	if ("undefined" !== typeof(chrome.storage)) {
-		console.log("OPTIONS > Using Chrome");
-		self.local = new chromeStorage();
+
+	if ("undefined" !== typeof(chrome)) {
+		if ("undefined" !== typeof(chrome.storage)) {
+			console.log("OPTIONS > Using Chrome");
+			self.local = new chromeStorage();
+		}
 	} else {
 		if ("undefined" !== typeof(window.localStorage) || "undefined" !== typeof(global.window.localStorage)) {
 			console.log("OPTIONS > Using localStorage");
