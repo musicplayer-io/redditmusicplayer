@@ -134,7 +134,7 @@ module.exports = function (grunt) {
 		},
 		// Removing chrome builds
 		clean: {
-			before: ["chrome/css", "chrome/js", "chrome/img", "chrome/fonts"],
+			before: ["chrome/sandbox.html", "chrome/main.html", "chrome/css", "chrome/js", "chrome/img", "chrome/fonts"],
 			one: ["chrome/js/modules/players.js", "chrome/js/modules/players.js"]
 		},
 		// Then placing them back
@@ -190,5 +190,6 @@ module.exports = function (grunt) {
 	grunt.registerTask('default', ["jshint", "less", "jade:compile", 'watch']);
 	grunt.registerTask('server', ["jshint", "less", "browserify", "watch"]);
 	grunt.registerTask('build', ["jshint", "less", "jade", "browserify"]);
+	grunt.registerTask('cleanup', ["jshint", "clean:before"]);
 	grunt.registerTask('chrome', ["jshint", "less", "clean:before", "copy:one", "clean:one", "copy:two", "jade:chrome", "browserify:chrome"]);
 };
