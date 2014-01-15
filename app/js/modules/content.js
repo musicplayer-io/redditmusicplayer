@@ -68,6 +68,8 @@ function ContentModel() {
 		$("<span/>").html(" &#8226; ").appendTo(root);
 		$("<span/>").addClass("origin").text(item.origin).appendTo(root);
 		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("comments").text(item.comments + " comments").appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
 		$("<a/>").attr("href", item.reddit).attr("target", "_blank").attr("title", item.title).html($("<u>permalink</u>")).appendTo(root);
 		return root;
 	};
@@ -145,14 +147,15 @@ function ContentModel() {
 	});
 
 	self.on("music-progress", function (currentSong, soundcloudData) {
+		intervalProgressBar = window.clearInterval(intervalProgressBar);
 		if (currentSong.origin === "soundcloud.com") {
 			try {
 				musicProgress.set(soundcloudData.relativePosition * 100);
 			} catch (err) {
-				//console.error(currentSong);
+				console.error(currentSong);
 			}
 		} else {
-			self.trigger("youtube-progressbar");				
+			self.trigger("youtube-progressbar");
 			updateProgressBar(function () {
 				self.trigger("youtube-progressbar");
 			});

@@ -26,7 +26,7 @@ function UserEventsModel(Music, Options) {
 
 	// MUSIC CONTROLS
 	var MusicEvents = function () {
-		// Play & Stop
+		// Play & Pause
 		$(".play-btn").click(function (e) {
 			self.trigger("play-btn", e);
 		});
@@ -121,8 +121,8 @@ function UserEventsModel(Music, Options) {
 	var KeyboardEvents = function () {
 		var Keyboard = window.KeyboardJS || global.KeyboardJS;
 		// Music Controls
-		Keyboard.on("space", function () {
-			Music.trigger("play-btn");
+		Keyboard.on("space", function (e) {
+			Music.trigger("play-btn", e);
 		});
 		Keyboard.on("right,down", function () {
 			Music.trigger("song-next");

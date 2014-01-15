@@ -1,5 +1,21 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
+"use strict";
 
 try {
 	if (global) {
@@ -68,7 +84,6 @@ $(function () {
 		// Events defined in Events module
 		function pipeEvent(To, event) {
 			Events.on(event, function (Arg1) {
-				console.log(To, event, Arg1);
 				To.trigger(event, Arg1);
 			});
 		}
@@ -113,8 +128,6 @@ $(function () {
 						Music.play();
 					}
 				}, 5000);
-			} else {
-				console.log(isPlaying, Music.isPlaying);
 			}
 		});
 
@@ -123,6 +136,10 @@ $(function () {
 			Content.trigger("build", "music playlist", songs, Music.currentSong);
 		});
 
+		// Mostly soundcloud data
+		Music.on("music-progress", function (song, data) {
+			Content.trigger("music-progress", song, data);
+		});
 		
 
 		// CONTENT
@@ -278,6 +295,8 @@ function ContentModel() {
 		$("<span/>").html(" &#8226; ").appendTo(root);
 		$("<span/>").addClass("origin").text(item.origin).appendTo(root);
 		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("comments").text(item.comments + " comments").appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
 		$("<a/>").attr("href", item.reddit).attr("target", "_blank").attr("title", item.title).html($("<u>permalink</u>")).appendTo(root);
 		return root;
 	};
@@ -355,14 +374,15 @@ function ContentModel() {
 	});
 
 	self.on("music-progress", function (currentSong, soundcloudData) {
+		intervalProgressBar = window.clearInterval(intervalProgressBar);
 		if (currentSong.origin === "soundcloud.com") {
 			try {
 				musicProgress.set(soundcloudData.relativePosition * 100);
 			} catch (err) {
-				//console.error(currentSong);
+				console.error(currentSong);
 			}
 		} else {
-			self.trigger("youtube-progressbar");				
+			self.trigger("youtube-progressbar");
 			updateProgressBar(function () {
 				self.trigger("youtube-progressbar");
 			});
@@ -407,7 +427,7 @@ function UserEventsModel(Music, Options) {
 
 	// MUSIC CONTROLS
 	var MusicEvents = function () {
-		// Play & Stop
+		// Play & Pause
 		$(".play-btn").click(function (e) {
 			self.trigger("play-btn", e);
 		});
@@ -502,8 +522,8 @@ function UserEventsModel(Music, Options) {
 	var KeyboardEvents = function () {
 		var Keyboard = window.KeyboardJS || global.KeyboardJS;
 		// Music Controls
-		Keyboard.on("space", function () {
-			Music.trigger("play-btn");
+		Keyboard.on("space", function (e) {
+			Music.trigger("play-btn", e);
 		});
 		Keyboard.on("right,down", function () {
 			Music.trigger("song-next");
@@ -546,6 +566,8 @@ function UserEventsModel(Music, Options) {
 module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
 module.exports=require('RgAvKX');
+},{}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
 },{}],"USwVCS":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -605,8 +627,8 @@ function MusicModel(musicProgress, loadProgress) {
 		};
 
 		var playSong = function (song) {
-			self.stop();
 			if (song) {
+				self.stop();
 				self.currentSong = song;
 				index = self.songs.indexOf(self.currentSong);
 				if (song.origin === "youtube.com") {
@@ -627,6 +649,14 @@ function MusicModel(musicProgress, loadProgress) {
 			}
 		};
 
+		var continueSong = function () {
+			if (self.currentSong.origin === "youtube.com") {
+				Players.trigger("youtube-play");
+			} else if (self.currentSong.origin === "soundcloud.com") {
+				Players.trigger("soundcloud-play");
+			}
+		};
+
 		var getSongByURL = function (songURL) {
 			for (var i = self.songs.length - 1; i >= 0; i--) {
 				if (self.songs[i].file === songURL) {
@@ -640,7 +670,7 @@ function MusicModel(musicProgress, loadProgress) {
 			var myWidth = e.clientX;
 			if (self.currentSong.origin === "soundcloud.com") {
 				Players.trigger("soundcloud-seek", (myWidth / maxWidth));
-			} else {
+			} else if (self.currentSong.origin === "youtube.com") {
 				Players.trigger("youtube-seek", (myWidth / maxWidth));
 			}
 
@@ -649,16 +679,27 @@ function MusicModel(musicProgress, loadProgress) {
 
 		self.play = function () {
 			if (self.songs.length > 0) {
-				playSong(
-					self.songs[index]
-				);
+				var newSong = self.songs[index];
+				if (newSong === self.currentSong) {
+					continueSong();
+				} else {
+					playSong(newSong);
+				}
 			} else {
-				Reddit.trigger("update");
 				Reddit.one("playlist", function () {
 					playSong(
 						self.songs[self.index]
 					);
 				});
+				Reddit.trigger("update");
+			}
+		};
+
+		self.pause = function () {
+			if (self.isPlaying) {
+				Players.trigger("soundcloud-pause");
+				Players.trigger("youtube-pause");
+				self.trigger("playing", false);
 			}
 		};
 		
@@ -671,14 +712,14 @@ function MusicModel(musicProgress, loadProgress) {
 		};
 
 		self.togglePlayBtn = function (value) {
-			$(".play-btn").removeClass("stop").removeClass("play");
+			$(".play-btn").removeClass("pause").removeClass("play");
 			$(".play-btn .icon").addClass("hidden");
 			if (value === "play") {
 				$(".play-btn").addClass("play");
 				$(".play-btn .play").removeClass("hidden");
-			} else if (value === "stop") {
-				$(".play-btn").addClass("stop");
-				$(".play-btn .stop").removeClass("hidden");
+			} else if (value === "pause") {
+				$(".play-btn").addClass("pause");
+				$(".play-btn .pause").removeClass("hidden");
 			}
 		};
 
@@ -698,6 +739,12 @@ function MusicModel(musicProgress, loadProgress) {
 			musicProgress.end();
 		});
 
+		Players.on("youtube-onPlayerPaused", function () {
+			console.log("YT > Paused");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+		});
+
 		var timeOut;
 		Players.on("youtube-onPlayerUnstarted", function () {
 			console.log("YT > Unstarted");
@@ -711,7 +758,7 @@ function MusicModel(musicProgress, loadProgress) {
 
 		Players.on("youtube-onPlayerPlaying", function () {
 			console.log("YT > Playing");
-			self.togglePlayBtn("stop");
+			self.togglePlayBtn("pause");
 			self.isPlaying = true;
 			loadProgress.trigger("end");
 			musicProgress.start();
@@ -738,10 +785,16 @@ function MusicModel(musicProgress, loadProgress) {
 			musicProgress.end();
 		});
 
+		Players.on("souncdloud-onPause", function () {
+			console.log("SC > Pause");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+		});
+
 		Players.on("souncdloud-onPlay", function () {
 			console.log("SC > Playing");
 			self.trigger("soundcloud-ready");
-			self.togglePlayBtn("stop");
+			self.togglePlayBtn("pause");
 			loadProgress.trigger("end");
 			self.isPlaying = true;
 			musicProgress.start();
@@ -854,21 +907,24 @@ function MusicModel(musicProgress, loadProgress) {
 				songEl.addClass("active");
 				self.trigger("loading");
 
-				self.togglePlayBtn("stop");
+				self.togglePlayBtn("pause");
 
 				self.trigger("song-switch", song);
 			}
 		});
 
 		// Play / Pause button
-		self.on("play-btn", function () {
+		self.on("play-btn", function (e) {
+			if (e) {
+				e.preventDefault();
+			}
 			if (!self.isPlaying) {
-				self.togglePlayBtn("stop");
+				self.togglePlayBtn("pause");
 				self.play();
 				self.trigger("loading");
 			} else if (self.isPlaying) {
 				self.togglePlayBtn("play");
-				self.stop();
+				self.pause();
 			}
 		});
 
@@ -879,9 +935,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"jLEaKv":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1161,6 +1215,8 @@ function OptionsModel() {
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
 module.exports=require('jLEaKv');
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -1198,6 +1254,9 @@ function PlayersModel() {
 			onPlayerEnded: function () {
 				self.trigger("youtube-onPlayerEnded");
 			},
+			onPlayerPaused: function () {
+				self.trigger("youtube-onPlayerPaused");
+			},
 			onPlayerUnstarted: function () {
 				self.trigger("youtube-onPlayerUnstarted");
 			},
@@ -1223,11 +1282,18 @@ function PlayersModel() {
 	};
 
 	self.on("youtube-play", function (id) {
-		$("#youtube").tubeplayer("play", id);
+		if ("undefined" !== typeof(id)) {
+			$("#youtube").tubeplayer("play", id);
+		} else {
+			$("#youtube").tubeplayer("play");
+		}
 	});
 	self.on("youtube-seek", function (percentage) {
 		var data = $("#youtube").tubeplayer("data");
 		$("#youtube").tubeplayer("seek", percentage * data.duration);
+	});
+	self.on("youtube-pause", function () {
+		$("#youtube").tubeplayer("pause");
 	});
 	self.on("youtube-stop", function () {
 		$("#youtube").tubeplayer("stop");
@@ -1267,6 +1333,9 @@ function PlayersModel() {
 			self.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
 				self.trigger("souncdloud-onFinish");
 			});
+			self.widget.bind(SoundCloud.Widget.Events.PAUSE, function () {
+				self.trigger("souncdloud-onPause");
+			});
 			self.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
 				self.trigger("souncdloud-onPlay");
 			});
@@ -1301,6 +1370,9 @@ function PlayersModel() {
 	self.on("soundcloud-seekTo", function (percentage) {
 		self.widget.seekTo(percentage);
 	});
+	self.on("soundcloud-pause", function () {
+		self.widget.pause();
+	});
 	self.on("soundcloud-stop", function () {
 		self.widget.pause();
 	});
@@ -1313,8 +1385,6 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
@@ -1515,7 +1585,7 @@ function RedditModel() {
 					var time = new Date();
 					time.setTime(parseInt(post.created_utc) * 1000);
 					post.created = timeSince(time);
-					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
+					var data = {"comments": post.num_comments, "author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
 					
 					switch (media.type) {
 						case "bandcamp.com":

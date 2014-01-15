@@ -34,6 +34,9 @@ function PlayersModel() {
 			onPlayerEnded: function () {
 				self.trigger("youtube-onPlayerEnded");
 			},
+			onPlayerPaused: function () {
+				self.trigger("youtube-onPlayerPaused");
+			},
 			onPlayerUnstarted: function () {
 				self.trigger("youtube-onPlayerUnstarted");
 			},
@@ -59,11 +62,18 @@ function PlayersModel() {
 	};
 
 	self.on("youtube-play", function (id) {
-		$("#youtube").tubeplayer("play", id);
+		if ("undefined" !== typeof(id)) {
+			$("#youtube").tubeplayer("play", id);
+		} else {
+			$("#youtube").tubeplayer("play");
+		}
 	});
 	self.on("youtube-seek", function (percentage) {
 		var data = $("#youtube").tubeplayer("data");
 		$("#youtube").tubeplayer("seek", percentage * data.duration);
+	});
+	self.on("youtube-pause", function () {
+		$("#youtube").tubeplayer("pause");
 	});
 	self.on("youtube-stop", function () {
 		$("#youtube").tubeplayer("stop");
@@ -103,6 +113,9 @@ function PlayersModel() {
 			self.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
 				self.trigger("souncdloud-onFinish");
 			});
+			self.widget.bind(SoundCloud.Widget.Events.PAUSE, function () {
+				self.trigger("souncdloud-onPause");
+			});
 			self.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
 				self.trigger("souncdloud-onPlay");
 			});
@@ -136,6 +149,9 @@ function PlayersModel() {
 	});
 	self.on("soundcloud-seekTo", function (percentage) {
 		self.widget.seekTo(percentage);
+	});
+	self.on("soundcloud-pause", function () {
+		self.widget.pause();
 	});
 	self.on("soundcloud-stop", function () {
 		self.widget.pause();

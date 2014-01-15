@@ -56,8 +56,8 @@ function MusicModel(musicProgress, loadProgress) {
 		};
 
 		var playSong = function (song) {
-			self.stop();
 			if (song) {
+				self.stop();
 				self.currentSong = song;
 				index = self.songs.indexOf(self.currentSong);
 				if (song.origin === "youtube.com") {
@@ -78,6 +78,14 @@ function MusicModel(musicProgress, loadProgress) {
 			}
 		};
 
+		var continueSong = function () {
+			if (self.currentSong.origin === "youtube.com") {
+				Players.trigger("youtube-play");
+			} else if (self.currentSong.origin === "soundcloud.com") {
+				Players.trigger("soundcloud-play");
+			}
+		};
+
 		var getSongByURL = function (songURL) {
 			for (var i = self.songs.length - 1; i >= 0; i--) {
 				if (self.songs[i].file === songURL) {
@@ -91,7 +99,7 @@ function MusicModel(musicProgress, loadProgress) {
 			var myWidth = e.clientX;
 			if (self.currentSong.origin === "soundcloud.com") {
 				Players.trigger("soundcloud-seek", (myWidth / maxWidth));
-			} else {
+			} else if (self.currentSong.origin === "youtube.com") {
 				Players.trigger("youtube-seek", (myWidth / maxWidth));
 			}
 
@@ -100,16 +108,27 @@ function MusicModel(musicProgress, loadProgress) {
 
 		self.play = function () {
 			if (self.songs.length > 0) {
-				playSong(
-					self.songs[index]
-				);
+				var newSong = self.songs[index];
+				if (newSong === self.currentSong) {
+					continueSong();
+				} else {
+					playSong(newSong);
+				}
 			} else {
-				Reddit.trigger("update");
 				Reddit.one("playlist", function () {
 					playSong(
 						self.songs[self.index]
 					);
 				});
+				Reddit.trigger("update");
+			}
+		};
+
+		self.pause = function () {
+			if (self.isPlaying) {
+				Players.trigger("soundcloud-pause");
+				Players.trigger("youtube-pause");
+				self.trigger("playing", false);
 			}
 		};
 		
@@ -122,14 +141,14 @@ function MusicModel(musicProgress, loadProgress) {
 		};
 
 		self.togglePlayBtn = function (value) {
-			$(".play-btn").removeClass("stop").removeClass("play");
+			$(".play-btn").removeClass("pause").removeClass("play");
 			$(".play-btn .icon").addClass("hidden");
 			if (value === "play") {
 				$(".play-btn").addClass("play");
 				$(".play-btn .play").removeClass("hidden");
-			} else if (value === "stop") {
-				$(".play-btn").addClass("stop");
-				$(".play-btn .stop").removeClass("hidden");
+			} else if (value === "pause") {
+				$(".play-btn").addClass("pause");
+				$(".play-btn .pause").removeClass("hidden");
 			}
 		};
 
@@ -149,6 +168,12 @@ function MusicModel(musicProgress, loadProgress) {
 			musicProgress.end();
 		});
 
+		Players.on("youtube-onPlayerPaused", function () {
+			console.log("YT > Paused");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+		});
+
 		var timeOut;
 		Players.on("youtube-onPlayerUnstarted", function () {
 			console.log("YT > Unstarted");
@@ -162,7 +187,7 @@ function MusicModel(musicProgress, loadProgress) {
 
 		Players.on("youtube-onPlayerPlaying", function () {
 			console.log("YT > Playing");
-			self.togglePlayBtn("stop");
+			self.togglePlayBtn("pause");
 			self.isPlaying = true;
 			loadProgress.trigger("end");
 			musicProgress.start();
@@ -189,10 +214,16 @@ function MusicModel(musicProgress, loadProgress) {
 			musicProgress.end();
 		});
 
+		Players.on("souncdloud-onPause", function () {
+			console.log("SC > Pause");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+		});
+
 		Players.on("souncdloud-onPlay", function () {
 			console.log("SC > Playing");
 			self.trigger("soundcloud-ready");
-			self.togglePlayBtn("stop");
+			self.togglePlayBtn("pause");
 			loadProgress.trigger("end");
 			self.isPlaying = true;
 			musicProgress.start();
@@ -305,21 +336,24 @@ function MusicModel(musicProgress, loadProgress) {
 				songEl.addClass("active");
 				self.trigger("loading");
 
-				self.togglePlayBtn("stop");
+				self.togglePlayBtn("pause");
 
 				self.trigger("song-switch", song);
 			}
 		});
 
 		// Play / Pause button
-		self.on("play-btn", function () {
+		self.on("play-btn", function (e) {
+			if (e) {
+				e.preventDefault();
+			}
 			if (!self.isPlaying) {
-				self.togglePlayBtn("stop");
+				self.togglePlayBtn("pause");
 				self.play();
 				self.trigger("loading");
 			} else if (self.isPlaying) {
 				self.togglePlayBtn("play");
-				self.stop();
+				self.pause();
 			}
 		});
 

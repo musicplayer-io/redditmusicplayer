@@ -105,7 +105,7 @@ function RedditModel() {
 					var time = new Date();
 					time.setTime(parseInt(post.created_utc) * 1000);
 					post.created = timeSince(time);
-					var data = {"author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
+					var data = {"comments": post.num_comments, "author": post.author, "subreddit": post.subreddit, "ups": post.ups, "downs": post.downs, "created": post.created, "name": post.name, "reddit": "http://reddit.com" + post.permalink, "score": post.score, "origin": media.type };
 					
 					switch (media.type) {
 						case "bandcamp.com":

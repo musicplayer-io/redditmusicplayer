@@ -1,3 +1,19 @@
+//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
 "use strict";
 
 try {
@@ -67,7 +83,6 @@ $(function () {
 		// Events defined in Events module
 		function pipeEvent(To, event) {
 			Events.on(event, function (Arg1) {
-				console.log(To, event, Arg1);
 				To.trigger(event, Arg1);
 			});
 		}
@@ -112,8 +127,6 @@ $(function () {
 						Music.play();
 					}
 				}, 5000);
-			} else {
-				console.log(isPlaying, Music.isPlaying);
 			}
 		});
 
@@ -122,6 +135,10 @@ $(function () {
 			Content.trigger("build", "music playlist", songs, Music.currentSong);
 		});
 
+		// Mostly soundcloud data
+		Music.on("music-progress", function (song, data) {
+			Content.trigger("music-progress", song, data);
+		});
 		
 
 		// CONTENT
