@@ -71,7 +71,7 @@ function UserEventsModel(Music, Options) {
 			target.addClass("active");
 
 			// Set Sorting Method
-			Options.set("sortMethod", sortingMethod);
+			Options.set({"sortMethod": sortingMethod});
 			Music.trigger("update");
 		});
 
@@ -85,14 +85,16 @@ function UserEventsModel(Music, Options) {
 			onChange: function (sortingMethod, text) {
 				if (sortingMethod.substr(0, 3) === "top") {
 					var topvalue = sortingMethod.split(":");
-					Options.set("sortMethod", topvalue[0]);
-					Options.set("topMethod", topvalue[1]);
+					Options.set({
+						"sortMethod": topvalue[0],
+						"topMethod": topvalue[1]
+					});
 
 					// Make button active
 					$(".sorting.column .sort.item").removeClass("active");
 					$(".sorting.column .sort.item.top").addClass("active");
 				} else {
-					Options.set("sortMethod", sortingMethod);
+					Options.set({"sortMethod": sortingMethod});
 				}
 				Music.trigger("update");
 			}

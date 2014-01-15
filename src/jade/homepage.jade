@@ -1,0 +1,53 @@
+!!! 5
+html(mlns:fb='http://ogp.me/ns/fb#', xmlns:og='http://ogp.me/ns#', itemscope='itemscope', itemtype='http://schema.org/Article')
+	head
+		meta(charset='utf-8')
+		title Reddit Music Player | Ilias Ismanalijev
+		include includes/favicon
+		include includes/meta
+		link(href='/css/semantic.min.css', rel='stylesheet')
+		link(href='/css/homepage.css', rel='stylesheet')
+	body
+		.title.ui.top.fixed.inverted.menu
+			.top.menu.header
+				.wrapper
+					//- Logo 
+					a.active.disabled.item.redmusic
+						span Reddit
+						| Music
+						span Player
+					//- Music / Radio Tabs 
+					.page-menu.right.tabular.menu
+						a.item.active(href="/", target="_blank")
+							i.icon.home
+						a.music-page.item(href="/player/", data-tab='music')
+							i.icon.music
+						a.item(href="http://reddit.com/r/musicplayer", target="_blank")
+							i.icon.help
+						a.item.redmusic(href="http://il.ly", target="_blank") Ilias Ismanalijev
+		//- Content 
+		.main-container.wrapper(class=background)
+			.intro
+				h1.ui.header Listen to the best user-curated music on the web.
+				p.description All of the music subreddits in one beautiful music player. Right now.
+				a.ui.black.button(href="/player/") Listen to Music
+			.links
+				.ui.two.buttons
+					a.ui.black.button(href="http://github.com/illyism/redditmusicplayer") Github
+					a.ui.black.button(href="http://reddit.com/r/musicplayer") Reddit
+		//- Libraries
+		.javascript
+			script(type='text/javascript', src='/js/lib/jquery.min.js')
+			script(type='text/javascript', src='/js/lib/jquery-migrate.min.js')
+			script(type='text/javascript', src='/js/lib/jquery.address.min.js')
+			script(type='text/javascript', src='/js/lib/jquery.easing.min.js')
+			//- TweenMax
+			script(type='text/javascript', src='/js/lib/TweenMax.min.js')
+			script(type='text/javascript', src='/js/lib/jquery.gsap.min.js')
+			//- swfobjet
+			script(type='text/javascript', src='/js/lib/swfobject.js')
+			//- MVP
+			script(type='text/javascript', src='/js/lib/riot.js')
+			//- Keyboard & UI
+			script(type='text/javascript', src='/js/lib/keyboard.js')
+			script(type='text/javascript', src='/js/lib/semantic.min.js')

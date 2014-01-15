@@ -8,7 +8,6 @@ try {
 
 // Model Dependencies
 // Music
-var PlayersModel = require("./js/modules/players");
 var MusicModel = require("./js/modules/music");
 
 // UI
@@ -28,11 +27,10 @@ $(function () {
 	// Initialize
 		var loadProgress = new ProgressBarModel(".load-progress");
 		var musicProgress = new ProgressBarModel(".music-progress");
-		var Music = new MusicModel(musicProgress);
+		var Music = new MusicModel(musicProgress, loadProgress);
 		var Content = new ContentModel();
 		var Options = new OptionsModel();
 		var Subreddits = new SubredditsModel(Music);
-		var Players = new PlayersModel(Music, loadProgress, musicProgress);
 		var Events = new EventsModel(Music, Options);
 
 	// Helpers
@@ -142,18 +140,19 @@ $(function () {
 			Music.trigger("play-btn");
 		});
 
+		Content.on("youtube-progressbar", function () {
+			Music.trigger("youtube-progressbar");
+		});
+
+		Music.on("youtube-progressbarReturn", function (data) {
+			Content.trigger("youtube-progressbarReturn", data);
+		});
+
 			
 		// Init Settings
-		Players.init();
 		Events.init();
 
-		var subs = Options.get("subreddits");
-		if ("undefined" !== typeof(defaults)) {
-			/*global defaults:true */
-			subs = defaults.split(",");
-		}
-		/*global comment_server:true */
-		if ("undefined" === typeof(comment_server)) {
+		var ActivateSubs = function (subs) {
 			for (var i = 0; i < subs.length; i++) {
 				var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
 				if (thisSub.length === 0) {
@@ -164,27 +163,39 @@ $(function () {
 				}
 				thisSub.addClass("active");
 			}
-		} else {
+		};
+		/*global comment_server:true */
+		if ("undefined" !== typeof(comment_server)) {
 			Music.Reddit.trigger("comments", comment_server);
 			Music.Reddit.one("playlist-update", function () {
 				Content.one("build-ready", function () {
 					$(".musicplaylist .item.more").remove();
 				});
 			});
-		}
-
-		if (Options.get("sortMethod") === "top") {
-			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + ":" + Options.get("topMethod") + "']").click();
 		} else {
-			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + "']").click();
-		}
-
-		if ("undefined" !== typeof(autoplay)) {
-			if (subs.length > 0) {
-				Content.one("build-ready", function () {
-					$(".music.playlist .item").click();
+			if ("undefined" !== typeof(defaults)) {
+				/*global defaults:true */
+				ActivateSubs(defaults.split(","));
+			} else {
+				Options.get("subreddits", function (items) {
+					ActivateSubs(items.subreddits);
 				});
 			}
+		}
+
+		Options.get(["sortMethod", "topMethod"], function (items) {
+			if (items.sortMethod === "top") {
+				$(".sorting.column .item[data-value='" + items.sortMethod + ":" + items.topMethod + "']").click();
+			} else {
+				$(".sorting.column .item[data-value='" + items.sortMethod + "']").click();
+			}
+		});
+
+		if ("undefined" !== typeof(autoplay)) {
+			// Autoplay when build is ready.
+			Content.one("build-ready", function () {
+				$(".music.playlist .item").click();
+			});
 		}
 
 	});

@@ -1,58 +1,4 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            if (ev.source === window && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],2:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 
 try {
@@ -63,7 +9,6 @@ try {
 
 // Model Dependencies
 // Music
-var PlayersModel = require("./js/modules/players");
 var MusicModel = require("./js/modules/music");
 
 // UI
@@ -83,11 +28,10 @@ $(function () {
 	// Initialize
 		var loadProgress = new ProgressBarModel(".load-progress");
 		var musicProgress = new ProgressBarModel(".music-progress");
-		var Music = new MusicModel(musicProgress);
+		var Music = new MusicModel(musicProgress, loadProgress);
 		var Content = new ContentModel();
 		var Options = new OptionsModel();
 		var Subreddits = new SubredditsModel(Music);
-		var Players = new PlayersModel(Music, loadProgress, musicProgress);
 		var Events = new EventsModel(Music, Options);
 
 	// Helpers
@@ -197,18 +141,19 @@ $(function () {
 			Music.trigger("play-btn");
 		});
 
+		Content.on("youtube-progressbar", function () {
+			Music.trigger("youtube-progressbar");
+		});
+
+		Music.on("youtube-progressbarReturn", function (data) {
+			Content.trigger("youtube-progressbarReturn", data);
+		});
+
 			
 		// Init Settings
-		Players.init();
 		Events.init();
 
-		var subs = Options.get("subreddits");
-		if ("undefined" !== typeof(defaults)) {
-			/*global defaults:true */
-			subs = defaults.split(",");
-		}
-		/*global comment_server:true */
-		if ("undefined" === typeof(comment_server)) {
+		var ActivateSubs = function (subs) {
 			for (var i = 0; i < subs.length; i++) {
 				var thisSub = $(".subreddit-menu .item[data-value='" + subs[i].toLowerCase() + "']");
 				if (thisSub.length === 0) {
@@ -219,34 +164,44 @@ $(function () {
 				}
 				thisSub.addClass("active");
 			}
-		} else {
+		};
+		/*global comment_server:true */
+		if ("undefined" !== typeof(comment_server)) {
 			Music.Reddit.trigger("comments", comment_server);
 			Music.Reddit.one("playlist-update", function () {
 				Content.one("build-ready", function () {
 					$(".musicplaylist .item.more").remove();
 				});
 			});
-		}
-
-		if (Options.get("sortMethod") === "top") {
-			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + ":" + Options.get("topMethod") + "']").click();
 		} else {
-			$(".sorting.column .item[data-value='" + Options.get("sortMethod") + "']").click();
-		}
-
-		if ("undefined" !== typeof(autoplay)) {
-			if (subs.length > 0) {
-				Content.one("build-ready", function () {
-					$(".music.playlist .item").click();
+			if ("undefined" !== typeof(defaults)) {
+				/*global defaults:true */
+				ActivateSubs(defaults.split(","));
+			} else {
+				Options.get("subreddits", function (items) {
+					ActivateSubs(items.subreddits);
 				});
 			}
 		}
 
+		Options.get(["sortMethod", "topMethod"], function (items) {
+			if (items.sortMethod === "top") {
+				$(".sorting.column .item[data-value='" + items.sortMethod + ":" + items.topMethod + "']").click();
+			} else {
+				$(".sorting.column .item[data-value='" + items.sortMethod + "']").click();
+			}
+		});
+
+		if ("undefined" !== typeof(autoplay)) {
+			// Autoplay when build is ready.
+			Content.one("build-ready", function () {
+				$(".music.playlist .item").click();
+			});
+		}
+
 	});
 
-},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/players":"5QOjA2","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('JTiXJJ');
-},{}],"JTiXJJ":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -275,13 +230,43 @@ function ContentModel() {
 		return element;
 	};
 
+	var buildSong = function (item) {
+		// <div class="ui item" href="{file}">
+		// 	<div class="name">{title}</div>
+		// 	<span class="ups">{ups}</span>/<span class="downs">{downs}</span> &#8226; 
+		// 	<span class="author">{author}</span> &#8226; 
+		// 	<span class="created">{created} ago</span> &#8226; 
+		// 	<span class="subreddit">{subreddit}</span> &#8226; 
+		// 	<span class="origin">{origin}</span> &#8226; 
+		// 	<a href="{reddit}" target="_blank" title="{title}">
+		// 		<u>permalink</u>
+		// 	</a>
+		// </div>
+		var root = $("<div class='ui item'></div>").attr("href", item.file);
+		$("<div/>").addClass("name").html(item.title).appendTo(root);
+		$("<span/>").addClass("ups").text(item.ups).appendTo(root);
+		$("<span/>").text("/").appendTo(root);
+		$("<span/>").addClass("downs").text(item.downs).appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("author").text(item.author).appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("created").text(item.created).appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("subreddit").text(item.subreddit).appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<span/>").addClass("origin").text(item.origin).appendTo(root);
+		$("<span/>").html(" &#8226; ").appendTo(root);
+		$("<a/>").attr("href", item.reddit).attr("target", "_blank").attr("title", item.title).html($("<u>permalink</u>")).appendTo(root);
+		return root;
+	};
+
 	// MUSIC
 	var buildMusicView = function (songs, currentSong) {
 		var root = $(".music.content .playlist");
 		var template = $(".templates [type='html/musicplaylist']").html();
 
 		var add = function (item) {
-			var newEl = $($.render(template, item));
+			var newEl = buildSong(item);
 			if (item.markdown) {
 				/*global markdown:true */
 				newEl.find(".name").html(markdown.toHTML(newEl.find(".name").html()));
@@ -339,10 +324,7 @@ function ContentModel() {
 	function updateProgressBar(updateFunction) {
 		if (!intervalProgressBar) {
 			musicProgress.start();
-			intervalProgressBar = window.setInterval(function () {
-				var percentage = updateFunction();
-				musicProgress.set(percentage);
-			}, 500);
+			intervalProgressBar = window.setInterval(updateFunction, 500);
 		}
 	}
 
@@ -358,20 +340,25 @@ function ContentModel() {
 				//console.error(currentSong);
 			}
 		} else {
+			self.trigger("youtube-progressbar");				
 			updateProgressBar(function () {
-				var data = $("#youtube").tubeplayer("data");
-				if (!data) {
-					self.trigger("ytnotready");
-				}
-				return data.currentTime / data.duration * 100;
+				self.trigger("youtube-progressbar");
 			});
 		}
 	});
 
+	self.on("youtube-progressbarReturn", function (data) {
+		if (!data) {
+			self.trigger("ytnotready");
+		}
+		musicProgress.set(data.currentTime / data.duration * 100);
+	});
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global KeyboardJS:true */
 
@@ -445,7 +432,7 @@ function UserEventsModel(Music, Options) {
 			target.addClass("active");
 
 			// Set Sorting Method
-			Options.set("sortMethod", sortingMethod);
+			Options.set({"sortMethod": sortingMethod});
 			Music.trigger("update");
 		});
 
@@ -459,14 +446,16 @@ function UserEventsModel(Music, Options) {
 			onChange: function (sortingMethod, text) {
 				if (sortingMethod.substr(0, 3) === "top") {
 					var topvalue = sortingMethod.split(":");
-					Options.set("sortMethod", topvalue[0]);
-					Options.set("topMethod", topvalue[1]);
+					Options.set({
+						"sortMethod": topvalue[0],
+						"topMethod": topvalue[1]
+					});
 
 					// Make button active
 					$(".sorting.column .sort.item").removeClass("active");
 					$(".sorting.column .sort.item.top").addClass("active");
 				} else {
-					Options.set("sortMethod", sortingMethod);
+					Options.set({"sortMethod": sortingMethod});
 				}
 				Music.trigger("update");
 			}
@@ -520,38 +509,17 @@ function UserEventsModel(Music, Options) {
 
 module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('gtc4uL');
-},{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('NzQZ2+');
-},{}],"NzQZ2+":[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+module.exports=require('RgAvKX');
+},{}],"USwVCS":[function(require,module,exports){
+"use strict";
 /*global SC:true */
 
 var RedditModel = require("./reddit");
+var PlayersModel = require("./players");
 
-function MusicModel(musicProgress) {
+function MusicModel(musicProgress, loadProgress) {
 	/// Controls Music & Radio
-
-	/// Events
-		// :: loaded : Done Loading
-		// :: song|song-playing (song) : Song is playing
-		// :: playing (isPlaying) : State of the playing system
-
-	/// Listeners
-		// :: playlist-select ("radio|music", element, song) : Playlist item is selected
-		// :: song-switch (song) : Song is switched
-		// :: song-previous : Previous song
-		// :: song-next : Next song
-		// :: update : Get new songs > Reddit
-		// :: menu-selection-remove (subreddit) : Remove a subreddit
-		// :: menu-selection-add (subreddit) : Add a subreddit
-
-	/// Reddit
-		/// Events
-		// :: update : Get New Songs
-		/// Listeners
-		// :: playlist (playlist) : Get a new playlist
-		// :: playlist-update (playlist) : Update playlist
+	/// Interfaces with Reddit and Youtube / Soundcloud
 
 	// Initialize
 		var self = this;
@@ -560,25 +528,7 @@ function MusicModel(musicProgress) {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
-		var SoundCloud = window.SC || global.SC;
-		self.widget = SoundCloud.Widget("sc");
-		self.widgetOptions = {
-			"auto_advance": false,
-			"auto_play": false,
-			"buying": false,
-			"download": false,
-			"hide_related": false,
-			"liking": false,
-			"sharing": false,
-			"show_artwork": false,
-			"show_comments": false,
-			"show_playcount": false,
-			"show_user": false,
-			"start_track": "0",
-			callback: function (data) {
-				self.trigger("load-ready", data);
-			}
-		};
+		var Players = self.Players = new PlayersModel();
 
 		self.isPlaying = false;
 		self.songs = [];
@@ -588,7 +538,7 @@ function MusicModel(musicProgress) {
 	// Methods
 		var isLastSong = function () {
 			if (self.currentSong === self.songs[0]) {
-				console.log("first song");
+				console.log("Music > First Song");
 				$(".prev-btn").addClass("disabled");
 			} else {
 				$(".prev-btn").removeClass("disabled");
@@ -597,7 +547,7 @@ function MusicModel(musicProgress) {
 
 		var isFirstSong = function () {
 			if (self.currentSong === self.songs[self.songs.length - 1]) {
-				console.log("last song");
+				console.log("Music > Last Song");
 				self.trigger("playlist-more");
 			}
 		};
@@ -609,16 +559,16 @@ function MusicModel(musicProgress) {
 				index = self.songs.indexOf(self.currentSong);
 				if (song.origin === "youtube.com") {
 					var songId = song.file.substr(31);
-					$("#youtube").tubeplayer("play", songId);
+					Players.trigger("youtube-play", songId);
 					self.trigger("playing", true);
 					self.trigger("song-playing", song);
 				} else if (song.origin === "soundcloud.com") {
-					self.one("load-ready", function (data) {
-						self.widget.play();
+					Players.one("load-ready", function (data) {
+						Players.trigger("soundcloud-play");
 						self.trigger("playing", true);
 						self.trigger("song-playing", self.currentSong);
 					});
-					self.widget.load(song.track.uri, self.widgetOptions);
+					Players.trigger("soundcloud-load", song.track.uri);
 				}
 				isLastSong();
 				isFirstSong();
@@ -636,14 +586,10 @@ function MusicModel(musicProgress) {
 		var seek = function (e) {
 			var maxWidth = musicProgress.element.outerWidth();
 			var myWidth = e.clientX;
-			console.log(musicProgress.element.outerWidth(), e, myWidth / maxWidth);
 			if (self.currentSong.origin === "soundcloud.com") {
-				self.widget.getDuration(function (dur) {
-					self.widget.seekTo((myWidth / maxWidth) * dur);
-				});
+				Players.trigger("soundcloud-seek", (myWidth / maxWidth));
 			} else {
-				var data = $("#youtube").tubeplayer("data");
-				$("#youtube").tubeplayer("seek", (myWidth / maxWidth) * data.duration);
+				Players.trigger("youtube-seek", (myWidth / maxWidth));
 			}
 
 			musicProgress.seek(myWidth / maxWidth * 100);
@@ -666,8 +612,8 @@ function MusicModel(musicProgress) {
 		
 		self.stop = function () {
 			if (self.isPlaying) {
-				self.widget.pause();
-				$("#youtube").tubeplayer("stop");
+				Players.trigger("soundcloud-stop");
+				Players.trigger("youtube-stop");
 				self.trigger("playing", false);
 			}
 		};
@@ -684,10 +630,89 @@ function MusicModel(musicProgress) {
 			}
 		};
 
-
+	// Init
 		$.observable(self);
+		Players.init();
 
 	// Listeners
+		// PLAYERS
+
+		// Youtube
+		Players.on("youtube-onPlayerEnded", function () {
+			console.log("YT > Ended");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+			self.trigger("song-next");
+			musicProgress.end();
+		});
+
+		var timeOut;
+		Players.on("youtube-onPlayerUnstarted", function () {
+			console.log("YT > Unstarted");
+			self.isPlaying = false;
+			timeOut = window.setTimeout(function () {
+				if (self.isPlaying === false) {
+					self.trigger("song-next");
+				}
+			}, 5000);
+		});
+
+		Players.on("youtube-onPlayerPlaying", function () {
+			console.log("YT > Playing");
+			self.togglePlayBtn("stop");
+			self.isPlaying = true;
+			loadProgress.trigger("end");
+			musicProgress.start();
+			self.trigger("music-progress", self.currentSong);
+			timeOut = window.clearTimeout(timeOut);
+		});
+
+		Players.on("youtube-onPlayerBuffering", function () {
+			console.log("YT > Buffering");
+			loadProgress.trigger("start");
+		});
+
+		Players.on("youtube-message", function (msg) {
+			console.log(msg);
+		});
+
+		// Soundcloud
+
+		Players.on("souncdloud-onFinish", function () {
+			console.log("SC > Ended");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+			self.trigger("song-next");
+			musicProgress.end();
+		});
+
+		Players.on("souncdloud-onPlay", function () {
+			console.log("SC > Playing");
+			self.trigger("soundcloud-ready");
+			self.togglePlayBtn("stop");
+			loadProgress.trigger("end");
+			self.isPlaying = true;
+			musicProgress.start();
+		});
+
+		Players.on("souncdloud-onPlayProgress", function (data) {
+			self.trigger("music-progress", self.currentSong, data);
+		});
+
+		Players.on("souncdloud-message", function (msg) {
+			console.log(msg);
+		});
+
+		Players.on("youtube-progressbarReturn", function (data) {
+			self.trigger("youtube-progressbarReturn", data);
+		});
+		// Progressbar asks for youtube data
+		self.on("youtube-progressbar", function () {
+			Players.trigger("youtube-progressbar");
+		});
+
+		// -------
+
 		// New Song Selected > Play This Song
 		self.on("song-switch", function (song) {
 			if (song) {
@@ -723,6 +748,8 @@ function MusicModel(musicProgress) {
 				Reddit.trigger("more", self.songs[self.songs.length - 1].name);
 			}
 		});
+
+
 
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs
@@ -800,8 +827,64 @@ function MusicModel(musicProgress) {
 module.exports = MusicModel;
 
 
-},{"./reddit":15}],"xbP5ff":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+
+var ERRORS = {
+	CALLBACKUNDEFINED: function (object) {
+		this.message = "Callback not defined";
+		this.name = "CallbackUndefined";
+		this.object = object;
+	},
+	KEYUNDEFINED: function (object) {
+		this.message = "Key not defined";
+		this.name = "KeyUndefined";
+		this.object = object;
+	},
+	NOTANOBJECT: function (object) {
+		this.message = "Items is not an Object";
+		this.name = "NotAnObject";
+		this.object = object;
+	}
+};
+
+// Polyfill
+if (!Object.keys) {
+	Object.keys = function (o) {
+		if (o !== Object(o)) {
+			throw new TypeError('Object.keys called on a non-object');
+		}
+		var k = [], p;
+		for (p in o) {
+			if (Object.prototype.hasOwnProperty.call(o, p)) {
+				k.push(p);
+			}
+		}
+		return k;
+	};
+}
+
+function chromeStorage() {
+	/*jshint validthis: true */
+	var self = this;
+
+	$.observable(self);
+
+	self.getItem = function (key, callback) {
+		console.log(key);
+		chrome.storage.sync.get(key, callback);
+	};
+	self.setItem = function (items, callback) {
+		return chrome.storage.sync.set(items, callback);
+	};
+	self.clear = function (key, callback) {
+		chrome.storage.sync.remove(key, callback);
+	};
+}
 
 function simpleStorage() {
 	/*jshint validthis: true */
@@ -809,158 +892,340 @@ function simpleStorage() {
 
 	$.observable(self);
 
-	global.storage = {};
+	self.storage = {};
 
-	self.getItem = function (key) {
-		return global.storage[key];
+	var getArray = function (arr) {
+		var keys = {};
+		for (var i = arr.length - 1; i >= 0; i--) {
+			keys[arr[i]] = JSON.parse(self.storage[arr[i]]);
+		}
+		return keys;
 	};
-	self.setItem = function (key, value) {
-		return global.storage[key] = value;
+
+	self.getItem = function (key, callback) {
+		if ("undefined" === typeof(callback)) {
+			throw new ERRORS.CALLBACKUNDEFINED({key: key, callback: callback});
+		}
+		if ("undefined" === typeof(key)) {
+			throw new ERRORS.KEYUNDEFINED({key: key, callback: callback});
+		}
+		if (typeof([]) === typeof(key)) {
+			// Array, so get all the keys in the array
+			// Returns an object
+			callback(getArray(key));
+		} else {
+			// Not an array, just a string
+			callback(getArray([key]));
+		}
 	};
-	self.clear = function (key) {
-		return delete global.storage[key];
+	self.setItem = function (items, callback) {
+		if (typeof({}) === typeof(items)) {
+			// Set each item
+			for (var i = Object.keys(items).length - 1; i >= 0; i--) {
+				var key = Object.keys(items)[i];
+				var value = items[key];
+				self.storage[key] = JSON.stringify(value);
+			}
+			if ("undefined" !== typeof(callback)) {
+				callback();
+			}
+		} else {
+			throw new ERRORS.NOTANOBJECT({items: items});
+		}
+	};
+	self.clear = function (key, callback) {
+		if ("undefined" === typeof(key)) {
+			throw new ERRORS.KEYUNDEFINED({key: key, callback: callback});
+		}
+		if (typeof([]) === typeof(key)) {
+			// Array, so clear all the keys in the array
+			// Returns an object
+			for (var i = key.length - 1; i >= 0; i--) {
+				delete self.storage[key[i]];
+			}
+		} else {
+			// Not an array, just a string
+			delete self.storage[key];
+		}
+		if ("undefined" !== typeof(callback)) {
+			callback();
+		}
 	};
 }
 
-var defaults = {
-	sortMethod: "hot",
-	topMethod: "week",
-	subreddits: []
-};
+function localStorageHelper() {
+	/*jshint validthis: true */
+	var self = this;
+
+	$.observable(self);
+
+	self.local = localStorage || global.window.localStorage;
+
+	var getArray = function (arr) {
+		var keys = {};
+		for (var i = arr.length - 1; i >= 0; i--) {
+			keys[arr[i]] = JSON.parse(self.local.getItem(arr[i]));
+		}
+		return keys;
+	};
+
+	self.getItem = function (key, callback) {
+		if ("undefined" === typeof(callback)) {
+			throw new ERRORS.CALLBACKUNDEFINED({key: key, callback: callback});
+		}
+		if ("undefined" === typeof(key)) {
+			throw new ERRORS.KEYUNDEFINED({key: key, callback: callback});
+		}
+		if (typeof([]) === typeof(key)) {
+			// Array, so get all the keys in the array
+			// Returns an object
+			callback(getArray(key));
+		} else {
+			// Not an array, just a string
+			callback(getArray([key]));
+		}
+	};
+	self.setItem = function (items, callback) {
+		if (typeof({}) === typeof(items)) {
+			// Set each item
+			for (var i = Object.keys(items).length - 1; i >= 0; i--) {
+				var key = Object.keys(items)[i];
+				var value = items[key];
+				self.local.setItem(key, JSON.stringify(value));
+			}
+			if ("undefined" !== typeof(callback)) {
+				callback();
+			}
+		} else {
+			throw new ERRORS.NOTANOBJECT({items: items});
+		}
+	};
+	self.clear = function (key, callback) {
+		if ("undefined" === typeof(key)) {
+			throw new ERRORS.KEYUNDEFINED({key: key, callback: callback});
+		}
+		if (typeof([]) === typeof(key)) {
+			// Array, so clear all the keys in the array
+			// Returns an object
+			for (var i = key.length - 1; i >= 0; i--) {
+				self.local.clear(key[i]);
+			}
+		} else {
+			// Not an array, just a string
+			self.local.clear(key);
+		}
+		if ("undefined" !== typeof(callback)) {
+			callback();
+		}
+	};
+}
+
 
 function OptionsModel() {
 	var self = this;
 
-	self.local = global.window.localStorage || new simpleStorage();
+	/*global chrome:true */
+	if ("undefined" !== typeof(chrome.storage)) {
+		console.log("OPTIONS > Using Chrome");
+		self.local = new chromeStorage();
+	} else {
+		if ("undefined" !== typeof(window.localStorage) || "undefined" !== typeof(global.window.localStorage)) {
+			console.log("OPTIONS > Using localStorage");
+			self.local = new localStorageHelper();
+		} else {
+			console.log("OPTIONS > Using Fallback");
+			self.local = new simpleStorage();
+		}
+	}
 
-	self.get = function (key) {
-		return JSON.parse(self.local.getItem(key)) || defaults[key];
+	self.get = function (items, callback) {
+		console.log("OPTIONS > Get", items);
+		try {
+			self.local.getItem(items, callback);
+		} catch (e) {
+			console.error(e.name, e.message, e.object);
+		}
 	};
 
-	self.set = function (key, value) {
-		return self.local.setItem(key, JSON.stringify(value));
+	self.set = function (items, callback) {
+		console.log("OPTIONS > Set", items);
+		try {
+			self.local.setItem(items, callback);
+		} catch (e) {
+			console.error(e.name, e.message, e.object);
+		}
 	};
 
-	self.clear = function (key) {
-		return self.local.clear(key);
+	self.clear = function (items, callback) {
+		try {
+			self.local.clear(items, callback);
+		} catch (e) {
+			console.error(e.name, e.message, e.object);
+		}
 	};
+
+	// Set defaults
+	var defaults = {
+		sortMethod: "hot",
+		topMethod: "week",
+		subreddits: []
+	};
+
+	self.get(["sortMethod", "topMethod", "subreddits"], function (items) {
+		if (items.topMethod === null || "undefined" === typeof(items.topMethod)) {
+			self.set({topMethod: defaults.topMethod});
+		}
+		if (items.sortMethod === null || "undefined" === typeof(items.sortMethod)) {
+			self.set({sortMethod: defaults.sortMethod});
+		}
+		if (items.subreddits === null || "undefined" === typeof(items.subreddits)) {
+			self.set({subreddits: []});
+		}
+	});
 
 	$.observable(self);
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('xbP5ff');
 },{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('5QOjA2');
-},{}],"5QOjA2":[function(require,module,exports){
+module.exports=require('6cd8lO');
+},{}],"6cd8lO":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
 /*global SC:true */
 
-function PlayersModel(Music, loadProgress, musicProgress) {
+function PlayersModel() {
 	var self = this;
 
 	$.observable(self);
 
 	// Youtube
 
-	var Youtube = function () {
-		var timeOut;
+	var YoutubeInit = function () {
+		
 		var ytPlayer = $("#youtube").tubeplayer({
 			allowFullScreen: "false", // true by default, allow user to go full screen
 			autoplay: true,
 			initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
 			preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
 			onPlayerEnded: function () {
-				console.log("YT > Ended");
-				Music.togglePlayBtn("play");
-				Music.isPlaying = false;
-				Music.trigger("song-next");
-				musicProgress.end();
+				self.trigger("youtube-onPlayerEnded");
 			},
 			onPlayerUnstarted: function () {
-				console.log("YT > Unstarted");
-				Music.isPlaying = false;
-				timeOut = window.setTimeout(function () {
-					if (Music.isPlaying === false) {
-						Music.trigger("song-next");
-					}
-				}, 5000);
+				self.trigger("youtube-onPlayerUnstarted");
 			},
 			onPlayerPlaying: function () {
-				console.log("YT > Playing");
-				Music.togglePlayBtn("stop");
-				Music.isPlaying = true;
-				loadProgress.trigger("end");
-				musicProgress.start();
-				self.trigger("music-progress", Music.currentSong);
-				timeOut = window.clearTimeout(timeOut);
+				self.trigger("youtube-onPlayerPlaying");
 			},
 			onPlayerBuffering: function () {
-				console.log("YT > Buffering");
-				loadProgress.trigger("start");
+				self.trigger("youtube-onPlayerBuffering");
 			},
 			onPlayerCued: function () {
-				console.log("YT > onPlayerCued");
+				self.trigger("youtube-message", "YT > onPlayerCued");
 			},
 			onErrorNotFound: function () {
-				console.error("YT > onErrorNotFound");
+				self.trigger("youtube-message", "YT > onErrorNotFound");
 			},
 			onErrorNotEmbeddable: function () {
-				console.error("YT > onErrorNotEmbeddable");
+				self.trigger("youtube-message", "YT > onErrorNotEmbeddable");
 			},
 			onErrorInvalidParameter: function () {
-				console.error("YT > onErrorInvalidParameter");
+				self.trigger("youtube-message", "YT > onErrorInvalidParameter");
 			},
 		});
 	};
 
+	self.on("youtube-play", function (id) {
+		$("#youtube").tubeplayer("play", id);
+	});
+	self.on("youtube-seek", function (percentage) {
+		var data = $("#youtube").tubeplayer("data");
+		$("#youtube").tubeplayer("seek", percentage * data.duration);
+	});
+	self.on("youtube-stop", function () {
+		$("#youtube").tubeplayer("stop");
+	});
+
+	self.on("youtube-progressbar", function () {
+		self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+	});
+
+	var SoundCloud = window.SC || global.SC;
+	self.widget = SoundCloud.Widget("sc");
+	self.widgetOptions = {
+		"auto_advance": false,
+		"auto_play": false,
+		"buying": false,
+		"download": false,
+		"hide_related": false,
+		"liking": false,
+		"sharing": false,
+		"show_artwork": false,
+		"show_comments": false,
+		"show_playcount": false,
+		"show_user": false,
+		"start_track": "0",
+		callback: function (data) {
+			self.trigger("load-ready", data);
+		}
+	};
+
 	// Soundcloud Player
-	var Soundcloud = function () {
-		var SoundCloud = window.SC || global.SC;
+	var SoundcloudInit = function () {
 		SoundCloud.initialize({
 			client_id: "5441b373256bae7895d803c7c23e59d9"
 		});
 
-		Music.widget.bind(SoundCloud.Widget.Events.READY, function () {
-			Music.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
-				console.log("SC > Ended");
-				Music.togglePlayBtn("play");
-				Music.isPlaying = false;
-				Music.trigger("song-next");
-				musicProgress.end();
+		self.widget.bind(SoundCloud.Widget.Events.READY, function () {
+			self.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
+				self.trigger("souncdloud-onFinish");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
-				console.log("SC > Playing");
-				Music.trigger("soundcloud-ready");
-				Music.togglePlayBtn("stop");
-				loadProgress.trigger("end");
-				Music.isPlaying = true;
-				musicProgress.start();
+			self.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
+				self.trigger("souncdloud-onPlay");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
-				console.log("SC > Error");
+			self.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
+				self.trigger("soundcloud-message", "SC > Error");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
-				self.trigger("music-progress", Music.currentSong, data);
+			self.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
+				self.trigger("souncdloud-onPlayProgress", data);
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
-				console.log("SC > Loading");
+			self.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
+				self.trigger("soundcloud-message", "SC > Loading");
 			});
 		});
 	};
 
+	self.on("soundcloud-load", function (uri) {
+		self.widget.load(uri, self.widgetOptions);
+	});
+	self.on("soundcloud-play", function (uri) {
+		self.widget.play();
+	});
+	self.on("soundcloud-duration", function () {
+		self.widget.getDuration(function (dur) {
+			self.trigger("soundcloud-durationReturn", dur);
+		});
+	});
+	self.on("soundcloud-seek", function (percentage) {
+		self.widget.getDuration(function (dur) {
+			self.widget.seekTo(percentage * dur);
+		});
+	});
+	self.on("soundcloud-seekTo", function (percentage) {
+		self.widget.seekTo(percentage);
+	});
+	self.on("soundcloud-stop", function () {
+		self.widget.pause();
+	});
+
 	self.init = function () {
-		Youtube();
-		Soundcloud();
+		YoutubeInit();
+		SoundcloudInit();
 		console.log("PLAYERS > Ready");
 	};
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('t9+Ge2');
-},{}],"t9+Ge2":[function(require,module,exports){
+},{}],"LtFNV5":[function(require,module,exports){
 "use strict";
 
 function ProgressBar(link) {
@@ -1034,7 +1299,9 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],15:[function(require,module,exports){
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
+},{}],14:[function(require,module,exports){
 var process=require("__browserify_process");"use strict";
 
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
@@ -1046,26 +1313,18 @@ function RedditModel() {
 	var self = this;
 
 	var Options = new OptionsModel();
-	self.subreddits = Options.get("subreddits");
+	self.subreddits = [];
 	if ("undefined" !== typeof(defaults)) {
 		/*global defaults:true */
 		self.subreddits = defaults.split(",");
+	} else {
+		Options.get("subreddits", function (items) {
+			self.subreddits = items.subreddits;
+		});
 	}
 	var last = "";
 
 	$.observable(self);
-
-	Object.defineProperty(self, "sortMethod", {
-		get: function () {
-			return Options.get("sortMethod");
-		}
-	});
-
-	Object.defineProperty(self, "topMethod", {
-		get: function () {
-			return Options.get("topMethod");
-		}
-	});
 
 	var timeSince = function (date) {
 
@@ -1120,12 +1379,12 @@ function RedditModel() {
 		});
 	};
 
-	var fetchMusic = function (subreddits, callback) {
+	var fetchMusic = function (options) {
 		var playlist = [];
-		var topParams = self.sortMethod === "top" ? "sort=top&t=" + self.topMethod + "&" : "";
+		var topParams = options.sortMethod === "top" ? "sort=top&t=" + options.topMethod + "&" : "";
 		var more = last.length > 0 ? true : false;
 		var page = more ? "after=" + last + "&" : "";
-		$.getJSON("http://www.reddit.com/r/" + subreddits + "/" + self.sortMethod + "/.json?" + topParams + page + "jsonp=?", function (r) {
+		$.getJSON("http://www.reddit.com/r/" + options.subreddits + "/" + options.sortMethod + "/.json?" + topParams + page + "jsonp=?", function (r) {
 			console.log("REDDIT > Total:", r.data.children.length);
 			$.each(r.data.children, function (i, child) {
 				var post = child.data;
@@ -1194,7 +1453,7 @@ function RedditModel() {
 							}
 							break;
 						default:
-							console.log(media);
+							console.log("REDDIT > Ignored: ", media);
 					}
 				}
 			});
@@ -1225,14 +1484,14 @@ function RedditModel() {
 	self.addSubReddit = function (value) {
 		shouldPush = true;
 		self.subreddits.push(value);
-		Options.set("subreddits", self.subreddits);
+		Options.set({"subreddits": self.subreddits});
 	};
 
 	self.removeSubReddit = function (value) {
 		shouldPush = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
-		Options.set("subreddits", self.subreddits);
+		Options.set({"subreddits": self.subreddits});
 	};
 
 	self.getSubRedditList = function () {
@@ -1243,7 +1502,10 @@ function RedditModel() {
 	self.on("update", function () {
 		if (self.subreddits.length >= 1) {
 			last = "";
-			fetchMusic(self.getSubRedditList(self.subreddits));
+			Options.get(["sortMethod", "topMethod"], function (items) {
+				items.subreddits = self.getSubRedditList(self.subreddits);
+				fetchMusic(items);
+			});
 		} else {
 			state("/");
 		}
@@ -1255,15 +1517,16 @@ function RedditModel() {
 
 	self.on("more", function (lastId) {
 		last = lastId;
-		fetchMusic(self.getSubRedditList(self.subreddits));
+		Options.get(["sortMethod", "topMethod"], function (items) {
+			items.subreddits = self.getSubRedditList(self.subreddits);
+			fetchMusic(items);
+		});
 	});
 }
 
 
 module.exports = RedditModel;
-},{"./options":"xbP5ff","__browserify_process":1}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('62hrOi');
-},{}],"62hrOi":[function(require,module,exports){
+},{"./options":"jLEaKv","__browserify_process":17}],"2l+GxM":[function(require,module,exports){
 "use strict";
 
 function SubredditsModel(Music) {
@@ -1396,5 +1659,61 @@ function SubredditsModel(Music) {
 }
 
 module.exports = SubredditsModel;
-},{}]},{},[2])
+},{}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('2l+GxM');
+},{}],17:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            if (ev.source === window && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}]},{},[1])
 ;

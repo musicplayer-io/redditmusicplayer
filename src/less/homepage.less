@@ -1,0 +1,106 @@
+
+@import "mixins";
+@import "fonts";
+
+// Roboto 100, 300, 400, 500, 700, 900
+// @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700);
+
+// Roboto Condensed 300, 400
+// @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300);
+
+// Basics
+*,
+::before,
+::after {
+	-webkit-user-select: none;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html, body, window {
+	background: #000;
+}
+
+::selection {
+	background: #F75858;
+}
+
+.ui.grid>.column {
+	margin: inherit;
+}
+
+body {
+	font-family: "Roboto", sans-serif;
+	font-weight: 300;
+	margin: 0px;
+	background: #000;
+	color: #FFF;
+}
+
+a {
+	font-weight: 300;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+// Title bar
+.title.menu.ui {
+	 .top.header.menu {
+		-webkit-app-region: drag;
+		-webkit-border-radius-bottom: 10px;
+		border-radius-bottom: 10px;
+		font-weight: 100;
+
+		.gradient(#393939, #212121);
+		background: -webkit-gradient(linear, center top, center bottom, from(rgba(57,57,57,0.7)), to(rgba(31,31,31,0.7))) 0 1px, url(../img/header.jpg);
+		background-repeat: repeat-x;
+		background-size: 100%, 378px;
+		border-top: 1px solid #6d6d6d;
+		border-left: 1px solid #464646;
+		border-right: 1px solid #464646;
+		border-bottom: 1px solid #313131;
+		.drop-shadow(0, 5px, 10px, 0.5);
+
+		.wrapper {
+			max-width: 960px;
+			margin: auto;
+		}
+
+		.redmusic {
+			font-weight: 400;
+			font-family: "Roboto Condensed", sans-serif;
+			text-transform: uppercase;
+			span {
+				font-variant: small-caps;
+				font-weight: 300;
+			}
+		}
+		.page-menu {
+			-webkit-app-region: no-drag;
+		}
+	}
+}
+
+// Content
+.main-container.wrapper {
+	width: 100%;
+	height: 100%;
+	margin-top: 40px;
+	background: url("/img/headphones.jpg") no-repeat;
+	background-size: cover;
+	&.imagetwo {
+		background: url("/img/headphones2.jpg") no-repeat;
+		background-size: cover;
+	}
+	min-height: 768px;
+	.intro, .links {
+		margin: auto;
+		max-width: 960px;
+		text-align: left;
+		padding-top: 100px;
+		h1.ui.header {
+			font-family: "Roboto Condensed", "Roboto", sans-serif;
+			font-weight: 300;
+		}
+	}
+}

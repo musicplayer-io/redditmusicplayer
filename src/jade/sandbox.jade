@@ -1,0 +1,21 @@
+!!! 5
+html
+	head
+	body
+		//- Hidden Controls 
+		.player.hidden
+			#youtube
+			iframe#sc(sandbox="allow-scripts allow-same-origin", src="https://w.soundcloud.com/player/?url=http://api.soundcloud.com/users/1539950/favorites", width="100%", height="465", scrolling="no", frameborder="no")
+		.scripts
+			//- Jquery
+			script(type='text/javascript', src='/js/lib/jquery.min.js')
+			script(type='text/javascript', src='/js/lib/jquery-migrate.min.js')
+			script(type='text/javascript', src='/js/lib/jquery.easing.min.js')
+			//- swfobjet
+			script(type='text/javascript', src='/js/lib/swfobject.js')
+			//- Player
+			script(type="text/javascript", src="/js/lib/soundcloud.api.js")
+			script(type='text/javascript', src='/js/lib/jquery.tubeplayer.js')
+			script(type='text/javascript', src='/js/lib/riot.js')
+			//- Execute
+			script(type='text/javascript', src='/js/sandbox.js')

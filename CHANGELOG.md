@@ -1,13 +1,9 @@
 
 ## Future
 
-* Comments threads support
-* Make a landing page for the website and move the player to /player/
-* Chrome App build
 * Windows 8 store build
 
 ## Further Future
-* Go Native (Started as native, but couldn't handle soundcloud properly)
 * Chrome Extension
 * Radio Reddit (I've had this before but deleted it to concentrate on the rest)
 * Logging in: upvoting, downvoting
@@ -19,11 +15,16 @@
 
 ## Changelog
 
-### 0.1.3 - 12 January 2014
+### 0.2.0 - 15 January 2014
 
 * Multi multireddit support. [user/br1anfry3r/m/music+user/Rakielis/m/electronica](http://reddit.music.player.il.ly/user/br1anfry3r/m/music+user/Rakielis/m/electronica).
 * Soundcloud fix
 * Youtu.be support
+* Native in **Alpha**. Only with youtube. Ask me.
+* Big player rework for Chrome app, but still having issues.
+* Comments threads support
+* Made a quick landing page for the website and moved the player to /player/
+
 
 ### 0.1.2 - 11 January 2014
 

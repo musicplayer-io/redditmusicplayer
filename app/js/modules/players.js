@@ -1,102 +1,133 @@
 "use strict";
 /*global SC:true */
 
-function PlayersModel(Music, loadProgress, musicProgress) {
+function PlayersModel() {
 	var self = this;
 
 	$.observable(self);
 
 	// Youtube
 
-	var Youtube = function () {
-		var timeOut;
+	var YoutubeInit = function () {
+		
 		var ytPlayer = $("#youtube").tubeplayer({
 			allowFullScreen: "false", // true by default, allow user to go full screen
 			autoplay: true,
 			initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
 			preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
 			onPlayerEnded: function () {
-				console.log("YT > Ended");
-				Music.togglePlayBtn("play");
-				Music.isPlaying = false;
-				Music.trigger("song-next");
-				musicProgress.end();
+				self.trigger("youtube-onPlayerEnded");
 			},
 			onPlayerUnstarted: function () {
-				console.log("YT > Unstarted");
-				Music.isPlaying = false;
-				timeOut = window.setTimeout(function () {
-					if (Music.isPlaying === false) {
-						Music.trigger("song-next");
-					}
-				}, 5000);
+				self.trigger("youtube-onPlayerUnstarted");
 			},
 			onPlayerPlaying: function () {
-				console.log("YT > Playing");
-				Music.togglePlayBtn("stop");
-				Music.isPlaying = true;
-				loadProgress.trigger("end");
-				musicProgress.start();
-				self.trigger("music-progress", Music.currentSong);
-				timeOut = window.clearTimeout(timeOut);
+				self.trigger("youtube-onPlayerPlaying");
 			},
 			onPlayerBuffering: function () {
-				console.log("YT > Buffering");
-				loadProgress.trigger("start");
+				self.trigger("youtube-onPlayerBuffering");
 			},
 			onPlayerCued: function () {
-				console.log("YT > onPlayerCued");
+				self.trigger("youtube-message", "YT > onPlayerCued");
 			},
 			onErrorNotFound: function () {
-				console.error("YT > onErrorNotFound");
+				self.trigger("youtube-message", "YT > onErrorNotFound");
 			},
 			onErrorNotEmbeddable: function () {
-				console.error("YT > onErrorNotEmbeddable");
+				self.trigger("youtube-message", "YT > onErrorNotEmbeddable");
 			},
 			onErrorInvalidParameter: function () {
-				console.error("YT > onErrorInvalidParameter");
+				self.trigger("youtube-message", "YT > onErrorInvalidParameter");
 			},
 		});
 	};
 
+	self.on("youtube-play", function (id) {
+		$("#youtube").tubeplayer("play", id);
+	});
+	self.on("youtube-seek", function (percentage) {
+		var data = $("#youtube").tubeplayer("data");
+		$("#youtube").tubeplayer("seek", percentage * data.duration);
+	});
+	self.on("youtube-stop", function () {
+		$("#youtube").tubeplayer("stop");
+	});
+
+	self.on("youtube-progressbar", function () {
+		self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+	});
+
+	var SoundCloud = window.SC || global.SC;
+	self.widget = SoundCloud.Widget("sc");
+	self.widgetOptions = {
+		"auto_advance": false,
+		"auto_play": false,
+		"buying": false,
+		"download": false,
+		"hide_related": false,
+		"liking": false,
+		"sharing": false,
+		"show_artwork": false,
+		"show_comments": false,
+		"show_playcount": false,
+		"show_user": false,
+		"start_track": "0",
+		callback: function (data) {
+			self.trigger("load-ready", data);
+		}
+	};
+
 	// Soundcloud Player
-	var Soundcloud = function () {
-		var SoundCloud = window.SC || global.SC;
+	var SoundcloudInit = function () {
 		SoundCloud.initialize({
 			client_id: "5441b373256bae7895d803c7c23e59d9"
 		});
 
-		Music.widget.bind(SoundCloud.Widget.Events.READY, function () {
-			Music.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
-				console.log("SC > Ended");
-				Music.togglePlayBtn("play");
-				Music.isPlaying = false;
-				Music.trigger("song-next");
-				musicProgress.end();
+		self.widget.bind(SoundCloud.Widget.Events.READY, function () {
+			self.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
+				self.trigger("souncdloud-onFinish");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
-				console.log("SC > Playing");
-				Music.trigger("soundcloud-ready");
-				Music.togglePlayBtn("stop");
-				loadProgress.trigger("end");
-				Music.isPlaying = true;
-				musicProgress.start();
+			self.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
+				self.trigger("souncdloud-onPlay");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
-				console.log("SC > Error");
+			self.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
+				self.trigger("soundcloud-message", "SC > Error");
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
-				self.trigger("music-progress", Music.currentSong, data);
+			self.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
+				self.trigger("souncdloud-onPlayProgress", data);
 			});
-			Music.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
-				console.log("SC > Loading");
+			self.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
+				self.trigger("soundcloud-message", "SC > Loading");
 			});
 		});
 	};
 
+	self.on("soundcloud-load", function (uri) {
+		self.widget.load(uri, self.widgetOptions);
+	});
+	self.on("soundcloud-play", function (uri) {
+		self.widget.play();
+	});
+	self.on("soundcloud-duration", function () {
+		self.widget.getDuration(function (dur) {
+			self.trigger("soundcloud-durationReturn", dur);
+		});
+	});
+	self.on("soundcloud-seek", function (percentage) {
+		self.widget.getDuration(function (dur) {
+			self.widget.seekTo(percentage * dur);
+		});
+	});
+	self.on("soundcloud-seekTo", function (percentage) {
+		self.widget.seekTo(percentage);
+	});
+	self.on("soundcloud-stop", function () {
+		self.widget.pause();
+	});
+
 	self.init = function () {
-		Youtube();
-		Soundcloud();
+		YoutubeInit();
+		SoundcloudInit();
 		console.log("PLAYERS > Ready");
 	};
 }

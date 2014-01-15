@@ -1,0 +1,201 @@
+"use strict";
+/*global SC:true */
+
+function PlayersModel() {
+	var self = this;
+
+	$.observable(self);
+
+	// Youtube
+
+	var YoutubeInit = function () {
+		
+		var ytPlayer = $("#youtube").tubeplayer({
+			allowFullScreen: "false", // true by default, allow user to go full screen
+			autoplay: true,
+			initialVideo: "Wkx_xvl7zRA", // the video that is loaded into the player
+			preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
+			onPlayerEnded: function () {
+				self.trigger("youtube-onPlayerEnded");
+			},
+			onPlayerUnstarted: function () {
+				self.trigger("youtube-onPlayerUnstarted");
+			},
+			onPlayerPlaying: function () {
+				self.trigger("youtube-onPlayerPlaying");
+			},
+			onPlayerBuffering: function () {
+				self.trigger("youtube-onPlayerBuffering");
+			},
+			onPlayerCued: function () {
+				self.trigger("youtube-message", "YT > onPlayerCued");
+			},
+			onErrorNotFound: function () {
+				self.trigger("youtube-message", "YT > onErrorNotFound");
+			},
+			onErrorNotEmbeddable: function () {
+				self.trigger("youtube-message", "YT > onErrorNotEmbeddable");
+			},
+			onErrorInvalidParameter: function () {
+				self.trigger("youtube-message", "YT > onErrorInvalidParameter");
+			},
+		});
+	};
+
+	self.on("youtube-play", function (id) {
+		$("#youtube").tubeplayer("play", id);
+	});
+	self.on("youtube-seek", function (percentage) {
+		var data = $("#youtube").tubeplayer("data");
+		$("#youtube").tubeplayer("seek", percentage * data.duration);
+	});
+	self.on("youtube-stop", function () {
+		$("#youtube").tubeplayer("stop");
+	});
+
+	self.on("youtube-progressbar", function () {
+		self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+	});
+
+
+	var SoundCloud = window.SC || global.SC;
+	self.widget = SoundCloud.Widget("sc");
+	self.widgetOptions = {
+		"auto_advance": false,
+		"auto_play": false,
+		"buying": false,
+		"download": false,
+		"hide_related": false,
+		"liking": false,
+		"sharing": false,
+		"show_artwork": false,
+		"show_comments": false,
+		"show_playcount": false,
+		"show_user": false,
+		"start_track": "0",
+		callback: function (data) {
+			self.trigger("load-ready", data);
+		}
+	};
+
+
+	// Soundcloud Player
+	var SoundcloudInit = function () {
+		SoundCloud.initialize({
+			client_id: "5441b373256bae7895d803c7c23e59d9"
+		});
+
+		self.widget.bind(SoundCloud.Widget.Events.READY, function () {
+			self.widget.bind(SoundCloud.Widget.Events.FINISH, function () {
+				self.trigger("souncdloud-onFinish");
+			});
+			self.widget.bind(SoundCloud.Widget.Events.PLAY, function () {
+				self.trigger("souncdloud-onPlay");
+			});
+			self.widget.bind(SoundCloud.Widget.Events.ERROR, function () {
+				self.trigger("soundcloud-message", "SC > Error");
+			});
+			self.widget.bind(SoundCloud.Widget.Events.PLAY_PROGRESS, function (data) {
+				self.trigger("souncdloud-onPlayProgress", data);
+			});
+			self.widget.bind(SoundCloud.Widget.Events.LOAD_PROGRESS, function () {
+				self.trigger("soundcloud-message", "SC > Loading");
+			});
+		});
+	};
+
+	self.on("soundcloud-load", function (uri) {
+		self.widget.load(uri, self.widgetOptions);
+	});
+	self.on("soundcloud-play", function (uri) {
+		self.widget.play();
+	});
+	self.on("soundcloud-duration", function () {
+		self.widget.getDuration(function (dur) {
+			self.trigger("soundcloud-durationReturn", dur);
+		});
+	});
+	self.on("soundcloud-seek", function (percentage) {
+		self.widget.getDuration(function (dur) {
+			self.widget.seekTo(percentage * dur);
+		});
+	});
+	self.on("soundcloud-seekTo", function (percentage) {
+		self.widget.seekTo(percentage);
+	});
+	self.on("soundcloud-stop", function () {
+		self.widget.pause();
+	});
+
+	self.init = function () {
+		YoutubeInit();
+		SoundcloudInit();
+		console.log("PLAYERS > Ready");
+	};
+}
+
+$(function () {
+	// Init
+		var Players = new PlayersModel();
+		var parent;
+
+		var fetchMusic = function (url, callback) {
+			$.getJSON(url, callback);
+		};
+
+		var messageHandler = function (e) {
+			parent = e.source;
+			if (e.data.type === "fetchMusic") {
+				fetchMusic(e.data.url, function (response) {
+					e.source.postMessage({
+						"type": "fetchMusic",
+						"response": response
+					}, "*");
+				});
+			} else if (e.data.type === "players") {
+				if (e.data.data) {
+					Players.trigger(e.data.event, e.data.data);
+				} else {
+					Players.trigger(e.data.event);
+				}
+			}
+		};
+
+		var messagePipe = function (event, data) {
+			if (data) {
+				parent.postMessage({
+					"type": "players",
+					"event": event,
+					"data": data
+				}, "*");
+			} else {
+				parent.postMessage({
+					"type": "players",
+					"event": event
+				}, "*");
+			}
+		};
+
+		var PlayersPipe = function (event) {
+			Players.on(event, function (data) {
+				messagePipe(event, data);
+			});
+		};
+
+		PlayersPipe("youtube-onPlayerEnded");
+		PlayersPipe("youtube-onPlayerUnstarted");
+		PlayersPipe("youtube-onPlayerPlaying");
+		PlayersPipe("youtube-onPlayerBuffering");
+		PlayersPipe("youtube-message");
+
+		PlayersPipe("load-ready");
+		PlayersPipe("souncdloud-onFinish");
+		PlayersPipe("souncdloud-onPlay");
+		PlayersPipe("soundcloud-message");
+		PlayersPipe("souncdloud-onPlayProgress");
+
+
+		window.addEventListener('message', messageHandler);
+
+		Players.init();
+	});

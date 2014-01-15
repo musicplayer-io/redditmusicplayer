@@ -9,26 +9,18 @@ function RedditModel() {
 	var self = this;
 
 	var Options = new OptionsModel();
-	self.subreddits = Options.get("subreddits");
+	self.subreddits = [];
 	if ("undefined" !== typeof(defaults)) {
 		/*global defaults:true */
 		self.subreddits = defaults.split(",");
+	} else {
+		Options.get("subreddits", function (items) {
+			self.subreddits = items.subreddits;
+		});
 	}
 	var last = "";
 
 	$.observable(self);
-
-	Object.defineProperty(self, "sortMethod", {
-		get: function () {
-			return Options.get("sortMethod");
-		}
-	});
-
-	Object.defineProperty(self, "topMethod", {
-		get: function () {
-			return Options.get("topMethod");
-		}
-	});
 
 	var timeSince = function (date) {
 
@@ -83,12 +75,12 @@ function RedditModel() {
 		});
 	};
 
-	var fetchMusic = function (subreddits, callback) {
+	var fetchMusic = function (options) {
 		var playlist = [];
-		var topParams = self.sortMethod === "top" ? "sort=top&t=" + self.topMethod + "&" : "";
+		var topParams = options.sortMethod === "top" ? "sort=top&t=" + options.topMethod + "&" : "";
 		var more = last.length > 0 ? true : false;
 		var page = more ? "after=" + last + "&" : "";
-		$.getJSON("http://www.reddit.com/r/" + subreddits + "/" + self.sortMethod + "/.json?" + topParams + page + "jsonp=?", function (r) {
+		$.getJSON("http://www.reddit.com/r/" + options.subreddits + "/" + options.sortMethod + "/.json?" + topParams + page + "jsonp=?", function (r) {
 			console.log("REDDIT > Total:", r.data.children.length);
 			$.each(r.data.children, function (i, child) {
 				var post = child.data;
@@ -157,7 +149,7 @@ function RedditModel() {
 							}
 							break;
 						default:
-							console.log(media);
+							console.log("REDDIT > Ignored: ", media);
 					}
 				}
 			});
@@ -188,14 +180,14 @@ function RedditModel() {
 	self.addSubReddit = function (value) {
 		shouldPush = true;
 		self.subreddits.push(value);
-		Options.set("subreddits", self.subreddits);
+		Options.set({"subreddits": self.subreddits});
 	};
 
 	self.removeSubReddit = function (value) {
 		shouldPush = true;
 		var index = self.subreddits.indexOf(value);
 		self.subreddits.splice(index, 1);
-		Options.set("subreddits", self.subreddits);
+		Options.set({"subreddits": self.subreddits});
 	};
 
 	self.getSubRedditList = function () {
@@ -206,7 +198,10 @@ function RedditModel() {
 	self.on("update", function () {
 		if (self.subreddits.length >= 1) {
 			last = "";
-			fetchMusic(self.getSubRedditList(self.subreddits));
+			Options.get(["sortMethod", "topMethod"], function (items) {
+				items.subreddits = self.getSubRedditList(self.subreddits);
+				fetchMusic(items);
+			});
 		} else {
 			state("/");
 		}
@@ -218,7 +213,10 @@ function RedditModel() {
 
 	self.on("more", function (lastId) {
 		last = lastId;
-		fetchMusic(self.getSubRedditList(self.subreddits));
+		Options.get(["sortMethod", "topMethod"], function (items) {
+			items.subreddits = self.getSubRedditList(self.subreddits);
+			fetchMusic(items);
+		});
 	});
 }
 

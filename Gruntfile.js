@@ -17,6 +17,16 @@ module.exports = function (grunt) {
 		return moduleList.join(",");
 	};
 
+	var getModulesChrome = function () {
+		// returns app/js/modules/music.js:./js/modules/music
+		var moduleList = [];
+		for (var i = modules.length - 1; i >= 0; i--) {
+			var module = "chrome/js/modules/" + modules[i] + ".js:./js/modules/" + modules[i];
+			moduleList.push(module);
+		}
+		return moduleList.join(",");
+	};
+
 	grunt.initConfig({
 		// JSHINT
 		jshint: {
@@ -36,6 +46,17 @@ module.exports = function (grunt) {
 				files: {
 					"app/main.html": ["src/jade/native.jade"]
 				}
+			},
+			chrome: {
+				options: {
+					data: {
+						debug: false
+					}
+				},
+				files: {
+					"chrome/main.html": ["src/jade/chrome.jade"],
+					"chrome/sandbox.html": ["src/jade/sandbox.jade"]
+				}
 			}
 		},
 		// LESS
@@ -43,6 +64,15 @@ module.exports = function (grunt) {
 			dev: {
 				src: ['src/less/style.less'],
 				dest: 'app/css/style.css',
+				options: {
+					style: "compressed",
+					compress: true,
+					yuicompress: true
+				},
+			},
+			hompage: {
+				src: ['src/less/homepage.less'],
+				dest: 'app/css/homepage.css',
 				options: {
 					style: "compressed",
 					compress: true,
@@ -57,6 +87,13 @@ module.exports = function (grunt) {
 				dest: 'app/js/browser.js',
 				options: {
 					alias: getModules()
+				}
+			},
+			chrome: {
+				src: ['chrome/js/main.js'],
+				dest: 'chrome/js/browser.js',
+				options: {
+					alias: getModulesChrome()
 				}
 			}
 		},
@@ -81,17 +118,32 @@ module.exports = function (grunt) {
 		},
 		// Removing chrome builds
 		clean: {
-			build: ["chrome/css", "chrome/js", "chrome/img", "chrome/fonts"]
+			before: ["chrome/css", "chrome/js", "chrome/img", "chrome/fonts"],
+			one: ["chrome/js/modules/players.js", "chrome/js/modules/players.js"]
 		},
 		// Then placing them back
-		copyto: {
-			stuff: {
+		copy: {
+			one: {
 				files: [
-					{cwd: 'app/', src: ['**/*'], dest: 'chrome/'}
+					{expand: true, cwd: 'app/', src: ['**/*'], dest: 'chrome/'},
 				],
 				options: {
 					// array of ignored paths, can be specific files or a glob
 					ignore: [
+						"app/node_modules",
+						'app/package.json',
+						'app/js/native.js'
+					]
+				}
+			},
+			two: {
+				files: [
+					{expand: true, cwd: 'src/chrome/', src: ['**/*', "js/modules/*.js"], dest: 'chrome/'},
+				],
+				options: {
+					// array of ignored paths, can be specific files or a glob
+					ignore: [
+						"app/node_modules",
 						'app/package.json',
 						'app/js/native.js'
 					]
@@ -118,9 +170,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-browserify');
 	// Chrome
 	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-copy-to');
-	grunt.registerTask('default', ["jshint", "less", "jade", 'watch']);
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.registerTask('default', ["jshint", "less", "jade:compile", 'watch']);
 	grunt.registerTask('server', ["jshint", "less", "browserify", "watch"]);
 	grunt.registerTask('build', ["jshint", "less", "jade", "browserify"]);
-	grunt.registerTask('chrome', ["jshint", "less", "jade", "browserify", "clean", "copyto"]);
+	grunt.registerTask('chrome', ["jshint", "less", "clean:before", "copy:one", "clean:one", "copy:two", "jade:chrome", "browserify:chrome"]);
 };

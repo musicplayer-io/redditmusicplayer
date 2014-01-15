@@ -3,9 +3,9 @@
 // Version manifest
 
 var version = {
-	win32: "0.1.2",
-	osx: "0.1.2",
-	linux: "0.1.2",
+	win32: "0.2.0",
+	osx: "0.2.0",
+	linux: "0.2.0",
 };
 
 var events = require('events').EventEmitter;
@@ -55,7 +55,7 @@ var withSubreddits = function (req, res) {
 	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
-	res.render('server.jade', data);
+	res.render('player.jade', data);
 };
 
 var justIndex = function (req, res) {
@@ -63,8 +63,18 @@ var justIndex = function (req, res) {
 	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
-	res.render('server.jade', data);
+	res.render('player.jade', data);
 };
+
+
+var HomePage = function (req, res) {
+	var backgrounds = ["imageone", "imagetwo"];
+	var data = {
+		background: backgrounds[Math.floor(Math.random() * 2)]
+	};
+	res.render('homepage.jade', data);
+};
+
 
 
 function multiListener() {
@@ -106,7 +116,7 @@ var loadedAll = function (subs, req, res) {
 	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
-	res.render("server.jade", data);
+	res.render("player.jade", data);
 };
 
 var multiCache = {};
@@ -164,19 +174,29 @@ var commentThread = function (req, res) {
 	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
 	}
-	res.render('server.jade', data);
+	res.render('player.jade', data);
 };
+
+var simpleRedirect = function (req, res) {
+	console.log("redirect", req.originalUrl);
+	res.redirect("/player" + req.originalUrl);
+};
+
 
 // Routes
 
-app.get("/", justIndex);
-app.get("/r/:subreddit", withSubreddits);
-app.get("/r/:subreddit/comments/:commentid", commentThread);
-app.get("/r/:subreddit/comments/:commentid/:title", commentThread);
+app.get("/", HomePage);
+app.get(/^\/user\/(.+)/, simpleRedirect);
+app.get("/r/:subreddit", simpleRedirect);
+app.get("/r/:subreddit", simpleRedirect);
+app.get("/r/:subreddit/comments/:commentid", simpleRedirect);
+app.get("/r/:subreddit/comments/:commentid/:title", simpleRedirect);
 app.get("/player", justIndex);
 app.get("/player/r/:subreddit", withSubreddits);
-
-app.get(/^\/user\/(.+)/, multiReddit);
+app.get("/player/r/:subreddit", withSubreddits);
+app.get("/player/r/:subreddit/comments/:commentid", commentThread);
+app.get("/player/r/:subreddit/comments/:commentid/:title", commentThread);
+app.get(/^\/player\/user\/(.+)/, multiReddit);
 
 app.get("/update.xml", function (req, res) {
 	if (req.query.v && req.query.os) {

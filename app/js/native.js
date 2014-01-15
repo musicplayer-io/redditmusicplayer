@@ -91,6 +91,7 @@ if (process) {
 	    trustManager.add('soundcloud.com');
 	    trustManager.add('player.soundcloud.com');
 	    trustManager.add('*.soundcloud.com');
+	    trustManager.add('w.soundcloud.com');
 	    trustManager.add('http://player.soundcloud.com/player.swf');
 	} catch (err) {
 		console.error(err);

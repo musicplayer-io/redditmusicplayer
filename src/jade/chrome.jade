@@ -1,7 +1,23 @@
 extends main
 block livereload
-block native
-block macnative
-block windowsnative
+block players
+	.players.hidden
+		iframe(sandbox="allow-same-origin allow-scripts", src="sandbox.html", width="0", height="0", frameborder="0")#sandbox
+block styles
+	link(href='/css/semantic.min.css', rel='stylesheet')
+	link(href='/css/style.css', rel='stylesheet')
+block libraries
+	//- Jquery
+	script(type='text/javascript', src='/js/lib/jquery.min.js')
+	script(type='text/javascript', src='/js/lib/jquery-migrate.min.js')
+	script(type='text/javascript', src='/js/lib/jquery.easing.min.js')
+	//- TweenMax
+	script(type='text/javascript', src='/js/lib/TweenMax.min.js')
+	script(type='text/javascript', src='/js/lib/jquery.gsap.min.js')
+	//- MVP
+	script(type='text/javascript', src='/js/lib/riot.js')
+	//- Keyboard & UI
+	script(type='text/javascript', src='/js/lib/keyboard.js')
+	script(type='text/javascript', src='/js/lib/semantic.min.js')
 block mainscript
 	script(type='text/javascript', src='/js/browser.js')

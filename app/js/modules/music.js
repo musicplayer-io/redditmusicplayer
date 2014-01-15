@@ -2,30 +2,11 @@
 /*global SC:true */
 
 var RedditModel = require("./reddit");
+var PlayersModel = require("./players");
 
-function MusicModel(musicProgress) {
+function MusicModel(musicProgress, loadProgress) {
 	/// Controls Music & Radio
-
-	/// Events
-		// :: loaded : Done Loading
-		// :: song|song-playing (song) : Song is playing
-		// :: playing (isPlaying) : State of the playing system
-
-	/// Listeners
-		// :: playlist-select ("radio|music", element, song) : Playlist item is selected
-		// :: song-switch (song) : Song is switched
-		// :: song-previous : Previous song
-		// :: song-next : Next song
-		// :: update : Get new songs > Reddit
-		// :: menu-selection-remove (subreddit) : Remove a subreddit
-		// :: menu-selection-add (subreddit) : Add a subreddit
-
-	/// Reddit
-		/// Events
-		// :: update : Get New Songs
-		/// Listeners
-		// :: playlist (playlist) : Get a new playlist
-		// :: playlist-update (playlist) : Update playlist
+	/// Interfaces with Reddit and Youtube / Soundcloud
 
 	// Initialize
 		var self = this;
@@ -34,25 +15,7 @@ function MusicModel(musicProgress) {
 			Reddit = self.Reddit = new RedditModel(),
 			type = null;
 
-		var SoundCloud = window.SC || global.SC;
-		self.widget = SoundCloud.Widget("sc");
-		self.widgetOptions = {
-			"auto_advance": false,
-			"auto_play": false,
-			"buying": false,
-			"download": false,
-			"hide_related": false,
-			"liking": false,
-			"sharing": false,
-			"show_artwork": false,
-			"show_comments": false,
-			"show_playcount": false,
-			"show_user": false,
-			"start_track": "0",
-			callback: function (data) {
-				self.trigger("load-ready", data);
-			}
-		};
+		var Players = self.Players = new PlayersModel();
 
 		self.isPlaying = false;
 		self.songs = [];
@@ -62,7 +25,7 @@ function MusicModel(musicProgress) {
 	// Methods
 		var isLastSong = function () {
 			if (self.currentSong === self.songs[0]) {
-				console.log("first song");
+				console.log("Music > First Song");
 				$(".prev-btn").addClass("disabled");
 			} else {
 				$(".prev-btn").removeClass("disabled");
@@ -71,7 +34,7 @@ function MusicModel(musicProgress) {
 
 		var isFirstSong = function () {
 			if (self.currentSong === self.songs[self.songs.length - 1]) {
-				console.log("last song");
+				console.log("Music > Last Song");
 				self.trigger("playlist-more");
 			}
 		};
@@ -83,16 +46,16 @@ function MusicModel(musicProgress) {
 				index = self.songs.indexOf(self.currentSong);
 				if (song.origin === "youtube.com") {
 					var songId = song.file.substr(31);
-					$("#youtube").tubeplayer("play", songId);
+					Players.trigger("youtube-play", songId);
 					self.trigger("playing", true);
 					self.trigger("song-playing", song);
 				} else if (song.origin === "soundcloud.com") {
-					self.one("load-ready", function (data) {
-						self.widget.play();
+					Players.one("load-ready", function (data) {
+						Players.trigger("soundcloud-play");
 						self.trigger("playing", true);
 						self.trigger("song-playing", self.currentSong);
 					});
-					self.widget.load(song.track.uri, self.widgetOptions);
+					Players.trigger("soundcloud-load", song.track.uri);
 				}
 				isLastSong();
 				isFirstSong();
@@ -110,14 +73,10 @@ function MusicModel(musicProgress) {
 		var seek = function (e) {
 			var maxWidth = musicProgress.element.outerWidth();
 			var myWidth = e.clientX;
-			console.log(musicProgress.element.outerWidth(), e, myWidth / maxWidth);
 			if (self.currentSong.origin === "soundcloud.com") {
-				self.widget.getDuration(function (dur) {
-					self.widget.seekTo((myWidth / maxWidth) * dur);
-				});
+				Players.trigger("soundcloud-seek", (myWidth / maxWidth));
 			} else {
-				var data = $("#youtube").tubeplayer("data");
-				$("#youtube").tubeplayer("seek", (myWidth / maxWidth) * data.duration);
+				Players.trigger("youtube-seek", (myWidth / maxWidth));
 			}
 
 			musicProgress.seek(myWidth / maxWidth * 100);
@@ -140,8 +99,8 @@ function MusicModel(musicProgress) {
 		
 		self.stop = function () {
 			if (self.isPlaying) {
-				self.widget.pause();
-				$("#youtube").tubeplayer("stop");
+				Players.trigger("soundcloud-stop");
+				Players.trigger("youtube-stop");
 				self.trigger("playing", false);
 			}
 		};
@@ -158,10 +117,89 @@ function MusicModel(musicProgress) {
 			}
 		};
 
-
+	// Init
 		$.observable(self);
+		Players.init();
 
 	// Listeners
+		// PLAYERS
+
+		// Youtube
+		Players.on("youtube-onPlayerEnded", function () {
+			console.log("YT > Ended");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+			self.trigger("song-next");
+			musicProgress.end();
+		});
+
+		var timeOut;
+		Players.on("youtube-onPlayerUnstarted", function () {
+			console.log("YT > Unstarted");
+			self.isPlaying = false;
+			timeOut = window.setTimeout(function () {
+				if (self.isPlaying === false) {
+					self.trigger("song-next");
+				}
+			}, 5000);
+		});
+
+		Players.on("youtube-onPlayerPlaying", function () {
+			console.log("YT > Playing");
+			self.togglePlayBtn("stop");
+			self.isPlaying = true;
+			loadProgress.trigger("end");
+			musicProgress.start();
+			self.trigger("music-progress", self.currentSong);
+			timeOut = window.clearTimeout(timeOut);
+		});
+
+		Players.on("youtube-onPlayerBuffering", function () {
+			console.log("YT > Buffering");
+			loadProgress.trigger("start");
+		});
+
+		Players.on("youtube-message", function (msg) {
+			console.log(msg);
+		});
+
+		// Soundcloud
+
+		Players.on("souncdloud-onFinish", function () {
+			console.log("SC > Ended");
+			self.togglePlayBtn("play");
+			self.isPlaying = false;
+			self.trigger("song-next");
+			musicProgress.end();
+		});
+
+		Players.on("souncdloud-onPlay", function () {
+			console.log("SC > Playing");
+			self.trigger("soundcloud-ready");
+			self.togglePlayBtn("stop");
+			loadProgress.trigger("end");
+			self.isPlaying = true;
+			musicProgress.start();
+		});
+
+		Players.on("souncdloud-onPlayProgress", function (data) {
+			self.trigger("music-progress", self.currentSong, data);
+		});
+
+		Players.on("souncdloud-message", function (msg) {
+			console.log(msg);
+		});
+
+		Players.on("youtube-progressbarReturn", function (data) {
+			self.trigger("youtube-progressbarReturn", data);
+		});
+		// Progressbar asks for youtube data
+		self.on("youtube-progressbar", function () {
+			Players.trigger("youtube-progressbar");
+		});
+
+		// -------
+
 		// New Song Selected > Play This Song
 		self.on("song-switch", function (song) {
 			if (song) {
@@ -197,6 +235,8 @@ function MusicModel(musicProgress) {
 				Reddit.trigger("more", self.songs[self.songs.length - 1].name);
 			}
 		});
+
+
 
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs

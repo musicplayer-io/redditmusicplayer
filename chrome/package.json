@@ -1,0 +1,21 @@
+{
+  "name": "RedditMusicPlayer",
+  "version": "0.1.3",
+  "description": "Reddit Music Player for Node-Webkit",
+  "main": "main.html",
+  "webkit": {
+    "plugin": true,
+    "no-edit-menu": true
+  },
+  "window": {
+    "toolbar": false,
+    "frame": false,
+    "width": 800,
+    "height": 600,
+    "position": "center",
+    "icon": "img/favicon/favicon-256.png"
+  },
+  "dependencies": {
+    "nw-flash-trust": "git://github.com/szwacz/nw-flash-trust.git#master"
+  }
+}
