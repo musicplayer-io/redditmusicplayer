@@ -9,11 +9,12 @@ Music listening for reddit.
 
 Module | Status
 --- | --- | ---
-**Global Version** | 0.1.2
+**Global Version** | 0.2.0
 **Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
-**Chrome App** | Next Up
-**Github** | Coming Soon
+**Web Player** |  [reddit.music.player.il.ly/player/](http://reddit.music.player.il.ly/player/)
+**Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)
 **Windows 8** | In The Future
+**Chrome App** | Help Needed
 
 ---
 
