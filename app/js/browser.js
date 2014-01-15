@@ -1,4 +1,58 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            if (ev.source === window && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],2:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -222,9 +276,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('JTiXJJ');
+},{}],"JTiXJJ":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -398,7 +452,9 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"t9+Ge2"}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('gtc4uL');
+},{}],"gtc4uL":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -564,11 +620,9 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
 },{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"USwVCS":[function(require,module,exports){
+module.exports=require('NzQZ2+');
+},{}],"NzQZ2+":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -935,7 +989,9 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
+},{"./players":"5QOjA2","./reddit":15}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('xbP5ff');
+},{}],"xbP5ff":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1213,11 +1269,7 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
-},{}],"6cd8lO":[function(require,module,exports){
+},{}],"5QOjA2":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1385,9 +1437,11 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('5QOjA2');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],"LtFNV5":[function(require,module,exports){
+module.exports=require('t9+Ge2');
+},{}],"t9+Ge2":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1477,7 +1531,7 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var process=require("__browserify_process");//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1718,9 +1772,9 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('2l+GxM');
-},{}],"2l+GxM":[function(require,module,exports){
+},{"./options":"xbP5ff","__browserify_process":1}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('62hrOi');
+},{}],"62hrOi":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1869,59 +1923,5 @@ function SubredditsModel(Music) {
 }
 
 module.exports = SubredditsModel;
-},{}],17:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            if (ev.source === window && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}]},{},[1])
+},{}]},{},[2])
 ;
