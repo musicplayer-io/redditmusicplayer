@@ -452,9 +452,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"t9+Ge2"}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('gtc4uL');
-},{}],"gtc4uL":[function(require,module,exports){
+},{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -620,6 +618,8 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
+},{}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('gtc4uL');
 },{}],"./js/modules/music":[function(require,module,exports){
 module.exports=require('NzQZ2+');
 },{}],"NzQZ2+":[function(require,module,exports){
@@ -989,9 +989,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"5QOjA2","./reddit":15}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('xbP5ff');
-},{}],"xbP5ff":[function(require,module,exports){
+},{"./players":"5QOjA2","./reddit":15}],"xbP5ff":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1269,6 +1267,10 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('xbP5ff');
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('5QOjA2');
 },{}],"5QOjA2":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -1437,8 +1439,6 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('5QOjA2');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('t9+Ge2');
 },{}],"t9+Ge2":[function(require,module,exports){
