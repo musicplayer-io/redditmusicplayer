@@ -47,3 +47,5 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
+
+[tl;dr](http://www.tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3))
