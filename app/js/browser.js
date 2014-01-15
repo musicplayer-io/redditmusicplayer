@@ -205,7 +205,25 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
+//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
@@ -360,10 +378,24 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"RgAvKX":[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
+"use strict";
 /*global KeyboardJS:true */
 
 function UserEventsModel(Music, Options) {
@@ -515,6 +547,22 @@ module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
 module.exports=require('RgAvKX');
 },{}],"USwVCS":[function(require,module,exports){
+//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
 "use strict";
 /*global SC:true */
 
@@ -833,10 +881,24 @@ module.exports = MusicModel;
 
 },{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
 module.exports=require('USwVCS');
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
 },{}],"jLEaKv":[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
+"use strict";
 
 var ERRORS = {
 	CALLBACKUNDEFINED: function (object) {
@@ -1030,12 +1092,15 @@ function OptionsModel() {
 
 	/*global chrome:true */
 
+	var isChrome = false;
 	if ("undefined" !== typeof(chrome)) {
 		if ("undefined" !== typeof(chrome.storage)) {
+			isChrome = true;
 			console.log("OPTIONS > Using Chrome");
 			self.local = new chromeStorage();
 		}
-	} else {
+	}
+	if (!isChrome) {
 		if ("undefined" !== typeof(window.localStorage) || "undefined" !== typeof(global.window.localStorage)) {
 			console.log("OPTIONS > Using localStorage");
 			self.local = new localStorageHelper();
@@ -1094,10 +1159,26 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
 },{}],"6cd8lO":[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};"use strict";
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
+"use strict";
 /*global SC:true */
 
 function PlayersModel() {
@@ -1232,9 +1313,27 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('6cd8lO');
 },{}],"./js/modules/progressbar":[function(require,module,exports){
 module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
+//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
 "use strict";
 
 function ProgressBar(link) {
@@ -1309,7 +1408,23 @@ function ProgressBar(link) {
 
 module.exports = ProgressBar;
 },{}],14:[function(require,module,exports){
-var process=require("__browserify_process");"use strict";
+var process=require("__browserify_process");//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
+"use strict";
 
 var Bandcamp = {base: "http://api.bandcamp.com/api/", key: "snaefellsjokull"};
 var SoundCloud = {base: "http://api.soundcloud.com/", key: "5441b373256bae7895d803c7c23e59d9"};
@@ -1536,6 +1651,22 @@ module.exports = RedditModel;
 },{"./options":"jLEaKv","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
 module.exports=require('2l+GxM');
 },{}],"2l+GxM":[function(require,module,exports){
+//     Reddit Music Player
+//     Copyright (C) 2014  Ilias Ismanalijev
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see http://www.gnu.org/licenses/
+
 "use strict";
 
 function SubredditsModel(Music) {

@@ -208,12 +208,15 @@ function OptionsModel() {
 
 	/*global chrome:true */
 
+	var isChrome = false;
 	if ("undefined" !== typeof(chrome)) {
 		if ("undefined" !== typeof(chrome.storage)) {
+			isChrome = true;
 			console.log("OPTIONS > Using Chrome");
 			self.local = new chromeStorage();
 		}
-	} else {
+	}
+	if (!isChrome) {
 		if ("undefined" !== typeof(window.localStorage) || "undefined" !== typeof(global.window.localStorage)) {
 			console.log("OPTIONS > Using localStorage");
 			self.local = new localStorageHelper();
