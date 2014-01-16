@@ -15,6 +15,8 @@
 	-webkit-user-select: none;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	font-smooth: always;
+	-webkit-font-smoothing : antialiased;
 }
 
 html, body, window {
@@ -60,7 +62,10 @@ a {
 		border-right: 1px solid #464646;
 		border-bottom: 1px solid #313131;
 		.drop-shadow(0, 5px, 10px, 0.5);
-
+		i.icon {
+			text-align: center;
+			margin: 0px;
+		}
 		.mac.native {
 			padding: 16px 10px 15px 15px;
 			&:hover, &.active {
@@ -170,7 +175,10 @@ a {
 	border-left: 1px solid #464646;
 	border-right: 1px solid #464646;
 	.drop-shadow(0, -5px, 10px, 0.4);
-
+	.icon {
+		text-align: center;
+		margin: 0px;
+	}
 	.center.aligned {
 		text-align: center;
 		.item.active {
