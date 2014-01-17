@@ -25,3 +25,8 @@
   -o-transition: @type @duration @ease;
   transition: @type @duration @ease;
 }
+.transform(@transform, @duration:0.2s, @ease:ease-out) {
+  -webkit-transform: @transform;
+  -webkit-transition-timing-function: @ease;
+  -webkit-transition-duration: @duration
+}

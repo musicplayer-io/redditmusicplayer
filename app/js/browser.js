@@ -1,58 +1,4 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            if (ev.source === window && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],2:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -158,10 +104,43 @@ $(function () {
 		pipeEvent(Subreddits, "toggleActiveSubs");
 
 		// Progressbar
-		musicProgress.element.click(function (e) {
-			Music.trigger("musicProgress", e);
-		});
+		var clicking = false;
 		
+
+		$(document).mousemove(function (e) {
+			if (clicking === false) {
+				return;
+			}
+			var percentage = e.clientX / musicProgress.element.outerWidth() * 100;
+
+			musicProgress.seek(percentage);
+			musicProgress.element.find(".time.start").html(Math.floor(percentage) + "%");
+			musicProgress.element.find(".time.end").css({
+				"margin-left": percentage + "%"
+			});
+		});
+
+		musicProgress.element.mousedown(function (e) {
+			clicking = true;
+			Content.trigger("musicProgress-clicking");
+			$(document).one("mouseup", function (ev) {
+				if (clicking === false) {
+					return;
+				}
+				clicking = false;
+				var percentage = ev.clientX / musicProgress.element.outerWidth() * 100;
+				musicProgress.seek(percentage);
+				musicProgress.element.find(".time.start").html(Math.floor(percentage) + "%");
+				musicProgress.element.find(".time.end").css({
+					"margin-left": percentage + "%"
+				});
+				Music.on("music-progress", function () {
+					Content.trigger("musicProgress-released");
+				});
+				Music.trigger("musicProgress", ev);
+			});
+		});
+
 		
 	// Model Events
 		// PLAYER
@@ -271,14 +250,16 @@ $(function () {
 		}
 
 		/*global ga:true*/
-		ga('create', 'UA-45488207-5', 'il.ly');
-		ga('send', 'pageview');
+		if ("undefined" !== typeof(ga)) {
+			ga('create', 'UA-45488207-5', 'il.ly');
+			ga('send', 'pageview');
+		}
 
 	});
 
-},{"./js/modules/content":"JTiXJJ","./js/modules/events":"gtc4uL","./js/modules/music":"NzQZ2+","./js/modules/options":"xbP5ff","./js/modules/progressbar":"t9+Ge2","./js/modules/subreddits":"62hrOi"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('JTiXJJ');
-},{}],"JTiXJJ":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -298,7 +279,6 @@ module.exports=require('JTiXJJ');
 "use strict";
 
 var ProgressBarModel = require("./progressbar");
-
 
 function ContentModel() {
 	/// Controls the Content.
@@ -428,13 +408,29 @@ function ContentModel() {
 	});
 
 	self.on("music-progress", function (currentSong, soundcloudData) {
-		intervalProgressBar = window.clearInterval(intervalProgressBar);
+		intervalProgressBar = window.clearInterval(intervalProgressBar); // Clear progressbar pulls
 		if (currentSong.origin === "soundcloud.com") {
-			try {
-				musicProgress.set(soundcloudData.relativePosition * 100);
-			} catch (err) {
-				console.error(currentSong);
+			if (musicProgressBusy) {
+				return;
 			}
+			musicProgress.set(soundcloudData.relativePosition * 100);
+			console.log(soundcloudData);
+			musicProgress.element.find(".time.start").html(
+				Math.floor(soundcloudData.relativePosition * 100) + "%" +
+				" • " + Math.floor(soundcloudData.currentPosition / 60000) + ":" + // in minutes
+				(Math.floor(soundcloudData.currentPosition / 1000 % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+					"0" + Math.floor(soundcloudData.currentPosition / 1000 % 60) :
+					Math.floor(soundcloudData.currentPosition / 1000 % 60))
+			);
+			soundcloudData.duration = soundcloudData.currentPosition / soundcloudData.relativePosition;
+			musicProgress.element.find(".time.end").html(
+				Math.floor(soundcloudData.duration / 60000) + ":" +  // Time in minutes
+				(Math.floor(soundcloudData.duration / 1000 % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+					"0" + Math.floor(soundcloudData.duration / 1000 % 60) :
+					Math.floor(soundcloudData.duration / 1000 % 60))
+			).css({
+				"margin-left": (soundcloudData.relativePosition * 100) + "%"
+			});
 		} else {
 			self.trigger("youtube-progressbar");
 			updateProgressBar(function () {
@@ -443,16 +439,43 @@ function ContentModel() {
 		}
 	});
 
+	var musicProgressBusy = false;
 	self.on("youtube-progressbarReturn", function (data) {
-		if (!data) {
+		if (!data) { // If no data received from the player, then song isn't loaded yet
 			self.trigger("ytnotready");
 		}
+		if (!data || musicProgressBusy === true) {
+			return;
+		}
 		musicProgress.set(data.currentTime / data.duration * 100);
+		musicProgress.element.find(".time.start").html(
+			Math.floor(data.videoLoadedFraction * 100) + "%" + // Percentage
+			" • " + Math.floor(data.currentTime / 60) + ":" +  // Time in minutes
+			(Math.floor(data.currentTime % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+				"0" + Math.floor(data.currentTime % 60) :
+				Math.floor(data.currentTime % 60))
+		);
+		musicProgress.element.find(".time.end").html(
+			Math.floor(data.duration / 60) + ":" +  // Time in minutes
+			(Math.floor(data.duration % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+				"0" + Math.floor(data.duration % 60) :
+				Math.floor(data.duration % 60))
+		).css({
+			"margin-left": (data.currentTime / data.duration * 100) + "%"
+		});
+	});
+	self.on("musicProgress-clicking", function () {
+		musicProgressBusy = true;
+	});
+	self.on("musicProgress-released", function () {
+		musicProgressBusy = false;
 	});
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"t9+Ge2"}],"gtc4uL":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('RgAvKX');
+},{}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -618,11 +641,9 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('gtc4uL');
 },{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('NzQZ2+');
-},{}],"NzQZ2+":[function(require,module,exports){
+module.exports=require('USwVCS');
+},{}],"USwVCS":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -989,7 +1010,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"5QOjA2","./reddit":15}],"xbP5ff":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1268,10 +1289,8 @@ function OptionsModel() {
 
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('xbP5ff');
-},{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('5QOjA2');
-},{}],"5QOjA2":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"6cd8lO":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1439,9 +1458,9 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('t9+Ge2');
-},{}],"t9+Ge2":[function(require,module,exports){
+},{}],"./js/modules/players":[function(require,module,exports){
+module.exports=require('6cd8lO');
+},{}],"LtFNV5":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1531,7 +1550,9 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
-},{}],15:[function(require,module,exports){
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
+},{}],14:[function(require,module,exports){
 var process=require("__browserify_process");//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1772,9 +1793,9 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"xbP5ff","__browserify_process":1}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('62hrOi');
-},{}],"62hrOi":[function(require,module,exports){
+},{"./options":"jLEaKv","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('2l+GxM');
+},{}],"2l+GxM":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1923,5 +1944,59 @@ function SubredditsModel(Music) {
 }
 
 module.exports = SubredditsModel;
-},{}]},{},[2])
+},{}],17:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            if (ev.source === window && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}]},{},[1])
 ;

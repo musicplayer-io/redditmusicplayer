@@ -18,7 +18,6 @@
 
 var ProgressBarModel = require("./progressbar");
 
-
 function ContentModel() {
 	/// Controls the Content.
 
@@ -147,13 +146,29 @@ function ContentModel() {
 	});
 
 	self.on("music-progress", function (currentSong, soundcloudData) {
-		intervalProgressBar = window.clearInterval(intervalProgressBar);
+		intervalProgressBar = window.clearInterval(intervalProgressBar); // Clear progressbar pulls
 		if (currentSong.origin === "soundcloud.com") {
-			try {
-				musicProgress.set(soundcloudData.relativePosition * 100);
-			} catch (err) {
-				console.error(currentSong);
+			if (musicProgressBusy) {
+				return;
 			}
+			musicProgress.set(soundcloudData.relativePosition * 100);
+			console.log(soundcloudData);
+			musicProgress.element.find(".time.start").html(
+				Math.floor(soundcloudData.relativePosition * 100) + "%" +
+				" • " + Math.floor(soundcloudData.currentPosition / 60000) + ":" + // in minutes
+				(Math.floor(soundcloudData.currentPosition / 1000 % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+					"0" + Math.floor(soundcloudData.currentPosition / 1000 % 60) :
+					Math.floor(soundcloudData.currentPosition / 1000 % 60))
+			);
+			soundcloudData.duration = soundcloudData.currentPosition / soundcloudData.relativePosition;
+			musicProgress.element.find(".time.end").html(
+				Math.floor(soundcloudData.duration / 60000) + ":" +  // Time in minutes
+				(Math.floor(soundcloudData.duration / 1000 % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+					"0" + Math.floor(soundcloudData.duration / 1000 % 60) :
+					Math.floor(soundcloudData.duration / 1000 % 60))
+			).css({
+				"margin-left": (soundcloudData.relativePosition * 100) + "%"
+			});
 		} else {
 			self.trigger("youtube-progressbar");
 			updateProgressBar(function () {
@@ -162,11 +177,36 @@ function ContentModel() {
 		}
 	});
 
+	var musicProgressBusy = false;
 	self.on("youtube-progressbarReturn", function (data) {
-		if (!data) {
+		if (!data) { // If no data received from the player, then song isn't loaded yet
 			self.trigger("ytnotready");
 		}
+		if (!data || musicProgressBusy === true) {
+			return;
+		}
 		musicProgress.set(data.currentTime / data.duration * 100);
+		musicProgress.element.find(".time.start").html(
+			Math.floor(data.videoLoadedFraction * 100) + "%" + // Percentage
+			" • " + Math.floor(data.currentTime / 60) + ":" +  // Time in minutes
+			(Math.floor(data.currentTime % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+				"0" + Math.floor(data.currentTime % 60) :
+				Math.floor(data.currentTime % 60))
+		);
+		musicProgress.element.find(".time.end").html(
+			Math.floor(data.duration / 60) + ":" +  // Time in minutes
+			(Math.floor(data.duration % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
+				"0" + Math.floor(data.duration % 60) :
+				Math.floor(data.duration % 60))
+		).css({
+			"margin-left": (data.currentTime / data.duration * 100) + "%"
+		});
+	});
+	self.on("musicProgress-clicking", function () {
+		musicProgressBusy = true;
+	});
+	self.on("musicProgress-released", function () {
+		musicProgressBusy = false;
 	});
 }
 

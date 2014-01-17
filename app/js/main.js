@@ -103,10 +103,43 @@ $(function () {
 		pipeEvent(Subreddits, "toggleActiveSubs");
 
 		// Progressbar
-		musicProgress.element.click(function (e) {
-			Music.trigger("musicProgress", e);
-		});
+		var clicking = false;
 		
+
+		$(document).mousemove(function (e) {
+			if (clicking === false) {
+				return;
+			}
+			var percentage = e.clientX / musicProgress.element.outerWidth() * 100;
+
+			musicProgress.seek(percentage);
+			musicProgress.element.find(".time.start").html(Math.floor(percentage) + "%");
+			musicProgress.element.find(".time.end").css({
+				"margin-left": percentage + "%"
+			});
+		});
+
+		musicProgress.element.mousedown(function (e) {
+			clicking = true;
+			Content.trigger("musicProgress-clicking");
+			$(document).one("mouseup", function (ev) {
+				if (clicking === false) {
+					return;
+				}
+				clicking = false;
+				var percentage = ev.clientX / musicProgress.element.outerWidth() * 100;
+				musicProgress.seek(percentage);
+				musicProgress.element.find(".time.start").html(Math.floor(percentage) + "%");
+				musicProgress.element.find(".time.end").css({
+					"margin-left": percentage + "%"
+				});
+				Music.on("music-progress", function () {
+					Content.trigger("musicProgress-released");
+				});
+				Music.trigger("musicProgress", ev);
+			});
+		});
+
 		
 	// Model Events
 		// PLAYER
@@ -216,7 +249,9 @@ $(function () {
 		}
 
 		/*global ga:true*/
-		ga('create', 'UA-45488207-5', 'il.ly');
-		ga('send', 'pageview');
+		if ("undefined" !== typeof(ga)) {
+			ga('create', 'UA-45488207-5', 'il.ly');
+			ga('send', 'pageview');
+		}
 
 	});
