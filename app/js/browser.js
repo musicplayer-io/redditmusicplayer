@@ -257,7 +257,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -471,11 +473,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
-},{}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -641,6 +639,8 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
+},{}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('RgAvKX');
 },{}],"./js/modules/music":[function(require,module,exports){
 module.exports=require('USwVCS');
 },{}],"USwVCS":[function(require,module,exports){
@@ -1010,9 +1010,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"jLEaKv":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1290,6 +1288,8 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
 },{}],"./js/modules/players":[function(require,module,exports){
 module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){

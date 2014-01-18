@@ -21,7 +21,7 @@ Module | Status
 # Contributing
 
 You need node installed and running.
-Run **npm install** in the main directory and in the server directory.
+Run **npm install** in the main directory and in the *server* directory.
 
 To run the server you need to build the packages using grunt.
 Here are the grunt tasks you can run using grunt-cli.

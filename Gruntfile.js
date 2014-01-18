@@ -187,9 +187,10 @@ module.exports = function (grunt) {
 	// Chrome
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.registerTask('default', ["jshint", "less", "jade:compile", 'watch']);
-	grunt.registerTask('server', ["jshint", "less", "browserify", "watch"]);
-	grunt.registerTask('build', ["jshint", "less", "jade", "browserify"]);
+
+	grunt.registerTask('live', ["jshint", "less", "jade", "browserify:dist", "watch"]);
+	grunt.registerTask('server', ["jshint", "less", "browserify:dist"]);
 	grunt.registerTask('cleanup', ["jshint", "clean:before"]);
+	grunt.registerTask('build', ["jshint", "less", "jade", "browserify"]);
 	grunt.registerTask('chrome', ["jshint", "less", "clean:before", "copy:one", "clean:one", "copy:two", "jade:chrome", "browserify:chrome"]);
 };
