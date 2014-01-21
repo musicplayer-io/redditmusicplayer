@@ -328,6 +328,10 @@ function MusicModel(musicProgress, loadProgress) {
 			self.trigger("playlist", self.songs, self.currentSong);
 		});
 
+		Reddit.on("empty-subreddits", function () {
+			self.trigger("empty-subreddits");
+		});
+
 	// Listeners
 		// Song Selected from Playlist
 		self.on("playlist-select", function (songEl, song) {

@@ -198,6 +198,17 @@ $(function () {
 			Content.trigger("youtube-progressbarReturn", data);
 		});
 
+		Music.on("empty-subreddits", function () {
+			$(".music.content .playlist .item").remove();
+			$(".music.content .empty").removeClass("hidden");
+			$(".music.content .empty").animate({"opacity": 1}, {
+				duration: 300,
+				complete: function () {
+					$(".music.content .empty").removeClass("hidden");
+				}
+			});
+		});
+
 			
 		// Init Settings
 		Events.init();

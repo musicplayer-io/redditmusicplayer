@@ -219,6 +219,8 @@ function RedditModel() {
 				fetchMusic(items);
 			});
 		} else {
+			console.log("REDDIT > Empty Subreddits");
+			self.trigger("empty-subreddits");
 			state("/");
 		}
 	});

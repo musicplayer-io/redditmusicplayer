@@ -8,3 +8,54 @@
 			include subreddits
 		.eleven.musicplaylist.wide.column
 			.music.playlist.ui.inverted.fluid.vertical.selection.menu
+			.empty.condensed
+				img.arrow(src="/img/arrow.svg")
+				h2.subsheader.ui.header.divided You haven't selected any subreddits yet.
+				p.description By selecting a few subreddits you’ll be able to listen to a playlist from the music from those subreddits.
+				h2.ui.header.divided Shortcuts
+				table.basic.inverted.ui.table.shortcuts
+					thead
+						tr
+							th.four.wide Key
+							th Function
+					tbody
+						tr
+							td
+								.ui.button.icon.black
+									| space
+							td Play / Pause
+						tr
+							td
+								.ui.button.icon.black
+									| Up or Left Arrow
+							td Previous Song
+						tr
+							td
+								.ui.button.icon.black
+									| Down or Right Arrow
+							td Next Song
+						tr
+							td
+								.ui.button.icon.black
+									| Ctrl
+								|  + 
+								.ui.button.icon.black
+									| F
+							td Search Subreddits
+						tr
+							td
+								.ui.button.icon.black
+									| Ctrl
+								|  + 
+								.ui.button.icon.black
+									| X
+							td Clear Selected Subreddits
+						tr
+							td
+								.ui.button.icon.black
+									| Ctrl
+								|  + 
+								.ui.button.icon.black
+									| E
+							td Edit Selected Subreddits
+						

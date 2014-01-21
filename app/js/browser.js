@@ -199,6 +199,17 @@ $(function () {
 			Content.trigger("youtube-progressbarReturn", data);
 		});
 
+		Music.on("empty-subreddits", function () {
+			$(".music.content .playlist .item").remove();
+			$(".music.content .empty").removeClass("hidden");
+			$(".music.content .empty").animate({"opacity": 1}, {
+				duration: 300,
+				complete: function () {
+					$(".music.content .empty").removeClass("hidden");
+				}
+			});
+		});
+
 			
 		// Init Settings
 		Events.init();
@@ -257,9 +268,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
-},{}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"RnGEbA","./js/modules/events":"G0gHWL","./js/modules/music":"xajvsc","./js/modules/options":"DZy7qV","./js/modules/progressbar":"9msWud","./js/modules/subreddits":"VyuFsO"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('RnGEbA');
+},{}],"RnGEbA":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -372,12 +383,21 @@ function ContentModel() {
 		
 		// Remove all old songs...
 		$(".music.content .playlist .item").remove();
+		// Hide empty data
+		$(".music.content .empty").animate({"opacity": 0}, {
+			duration: 300,
+			complete: function () {
+				$(".music.content .empty").addClass("hidden");
+			}
+		});
+
 
 		// For all the new songs...
 		for (var i = 0; i < songs.length; i++) {
 			add(songs[i]);
 		}
 		more();
+
 		self.trigger("build-ready");
 	};
 
@@ -473,7 +493,7 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"RgAvKX":[function(require,module,exports){
+},{"./progressbar":"9msWud"}],"G0gHWL":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -640,10 +660,10 @@ function UserEventsModel(Music, Options) {
 
 module.exports = UserEventsModel;
 },{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
+module.exports=require('G0gHWL');
 },{}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"USwVCS":[function(require,module,exports){
+module.exports=require('xajvsc');
+},{}],"xajvsc":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -974,6 +994,10 @@ function MusicModel(musicProgress, loadProgress) {
 			self.trigger("playlist", self.songs, self.currentSong);
 		});
 
+		Reddit.on("empty-subreddits", function () {
+			self.trigger("empty-subreddits");
+		});
+
 	// Listeners
 		// Song Selected from Playlist
 		self.on("playlist-select", function (songEl, song) {
@@ -1010,7 +1034,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
+},{"./players":"gdzgEr","./reddit":14}],"DZy7qV":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1289,10 +1313,10 @@ function OptionsModel() {
 
 module.exports = OptionsModel;
 },{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
+module.exports=require('DZy7qV');
 },{}],"./js/modules/players":[function(require,module,exports){
-module.exports=require('6cd8lO');
-},{}],"6cd8lO":[function(require,module,exports){
+module.exports=require('gdzgEr');
+},{}],"gdzgEr":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1461,8 +1485,8 @@ function PlayersModel() {
 
 module.exports = PlayersModel;
 },{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
-},{}],"LtFNV5":[function(require,module,exports){
+module.exports=require('9msWud');
+},{}],"9msWud":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1774,6 +1798,8 @@ function RedditModel() {
 				fetchMusic(items);
 			});
 		} else {
+			console.log("REDDIT > Empty Subreddits");
+			self.trigger("empty-subreddits");
 			state("/");
 		}
 	});
@@ -1793,9 +1819,9 @@ function RedditModel() {
 
 
 module.exports = RedditModel;
-},{"./options":"jLEaKv","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
-module.exports=require('2l+GxM');
-},{}],"2l+GxM":[function(require,module,exports){
+},{"./options":"DZy7qV","__browserify_process":17}],"./js/modules/subreddits":[function(require,module,exports){
+module.exports=require('VyuFsO');
+},{}],"VyuFsO":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
