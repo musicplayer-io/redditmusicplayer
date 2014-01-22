@@ -110,21 +110,12 @@ function ContentModel() {
 		
 		// Remove all old songs...
 		$(".music.content .playlist .item").remove();
-		// Hide empty data
-		$(".music.content .empty").animate({"opacity": 0}, {
-			duration: 300,
-			complete: function () {
-				$(".music.content .empty").addClass("hidden");
-			}
-		});
-
 
 		// For all the new songs...
 		for (var i = 0; i < songs.length; i++) {
 			add(songs[i]);
 		}
 		more();
-
 		self.trigger("build-ready");
 	};
 
