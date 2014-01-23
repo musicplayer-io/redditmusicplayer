@@ -19,9 +19,9 @@
 // Version manifest
 
 var version = {
-	win32: "0.2.0",
-	osx: "0.2.0",
-	linux: "0.2.0",
+	win32: "0.2.1",
+	osx: "0.2.1",
+	linux: "0.2.1",
 };
 
 var events = require('events').EventEmitter;
