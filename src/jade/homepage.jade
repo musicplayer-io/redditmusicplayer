@@ -12,12 +12,13 @@ html(mlns:fb='http://ogp.me/ns/fb#', xmlns:og='http://ogp.me/ns#', itemscope='it
 			.top.menu.header
 				.wrapper
 					//- Logo 
-					a.active.disabled.item.redmusic
-						span Reddit
-						| Music
-						span Player
+					.left.menu
+						a.active.disabled.item.redmusic
+							span Reddit
+							| Music
+							span Player
 					//- Music / Radio Tabs 
-					.page-menu.right.tabular.menu
+					.page-menu.right.menu
 						a.item.active(href="/", target="_blank")
 							i.icon.home
 						a.music-page.item(href="/player/", data-tab='music')
