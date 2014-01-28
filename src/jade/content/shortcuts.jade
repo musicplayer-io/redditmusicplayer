@@ -1,0 +1,13 @@
+mixin key(key, func)
+	tr
+		td
+			.ui.button.icon.black
+				| #{key}
+		td #{func}
+
++key("space", "Play / Pause")
++key("Up or Left Arrow", "Previous Song")
++key("Down or Right Arrow", "Next Song")
++key("Ctrl+F", "Search Subreddits")
++key("Ctrl+X", "Clear Selected Subreddits")
++key("Ctrl+E", "Edit Selected Subreddits")
