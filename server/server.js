@@ -58,6 +58,7 @@ if (env === "dev") {
 
 app.use("/css", express.static(__appdir + '/css'));
 app.use("/img", express.static(__appdir + '/img'));
+app.use("/img", express.static(__serverdir + '/img'));
 app.use("/fonts", express.static(__appdir + '/fonts'));
 app.use("/js", express.static(__appdir + '/js'));
 app.set("views", __srcdir + "/jade");
@@ -84,9 +85,11 @@ var justIndex = function (req, res) {
 
 
 var HomePage = function (req, res) {
-	var backgrounds = ["imageone", "imagetwo"];
+	var ua = req.headers["user-agent"];
+	var isWindowsString = /windows nt/i;
+	var isWindows = isWindowsString.test(ua);
 	var data = {
-		background: backgrounds[Math.floor(Math.random() * 2)]
+		isWindows: isWindows
 	};
 	res.render('homepage.jade', data);
 };

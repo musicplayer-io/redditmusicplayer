@@ -8,6 +8,10 @@
 // Roboto Condensed 300, 400
 // @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300);
 
+@desktop:   ~"only screen and (min-width: 960px) and (max-width: 1199px)";
+@tablet:    ~"only screen and (min-width: 720px) and (max-width: 959px)";
+@phone: 	~"only screen and (max-width: 719px)";
+
 // Basics
 *,
 ::before,
@@ -18,7 +22,7 @@
 }
 
 html, body, window {
-	background: #000;
+	background: #212121;
 }
 
 ::selection {
@@ -33,7 +37,8 @@ body {
 	font-family: "Roboto", sans-serif;
 	font-weight: 300;
 	margin: 0px;
-	background: #000;
+	background: #212121;
+	background: #212121 url(../img/header.png) top repeat-x;
 	color: #FFF;
 }
 
@@ -46,13 +51,14 @@ a {
 // Title bar
 .title.menu.ui {
 	 .top.header.menu {
+	 	height: 45px;
 		-webkit-app-region: drag;
 		-webkit-border-radius-bottom: 10px;
 		border-radius-bottom: 10px;
 		font-weight: 100;
 
 		.gradient(#393939, #212121);
-		background: -webkit-gradient(linear, center top, center bottom, from(rgba(57,57,57,0.7)), to(rgba(31,31,31,0.7))) 0 1px, url(../img/header.jpg);
+		background: -webkit-gradient(linear, center top, center bottom, from(rgba(57,57,57,0.7)), to(rgba(31,31,31,0.7))) 0 1px, url(../img/header.png);
 		background-repeat: repeat-x;
 		background-size: 100%, 378px;
 		border-top: 1px solid #6d6d6d;
@@ -64,6 +70,11 @@ a {
 		.wrapper {
 			max-width: 960px;
 			margin: auto;
+		}
+
+		i.icon {
+			text-align: center;
+			margin: 0px;
 		}
 
 		.redmusic {
@@ -81,26 +92,91 @@ a {
 	}
 }
 
+
 // Content
 .main-container.wrapper {
 	width: 100%;
 	height: 100%;
-	margin-top: 40px;
-	background: url("/img/headphones.jpg") no-repeat;
-	background-size: cover;
-	&.imagetwo {
-		background: url("/img/headphones2.jpg") no-repeat;
-		background-size: cover;
-	}
+	margin-top: -10px;
 	min-height: 768px;
-	.intro, .links {
-		margin: auto;
-		max-width: 960px;
-		text-align: left;
-		padding-top: 100px;
+	.intro {
+		margin: 50px auto;
+		max-width: 1280px;
+		text-align: center;
+		padding-top: 50px;
 		h1.ui.header {
 			font-family: "Roboto Condensed", "Roboto", sans-serif;
 			font-weight: 300;
+		}
+	}
+	.footer {
+		text-align: center;
+		max-width: 1280px;
+		margin: 50px auto;
+		.player {
+			margin-top: 100px;
+		}
+		.share {
+			margin-top: 50px;
+		}
+		.copyright {
+			margin-top: 100px;
+		}
+	}
+	.feature {
+		max-width: 1280px;
+		margin: auto;
+		padding: 10px;
+		@media @tablet {
+			margin: 50px auto;
+			padding: 20px;
+		}
+		@media @phone {
+			margin-bottom: 100px auto;
+			padding: 10px;
+			padding-bottom: 100px;
+		}
+		.ui.image {
+			display: inline-block;
+			width: 70%;
+			@media @tablet {
+				width: 50%;
+				margin-left: 0px;
+			}
+			@media @phone {
+				width: 100%;
+				display: block;
+				margin: auto;
+			}
+		}
+		.description {
+			display: inline-block;
+			width: 30%;
+			a {
+				font-weight: 700;
+			}
+			@media @tablet {
+				width: 50%;
+			}
+			@media @phone {
+				width: 100%;
+				display: block;
+				max-width: 700px;
+				margin: auto;
+				text-align: center;
+			}
+		}
+		.description + .ui.image {
+			// image to the right
+			@media @desktop {
+				padding-left: 20px;
+			}
+			@media @phone {
+				margin-top: 10px;
+			}
+		}
+		.ui.image + .description {
+			// text to the right
 		}
 	}
 }

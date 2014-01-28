@@ -141,7 +141,12 @@ function localStorageHelper() {
 
 	$.observable(self);
 
-	self.local = localStorage || global.window.localStorage;
+	if ("undefined" === typeof(localStorage)) {
+		self.local = global.window.localStorage;
+	} else {
+		self.local = localStorage || global.window.localStorage;
+	}
+
 
 	var getArray = function (arr) {
 		var keys = {};

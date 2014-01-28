@@ -43,6 +43,16 @@ module.exports = function (grunt) {
 		return moduleList.join(",");
 	};
 
+	var getModulesMetro = function () {
+		// returns app/js/modules/music.js:./js/modules/music
+		var moduleList = [];
+		for (var i = modules.length - 1; i >= 0; i--) {
+			var module = "metro/redditmusicplayer/js/modules/" + modules[i] + ".js:./js/modules/" + modules[i];
+			moduleList.push(module);
+		}
+		return moduleList.join(",");
+	};
+
 	grunt.initConfig({
 		// JSHINT
 		jshint: {
@@ -72,6 +82,17 @@ module.exports = function (grunt) {
 				files: {
 					"chrome/main.html": ["src/jade/chrome.jade"],
 					"chrome/sandbox.html": ["src/jade/sandbox.jade"]
+				}
+			},
+			metro: {
+				options: {
+					data: {
+						debug: false
+					}
+				},
+				files: {
+					"metro/redditmusicplayer/main.html": ["src/jade/metro.jade"],
+					"metro/redditmusicplayer/sandbox.html": ["src/jade/sandbox.jade"]
 				}
 			}
 		},
@@ -111,6 +132,13 @@ module.exports = function (grunt) {
 				options: {
 					alias: getModulesChrome()
 				}
+			},
+			metro: {
+				src: ['metro/redditmusicplayer/js/main.js'],
+				dest: 'metro/redditmusicplayer/js/browser.js',
+				options: {
+					alias: getModulesMetro()
+				}
 			}
 		},
 		// LiVERELOAD & WATCH
@@ -135,7 +163,9 @@ module.exports = function (grunt) {
 		// Removing chrome builds
 		clean: {
 			before: ["chrome/sandbox.html", "chrome/main.html", "chrome/css", "chrome/js", "chrome/img", "chrome/fonts"],
-			one: ["chrome/js/modules/players.js", "chrome/js/modules/players.js"]
+			one: ["chrome/js/modules/players.js", "chrome/js/modules/players.js"],
+			metro: ["metro/redditmusicplayer/css", "metro/redditmusicplayer/main.html", "metro/redditmusicplayer/css", "metro/redditmusicplayer/js", "metro/redditmusicplayer/img", "metro/redditmusicplayer/fonts"],
+			metroOne: ["metro/redditmusicplayer/js/modules/players.js", "metro/redditmusicplayer/js/modules/players.js"]
 		},
 		// Then placing them back
 		copy: {
@@ -146,6 +176,34 @@ module.exports = function (grunt) {
 				options: {
 					// array of ignored paths, can be specific files or a glob
 					ignore: [
+						"app/node_modules",
+						'app/package.json',
+						'app/js/native.js'
+					]
+				}
+			},
+			metro: {
+				files: [
+					{expand: true, cwd: 'app/', src: ['**/*'], dest: 'metro/redditmusicplayer/'},
+				],
+				options: {
+					// array of ignored paths, can be specific files or a glob
+					ignore: [
+						"app/node_modules/",
+						"app/node_modules",
+						'app/package.json',
+						'app/js/native.js'
+					]
+				}
+			},
+			metroTwo: {
+				files: [
+					{expand: true, cwd: 'src/chrome/', src: ['**/*', "js/modules/*.js"], dest: 'metro/redditmusicplayer/'},
+				],
+				options: {
+					// array of ignored paths, can be specific files or a glob
+					ignore: [
+						"app/node_modules/",
 						"app/node_modules",
 						'app/package.json',
 						'app/js/native.js'
@@ -193,4 +251,5 @@ module.exports = function (grunt) {
 	grunt.registerTask('cleanup', ["jshint", "clean:before"]);
 	grunt.registerTask('build', ["jshint", "less", "jade", "browserify"]);
 	grunt.registerTask('chrome', ["jshint", "less", "clean:before", "copy:one", "clean:one", "copy:two", "jade:chrome", "browserify:chrome"]);
+	grunt.registerTask('metro', ["jshint", "less", "clean:metro", "copy:metro", "clean:metroOne", "copy:metroTwo", "jade:metro", "browserify:metro"]);
 };

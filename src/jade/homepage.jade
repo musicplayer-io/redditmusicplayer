@@ -25,17 +25,69 @@ html(mlns:fb='http://ogp.me/ns/fb#', xmlns:og='http://ogp.me/ns#', itemscope='it
 							i.icon.music
 						a.item(href="http://reddit.com/r/musicplayer", target="_blank")
 							i.icon.help
+						a.item(href="http://github.com/illyism/redditmusicplayer", target="_blank")
+							i.icon.github
 						a.item.redmusic(href="http://il.ly", target="_blank") Ilias Ismanalijev
 		//- Content 
 		.main-container.wrapper(class=background)
 			.intro
 				h1.ui.header Listen to the best user-curated music on the web.
 				p.description All of the music subreddits in one beautiful music player. Right now.
-				a.ui.black.button(href="/player/") Listen to Music
-			.links
-				.ui.two.buttons
-					a.ui.black.button(href="http://github.com/illyism/redditmusicplayer") Github
-					a.ui.black.button(href="http://reddit.com/r/musicplayer") Reddit
+			.feature
+				if (isWindows)
+					img.ui.image(src="/img/windows.png")
+				else
+					img.ui.image(src="/img/unix.png")
+				p.description Hundreds of subreddits full of music at your immediate disposal. Just a few clicks and you're listening to any genre of music that you want. Discover new exotic types of music and combine them all to make your own unique selection.
+					br
+					br
+					a.ui.black.button(href="/player/") Start Listening
+				.ui.horizontal.icon.divider.inverted
+					i.circular.github.icon
+			.feature
+				p.description Thousands lines of code combined to make a great listening experience. All open source and free for everyone to look at, improve upon or use for their own fork. This means this music player will be free forever.
+					br
+					br
+					a.ui.black.button(href="http://github.com/illyism/redditmusicplayer") View the Code on Github
+				img.ui.image(src="/img/code.png")
+				.ui.horizontal.icon.divider.inverted
+						i.circular.heart.icon
+			.feature
+				img.ui.image(src="/img/reddit.png")
+				p.description Feel free to ask questions, give feedback and suggest new and awesome ideas on the 
+					a(href="http://reddit.com/r/musicplayer") /r/musicplayer 
+					| subreddit. We listen to your needs and work closely with the community to make this the best music player for reddit in the world.
+					br
+					br
+					a.ui.black.button(href="http://reddit.com/r/musicplayer") Check out the Subreddit
+				.ui.horizontal.icon.divider.inverted
+						i.circular.keyboard.icon
+			.feature
+				p.description Shortcuts make accessing features easier than ever before. With just a few taps on the keyboard you can control the music player however you like.
+				.ui.image
+					table.inverted.ui.table.shortcuts
+						thead
+							tr
+								th Key
+								th Function
+						tbody
+							include content/shortcuts
+			.footer
+				.player
+					.ui.three.buttons
+						a.ui.black.button(href="/player/") Player
+						a.ui.black.button(href="http://github.com/illyism/redditmusicplayer") Github
+						a.ui.black.button(href="http://reddit.com/r/musicplayer") Reddit
+				.share
+					.ui.three.buttons
+						a(class="g-interactivepost", data-contenturl="http://adobe.breach.il.ly/", data-contentdeeplinkid="/", data-clientid="adobe-breach-il-ly", data-cookiepolicy="single_host_origin", data-prefilltext="Everything you need to know about the Adobe Breach", data-calltoactionlabel="TRY_IT", data-calltoactionurl="http://adobe.breach.il.ly/#/search/", data-calltoactiondeeplinkid="/#/search/", href='https://plus.google.com/share?url=http://adobe.breach.il.ly', target="_blank", onclick='javascript:window.open(this.href, \'\', \'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600\');return false;').ui.button.google.plus.icon
+							i.google.plus.icon
+						a(href='https://twitter.com/intent/tweet?original_referer=http://adobe.breach.il.ly&text=Everything you need to know about the Adobe Breach&tw_p=tweetbutton&url=http://adobe.breach.il.ly&via=illyism', target='_blank').ui.button.twitter.icon
+							i.twitter.icon
+						a(target="_blank", href='JavaScript:window.open(\'http://www.facebook.com/sharer.php?u=http://adobe.breach.il.ly\',\'\',\'width=657,height=400,scrollbars=1\')').ui.button.facebook.icon
+							i.facebook.icon
+				.small.copyright
+					small Copyright © 2014 Ilias Ismanalijev
 		//- Libraries
 		.javascript
 			script(type='text/javascript', src='/js/lib/jquery.min.js')

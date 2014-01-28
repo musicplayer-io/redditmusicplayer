@@ -2,6 +2,9 @@
 ## Future
 
 * Windows 8 store build
+* Sharing Playlists
+* Number of people listening to each specific subreddit
+* Message of the day
 
 ## Further Future
 * Chrome Extension
@@ -9,11 +12,20 @@
 * Logging in: upvoting, downvoting
 * Last.fm scrobbling
 * Leverage the server more
- * Number of people listening to each specific subreddit
  * Remote control from your phone
  * Sync multiple players (for a living room + kitchen setup for example)
 
 ## Changelog
+
+
+### 0.2.1 - 25 January 2014
+
+* Message if no subreddits are selected
+* Started on Windows 8 Store build
+* Added Github link on titlebar
+* New homepage with features, sharing and shortcuts
+* New Icon
+
 
 ### 0.2.0 - 15 January 2014
 
