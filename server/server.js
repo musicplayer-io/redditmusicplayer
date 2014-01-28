@@ -19,9 +19,9 @@
 // Version manifest
 
 var version = {
-	win32: "0.2.1",
-	osx: "0.2.1",
-	linux: "0.2.1",
+	win32: "0.2.2",
+	osx: "0.2.2",
+	linux: "0.2.2",
 };
 
 var events = require('events').EventEmitter;
@@ -30,7 +30,6 @@ var express = require('express');
 var app = express();
 
 var request = require('request');
-var cheerio = require('cheerio');
 
 // Configuration
 
@@ -111,15 +110,17 @@ multiListener.prototype = Object.create(events.prototype, {
 
 multiListener.prototype.load = function (url) {
 	var self = this;
-	self.url = 'http://www.reddit.com/' + url;
+	self.url = 'http://www.reddit.com/api/multi/' + url;
 	self.subs = [];
 
-	request(self.url, function (error, response, html) {
+	console.log("MULTI > ", self.url);
+
+	request(self.url, function (error, response) {
 		if (!error && response.statusCode === 200) {
-			var $ = cheerio.load(html);
-			$(".side .subreddits a").each(function (i, element) {
-				self.subs.push(element.attribs.href.substr(3));
-			});
+			var data = JSON.parse(response.body).data.subreddits;
+			for (var i = data.length - 1; i >= 0; i--) {
+				self.subs.push(data[i].name);
+			}
 			self.emit("loaded", self.subs);
 		} else {
 			self.emit("failed", error, self.url);

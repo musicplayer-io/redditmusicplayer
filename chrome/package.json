@@ -1,6 +1,6 @@
 {
   "name": "RedditMusicPlayer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Reddit Music Player for Node-Webkit",
   "main": "main.html",
   "webkit": {

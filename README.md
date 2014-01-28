@@ -9,7 +9,7 @@ Music listening for reddit.
 
 Module | Status
 --- | --- | ---
-**Global Version** | 0.2.1
+**Global Version** | 0.2.2
 **Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
 **Web Player** |  [reddit.music.player.il.ly/player/](http://reddit.music.player.il.ly/player/)
 **Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)

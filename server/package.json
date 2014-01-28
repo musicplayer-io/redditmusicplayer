@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Reddit Music Player Server",
   "main": "server.js",
   "scripts": {
@@ -12,7 +12,6 @@
     "express": "~3.4.4",
     "ejs": "~0.8.5",
     "jade": "~0.35.0",
-    "cheerio": "~0.13.1",
     "request": "~2.31.0"
   }
 }
