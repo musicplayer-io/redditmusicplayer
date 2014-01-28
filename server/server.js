@@ -130,7 +130,6 @@ multiListener.prototype.load = function (url) {
 };
 
 var loadedAll = function (subs, req, res) {
-	console.log(subs.length);
 	var data = {subreddits: subs, pushState: false};
 	if ("undefined" !== typeof(req.query.autoplay)) {
 		data.autoplay = true;
@@ -142,6 +141,7 @@ var multiCache = {};
 
 var multiReddit = function (req, res) {
 	var url = req.url.split("+");
+	url[0] = url[0].replace("/player/", "");
 	if (!multiCache[req.url]) {
 		var listener = new multiListener();
 		var loadedNum = 0;

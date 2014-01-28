@@ -25,6 +25,7 @@
 * Added Github link on titlebar
 * New homepage with features, sharing and shortcuts
 * New Icon
+* New Subreddits: AbletonProductions, ClassicTrance, Downtempo, experimentalmusic, progtrance
 
 
 ### 0.2.0 - 15 January 2014
