@@ -1075,7 +1075,9 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
+},{}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1358,8 +1360,6 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
 },{}],"./js/modules/players":[function(require,module,exports){
 module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){
@@ -1642,8 +1642,6 @@ function PlayersModel() {
 }
 
 module.exports = PlayersModel;
-},{}],"./js/modules/progressbar":[function(require,module,exports){
-module.exports=require('LtFNV5');
 },{}],"LtFNV5":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -1734,6 +1732,8 @@ function ProgressBar(link) {
 
 
 module.exports = ProgressBar;
+},{}],"./js/modules/progressbar":[function(require,module,exports){
+module.exports=require('LtFNV5');
 },{}],14:[function(require,module,exports){
 var process=require("__browserify_process");//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
