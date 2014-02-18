@@ -202,6 +202,12 @@ var simpleRedirect = function (req, res) {
 	res.redirect("/player" + req.originalUrl);
 };
 
+// Video
+
+var videoPlayer = function (req, res) {
+	res.render('video.jade');
+};
+
 
 // Routes
 
@@ -217,6 +223,8 @@ app.get("/player/r/:subreddit", withSubreddits);
 app.get("/player/r/:subreddit/comments/:commentid", commentThread);
 app.get("/player/r/:subreddit/comments/:commentid/:title", commentThread);
 app.get(/^\/player\/user\/(.+)/, multiReddit);
+
+app.get("/video", videoPlayer);
 
 app.get("/update.xml", function (req, res) {
 	if (req.query.v && req.query.os) {

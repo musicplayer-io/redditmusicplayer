@@ -24,6 +24,8 @@ function PlayersModel() {
 
 	// Youtube
 
+	var videoMode = false;
+	var videoWindow = null;
 	var YoutubeInit = function () {
 		
 		var ytPlayer = $("#youtube").tubeplayer({
@@ -62,26 +64,129 @@ function PlayersModel() {
 	};
 
 	self.on("youtube-play", function (id) {
-		if ("undefined" !== typeof(id)) {
-			$("#youtube").tubeplayer("play", id);
+		if ($(".video.open").hasClass("disabled")) {
+			$(".video.open").removeClass("disabled");
+		}
+		if (videoMode === false) {
+			if ("undefined" !== typeof(id)) {
+				$("#youtube").tubeplayer("play", id);
+			} else {
+				$("#youtube").tubeplayer("play");
+			}
 		} else {
-			$("#youtube").tubeplayer("play");
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-play",
+				"data": id
+			}, "*");
 		}
 	});
 	self.on("youtube-seek", function (percentage) {
-		var data = $("#youtube").tubeplayer("data");
-		$("#youtube").tubeplayer("seek", percentage * data.duration);
+		if (videoMode === false) {
+			var data = $("#youtube").tubeplayer("data");
+			$("#youtube").tubeplayer("seek", percentage * data.duration);
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-seek",
+				"data": percentage
+			}, "*");
+		}
 	});
 	self.on("youtube-pause", function () {
-		$("#youtube").tubeplayer("pause");
+		if (videoMode === false) {
+			$("#youtube").tubeplayer("pause");
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-pause"
+			}, "*");
+		}
 	});
 	self.on("youtube-stop", function () {
-		$("#youtube").tubeplayer("stop");
+		if (videoMode === false) {
+			$("#youtube").tubeplayer("stop");
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-stop"
+			}, "*");
+		}
 	});
 
 	self.on("youtube-progressbar", function () {
-		self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+		if (videoMode === false) {
+			self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-progressbar"
+			}, "*");
+		}
 	});
+
+	self.on("videoOpen", function (vidWin, currentSong) {
+		videoWindow = vidWin;
+		if (videoWindow !== null) {
+			console.log("Video > ON");
+			videoMode = true;
+			$("#youtube").tubeplayer("pause");
+			self.one("yt-ready", function () {
+				console.log("Video > Ready");
+				var data = $("#youtube").tubeplayer("data");
+				self.one("youtube-progressbarReturn", function (data) {
+					if (data.videoID !== currentSong.file.substr(31)) {
+						videoWindow.postMessage({
+							"type": "players",
+							"event": "youtube-load",
+							"data": {
+								"id": currentSong.file.substr(31),
+								"time": data.currentTime
+							}
+						}, "*");
+					}
+				});
+				videoWindow.postMessage({
+					"type": "players",
+					"event": "youtube-load",
+					"data": {
+						"id": currentSong.file.substr(31),
+						"time": data.currentTime
+					}
+				}, "*");
+			});
+		} else {
+			videoMode = false;
+		}
+	});
+	self.on("videoClose", function () {
+		console.log("Video > OFF");
+		self.one("youtube-progressbarReturn", function (data) {
+			$("#youtube").tubeplayer("play");
+			$("#youtube").tubeplayer("seek", (data.currentTime / data.duration) * data.duration);
+		});
+		videoWindow.postMessage({
+			"type": "players",
+			"event": "youtube-progressbar"
+		}, "*");
+		videoWindow = null;
+		videoMode = false;
+	});
+
+	
+
+	var messageHandler = function (e) {
+		if (e.data.type === "players") {
+			console.log("Message >", e.data);
+			if (e.data.data) {
+				self.trigger(e.data.event, e.data.data);
+			} else {
+				self.trigger(e.data.event);
+			}
+		}
+	};
+
+	window.addEventListener('message', messageHandler);
 
 	var SoundCloud = window.SC || global.SC;
 	self.widget = SoundCloud.Widget("sc");
@@ -133,6 +238,13 @@ function PlayersModel() {
 
 	self.on("soundcloud-load", function (uri) {
 		self.widget.load(uri, self.widgetOptions);
+		if (videoMode) {
+			if (videoWindow) {
+				videoWindow.close();
+				self.trigger("videoClose");
+				$(".video.open").addClass("disabled");
+			}
+		}
 	});
 	self.on("soundcloud-play", function (uri) {
 		self.widget.play();

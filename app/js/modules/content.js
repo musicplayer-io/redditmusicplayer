@@ -196,7 +196,7 @@ function ContentModel() {
 		}
 		musicProgress.set(data.currentTime / data.duration * 100);
 		musicProgress.element.find(".time.start").html(
-			Math.floor(data.videoLoadedFraction * 100) + "%" + // Percentage
+			Math.floor((data.currentTime / data.duration) * 100) + "%" + // Percentage
 			" • " + Math.floor(data.currentTime / 60) + ":" +  // Time in minutes
 			(Math.floor(data.currentTime % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
 				"0" + Math.floor(data.currentTime % 60) :

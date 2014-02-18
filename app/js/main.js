@@ -102,6 +102,25 @@ $(function () {
 		pipeEvent(Subreddits, "clearSubs");
 		pipeEvent(Subreddits, "toggleActiveSubs");
 
+
+		var videoWindow = null;
+		Events.on("videoOpen", function () {
+			if (videoWindow === null || videoWindow.closed) {
+				videoWindow = window.open(
+					"/video",
+					"videoWindow",
+					"dialog,dependent,resizable,personalbar=no,location=no,menubar=no,scrollbars=no,status=no,width=800,height=600"
+				);
+				videoWindow.onbeforeunload = function () {
+					videoWindow = null;
+					Music.trigger("videoClose", videoWindow);
+				};
+				Music.trigger("videoOpen", videoWindow);
+			} else {
+				videoWindow.focus();
+			}
+		});
+
 		// Progressbar
 		var clicking = false;
 		

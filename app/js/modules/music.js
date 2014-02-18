@@ -285,6 +285,18 @@ function MusicModel(musicProgress, loadProgress) {
 
 
 
+		// Video
+		self.on("videoOpen", function (videoWindow) {
+			if (videoWindow !== null) {
+				Players.trigger("videoOpen", videoWindow, self.currentSong);
+			}
+		});
+
+		self.on("videoClose", function () {
+			Players.trigger("videoClose");
+		});
+
+
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs
 		self.on("menu-selection-remove", function (el) {

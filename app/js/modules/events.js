@@ -40,6 +40,11 @@ function UserEventsModel(Music, Options) {
 		$(".prev-btn").click(function (e) {
 			self.trigger("song-previous", e);
 		});
+
+		// Previous button
+		$(".video.open").click(function (e) {
+			self.trigger("videoOpen", e);
+		});
 	};
 
 	// SUBREDDITS
@@ -138,6 +143,11 @@ function UserEventsModel(Music, Options) {
 
 		Keyboard.on("ctrl+e", function (e) {
 			self.trigger("toggleActiveSubs", e);
+		});
+
+		// Open Video
+		Keyboard.on("ctrl+v", function (e) {
+			self.trigger("videoOpen", e);
 		});
 
 		// Search

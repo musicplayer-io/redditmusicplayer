@@ -103,6 +103,25 @@ $(function () {
 		pipeEvent(Subreddits, "clearSubs");
 		pipeEvent(Subreddits, "toggleActiveSubs");
 
+
+		var videoWindow = null;
+		Events.on("videoOpen", function () {
+			if (videoWindow === null || videoWindow.closed) {
+				videoWindow = window.open(
+					"/video",
+					"videoWindow",
+					"dialog,dependent,resizable,personalbar=no,location=no,menubar=no,scrollbars=no,status=no,width=800,height=600"
+				);
+				videoWindow.onbeforeunload = function () {
+					videoWindow = null;
+					Music.trigger("videoClose", videoWindow);
+				};
+				Music.trigger("videoOpen", videoWindow);
+			} else {
+				videoWindow.focus();
+			}
+		});
+
 		// Progressbar
 		var clicking = false;
 		
@@ -268,7 +287,9 @@ $(function () {
 
 	});
 
-},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"kUqara":[function(require,module,exports){
+},{"./js/modules/content":"kUqara","./js/modules/events":"RgAvKX","./js/modules/music":"USwVCS","./js/modules/options":"jLEaKv","./js/modules/progressbar":"LtFNV5","./js/modules/subreddits":"2l+GxM"}],"./js/modules/content":[function(require,module,exports){
+module.exports=require('kUqara');
+},{}],"kUqara":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -467,7 +488,7 @@ function ContentModel() {
 		}
 		musicProgress.set(data.currentTime / data.duration * 100);
 		musicProgress.element.find(".time.start").html(
-			Math.floor(data.videoLoadedFraction * 100) + "%" + // Percentage
+			Math.floor((data.currentTime / data.duration) * 100) + "%" + // Percentage
 			" • " + Math.floor(data.currentTime / 60) + ":" +  // Time in minutes
 			(Math.floor(data.currentTime % 60).toString().length === 1 ? // Prepend 0 for 0-9 seconds
 				"0" + Math.floor(data.currentTime % 60) :
@@ -491,8 +512,8 @@ function ContentModel() {
 }
 
 module.exports = ContentModel;
-},{"./progressbar":"LtFNV5"}],"./js/modules/content":[function(require,module,exports){
-module.exports=require('kUqara');
+},{"./progressbar":"LtFNV5"}],"./js/modules/events":[function(require,module,exports){
+module.exports=require('RgAvKX');
 },{}],"RgAvKX":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -535,6 +556,11 @@ function UserEventsModel(Music, Options) {
 		// Previous button
 		$(".prev-btn").click(function (e) {
 			self.trigger("song-previous", e);
+		});
+
+		// Previous button
+		$(".video.open").click(function (e) {
+			self.trigger("videoOpen", e);
 		});
 	};
 
@@ -636,6 +662,11 @@ function UserEventsModel(Music, Options) {
 			self.trigger("toggleActiveSubs", e);
 		});
 
+		// Open Video
+		Keyboard.on("ctrl+v", function (e) {
+			self.trigger("videoOpen", e);
+		});
+
 		// Search
 		Keyboard.on("ctrl+f", function (e) {
 			self.trigger("toggleSearchSubs", e);
@@ -659,8 +690,8 @@ function UserEventsModel(Music, Options) {
 }
 
 module.exports = UserEventsModel;
-},{}],"./js/modules/events":[function(require,module,exports){
-module.exports=require('RgAvKX');
+},{}],"./js/modules/music":[function(require,module,exports){
+module.exports=require('USwVCS');
 },{}],"USwVCS":[function(require,module,exports){
 //     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
@@ -949,6 +980,18 @@ function MusicModel(musicProgress, loadProgress) {
 
 
 
+		// Video
+		self.on("videoOpen", function (videoWindow) {
+			if (videoWindow !== null) {
+				Players.trigger("videoOpen", videoWindow, self.currentSong);
+			}
+		});
+
+		self.on("videoClose", function () {
+			Players.trigger("videoClose");
+		});
+
+
 	// Reddit
 		// Remove Subreddit > Update Reddit > Update Songs
 		self.on("menu-selection-remove", function (el) {
@@ -1032,11 +1075,7 @@ function MusicModel(musicProgress, loadProgress) {
 module.exports = MusicModel;
 
 
-},{"./players":"6cd8lO","./reddit":14}],"./js/modules/music":[function(require,module,exports){
-module.exports=require('USwVCS');
-},{}],"./js/modules/options":[function(require,module,exports){
-module.exports=require('jLEaKv');
-},{}],"jLEaKv":[function(require,module,exports){
+},{"./players":"6cd8lO","./reddit":14}],"jLEaKv":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};//     Reddit Music Player
 //     Copyright (C) 2014  Ilias Ismanalijev
 
@@ -1319,6 +1358,8 @@ function OptionsModel() {
 }
 
 module.exports = OptionsModel;
+},{}],"./js/modules/options":[function(require,module,exports){
+module.exports=require('jLEaKv');
 },{}],"./js/modules/players":[function(require,module,exports){
 module.exports=require('6cd8lO');
 },{}],"6cd8lO":[function(require,module,exports){
@@ -1348,6 +1389,8 @@ function PlayersModel() {
 
 	// Youtube
 
+	var videoMode = false;
+	var videoWindow = null;
 	var YoutubeInit = function () {
 		
 		var ytPlayer = $("#youtube").tubeplayer({
@@ -1386,26 +1429,129 @@ function PlayersModel() {
 	};
 
 	self.on("youtube-play", function (id) {
-		if ("undefined" !== typeof(id)) {
-			$("#youtube").tubeplayer("play", id);
+		if ($(".video.open").hasClass("disabled")) {
+			$(".video.open").removeClass("disabled");
+		}
+		if (videoMode === false) {
+			if ("undefined" !== typeof(id)) {
+				$("#youtube").tubeplayer("play", id);
+			} else {
+				$("#youtube").tubeplayer("play");
+			}
 		} else {
-			$("#youtube").tubeplayer("play");
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-play",
+				"data": id
+			}, "*");
 		}
 	});
 	self.on("youtube-seek", function (percentage) {
-		var data = $("#youtube").tubeplayer("data");
-		$("#youtube").tubeplayer("seek", percentage * data.duration);
+		if (videoMode === false) {
+			var data = $("#youtube").tubeplayer("data");
+			$("#youtube").tubeplayer("seek", percentage * data.duration);
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-seek",
+				"data": percentage
+			}, "*");
+		}
 	});
 	self.on("youtube-pause", function () {
-		$("#youtube").tubeplayer("pause");
+		if (videoMode === false) {
+			$("#youtube").tubeplayer("pause");
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-pause"
+			}, "*");
+		}
 	});
 	self.on("youtube-stop", function () {
-		$("#youtube").tubeplayer("stop");
+		if (videoMode === false) {
+			$("#youtube").tubeplayer("stop");
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-stop"
+			}, "*");
+		}
 	});
 
 	self.on("youtube-progressbar", function () {
-		self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+		if (videoMode === false) {
+			self.trigger("youtube-progressbarReturn", $("#youtube").tubeplayer("data"));
+		} else {
+			videoWindow.postMessage({
+				"type": "players",
+				"event": "youtube-progressbar"
+			}, "*");
+		}
 	});
+
+	self.on("videoOpen", function (vidWin, currentSong) {
+		videoWindow = vidWin;
+		if (videoWindow !== null) {
+			console.log("Video > ON");
+			videoMode = true;
+			$("#youtube").tubeplayer("pause");
+			self.one("yt-ready", function () {
+				console.log("Video > Ready");
+				var data = $("#youtube").tubeplayer("data");
+				self.one("youtube-progressbarReturn", function (data) {
+					if (data.videoID !== currentSong.file.substr(31)) {
+						videoWindow.postMessage({
+							"type": "players",
+							"event": "youtube-load",
+							"data": {
+								"id": currentSong.file.substr(31),
+								"time": data.currentTime
+							}
+						}, "*");
+					}
+				});
+				videoWindow.postMessage({
+					"type": "players",
+					"event": "youtube-load",
+					"data": {
+						"id": currentSong.file.substr(31),
+						"time": data.currentTime
+					}
+				}, "*");
+			});
+		} else {
+			videoMode = false;
+		}
+	});
+	self.on("videoClose", function () {
+		console.log("Video > OFF");
+		self.one("youtube-progressbarReturn", function (data) {
+			$("#youtube").tubeplayer("play");
+			$("#youtube").tubeplayer("seek", (data.currentTime / data.duration) * data.duration);
+		});
+		videoWindow.postMessage({
+			"type": "players",
+			"event": "youtube-progressbar"
+		}, "*");
+		videoWindow = null;
+		videoMode = false;
+	});
+
+	
+
+	var messageHandler = function (e) {
+		if (e.data.type === "players") {
+			console.log("Message >", e.data);
+			if (e.data.data) {
+				self.trigger(e.data.event, e.data.data);
+			} else {
+				self.trigger(e.data.event);
+			}
+		}
+	};
+
+	window.addEventListener('message', messageHandler);
 
 	var SoundCloud = window.SC || global.SC;
 	self.widget = SoundCloud.Widget("sc");
@@ -1457,6 +1603,13 @@ function PlayersModel() {
 
 	self.on("soundcloud-load", function (uri) {
 		self.widget.load(uri, self.widgetOptions);
+		if (videoMode) {
+			if (videoWindow) {
+				videoWindow.close();
+				self.trigger("videoClose");
+				$(".video.open").addClass("disabled");
+			}
+		}
 	});
 	self.on("soundcloud-play", function (uri) {
 		self.widget.play();
