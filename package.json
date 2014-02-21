@@ -1,0 +1,23 @@
+{
+  "name": "redditmusicplayer-builder",
+  "version": "0.3.0",
+  "description": "Builder for Reddit Music Player",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jade": "~0.8.0",
+    "grunt-contrib-less": "~0.8.1",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "scripts": {
+    "start": "coffee -n server/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Illyism/redditmusicplayer.git"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "coffee-script": "~1.7.1"
+  }
+}
