@@ -1,0 +1,116 @@
+@post-width: 100%;
+@code-font: monospace;
+@gold: #00B5AD;
+@dark: rgba(0,0,0,0.2);
+@background: #111;
+
+font-size: 1em;
+line-height: 1.4em;
+
+a {
+	text-decoration: underline;
+}
+
+p, blockquote, ul, ol, dl, table, pre {
+	max-width: @post-width;
+	margin: 15px auto;
+}
+blockquote {
+	border-left: 4px solid @gold;
+	padding: 0 15px;
+	color: @dark;
+}
+hr {
+	max-width: @post-width;
+	margin: 30px auto;
+	border-style: dotted;
+	border-color: @dark;
+}
+tt, code, pre {
+	font-family: @code-font;
+	font-weight: 600;
+}
+code, tt {
+	margin: 0 2px;
+	padding: 0px 5px;
+	border: 1px solid fade(lighten(@background, 30%), 20%);
+	background-color: fade(lighten(@background, 20%), 20%);
+	border-radius: 3px;
+}
+code {
+	white-space: nowrap;
+}
+pre {
+	word-wrap: normal;
+	&>code {
+		margin: 0;
+		padding: 0;
+		white-space: pre;
+		border: none;
+		background: transparent;
+	}
+	code {
+		margin: 0;
+		padding: 0;
+		background-color: transparent;
+		border: none;
+		word-wrap: normal;
+		overflow: auto;
+	}
+}
+pre, .highlight pre {
+	background-color: fade(lighten(@background, 20%), 20%);
+	border: 1px solid fade(lighten(@background, 30%), 20%);
+	font-size: 14px;
+	line-height: normal;
+	border-radius: 3px;
+	max-width: @post-width;
+	.transition(max-width);
+	&:hover, &:focus {
+		border: 1px solid fade(@gold, 10%);
+		max-width: 100%;
+	}
+}
+p {
+	img {
+		margin: 0;
+		width: 100%;
+	}
+}
+
+sup {
+	vertical-align: super;
+	font-size: smaller;
+}
+sub {
+	vertical-align: sub;
+	font-size: smaller;
+}
+
+.footnote {
+	font-size: 14px;
+	font-weight: 300;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 2em auto 0.5em;
+	max-width: @post-width;
+}
+h1 {
+	text-transform: capitalize;
+	font-weight: 100;
+	border-bottom: 1px solid #FFF;
+	padding-bottom: 0.5em;
+	margin-bottom: 0px;
+	text-align: center;
+}
+h2 {
+	font-weight: 300;
+}
+h3 {
+	font-weight: 400;
+}
+
+& + .divider {
+	margin-top: 5em;
+}

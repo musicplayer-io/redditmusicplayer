@@ -1,0 +1,542 @@
+	
+@import "mixins";
+
+// Roboto 100, 300, 400, 500, 700, 900
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700);
+
+// Roboto Condensed 300, 400
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300);
+
+// Semantic UI
+@import "semantic.min.css";
+
+
+@desktop:   ~"only screen and (min-width: 960px)";
+@tablet:    ~"only screen and (min-width: 720px) and (max-width: 959px)";
+@phone: 	~"only screen and (max-width: 719px)";
+
+@maxwidth: 1280px;
+
+@col-bg: #111;
+@col-fg: #fff;
+@col-primary: #00B5AD;
+
+@font-default: "Roboto", Arial, Helvetica, sans-serif;
+@font-condensed: "Roboto Condensed", Arial, Helvetica, sans-serif;
+
+// Basics
+*,
+::before,
+::after {
+	-webkit-user-select: none;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html, body, window {
+	background: @col-bg;
+}
+
+::selection {
+	background: #F75858;
+}
+
+body {
+	font-family: @font-default;
+	font-weight: 300;
+	margin: 0px;
+	background: @col-bg;
+	color: @col-fg;
+}
+
+a {
+	font-weight: 300;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.ui.menu .reddit.active.item,
+.ui.reddit.menu .active.item {
+  border-color: @col-bg;
+  color: @col-fg;
+}
+.ui.inverted.reddit.menu {
+  background-color: lighten(@col-bg, 10%);
+}
+.ui.inverted.reddit.pointing.menu .active.item:after {
+  background-color: lighten(@col-bg, 10%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+	margin-right: 1px;
+    width: 8px;
+}
+
+::-webkit-scrollbar:vertical {
+	.transition(0.15s, ease-out);
+	background: fade(@col-fg, 10%);
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 100px;
+    background: fade(@col-fg, 15%);
+    &:hover {
+    	background: fade(@col-fg, 10%);
+    }
+    &:active {
+    	background: fade(@col-fg, 5%);
+    }
+}
+
+.ui.inverted.menu .dropdown.reddit, .ui.inverted.menu .dropdown.reddit
+.dropdown.reddit {
+	.menu {
+		background: lighten(@col-bg, 10%);
+		color: @col-fg !important;
+		.item {
+			color: @col-fg !important;
+			&:hover, &:focus {
+				background: lighten(@col-bg, 15%);
+			}
+			&.active {
+				background: lighten(@col-bg, 20%);
+			}
+		}
+	}
+}
+
+// Menus
+.ui.sidepane.sidebar {
+	top: 45px;
+	height: ~"calc(100% - 90px)" !important;
+	overflow-x: hidden;
+	.item {
+		font-size: 0.9rem;
+		color: fade(@col-fg, 70%);
+		> .menu {
+			font-size: 1rem;
+			> .item {
+				padding: .5rem 1rem;
+				.icon {
+					float: left;
+					margin: 0 1em 0 0;
+				}
+			}
+		}
+		&.disabled, &.disabled:hover {
+			color: rgba(255,255,255,.2) !important;
+			text-decoration: line-through;
+		}
+	}
+	iframe, audio, video {
+		border: 0px;
+		width: 100%;
+	}
+}
+.top.titlebar {
+	.redditmusicplayer {
+		position: absolute;
+		left: 0px;
+		right: 0px;
+		text-align: center;
+		font-weight: 400;
+		font-family: @font-condensed;
+		text-transform: uppercase;
+		span {
+			font-variant: small-caps;
+			font-weight: 300;
+		}
+	}
+	.input.reddit {
+		font-weight: 300;
+		font-family: @font-condensed;
+		background: lighten(@col-bg, 10%);
+		color: @col-fg;
+		input {
+			background: lighten(@col-bg, 20%);
+			color: @col-fg;
+			border-radius: 1em;
+			&:hover, &:focus {
+				background: lighten(@col-bg, 15%);
+			}
+		}
+		.ui.dropdown.reddit {
+			display: table-cell;
+			background: lighten(@col-bg, 20%);
+			color: @col-fg;
+			border-radius: 1em;
+			border-top-left-radius: 0px;
+			border-bottom-left-radius: 0px;
+			white-space: nowrap;
+			padding-left: 10px;
+			padding-right: 10px;
+			&:hover, &:focus {
+				background: lighten(@col-bg, 15%);
+			}
+		}
+	}
+}
+
+.ui.controls {
+	.middle {
+		width: 50%;
+		float: left;
+		text-align: center;
+		.progress {
+			height: 20px;
+			padding: 10px 0px;
+			cursor: ew-resize;
+			.loaded, .current {
+				height: 20px;
+				position: absolute;
+				bottom: 0px;
+			}
+			.loaded {
+				width: 0%;
+				background: rgba(0,0,0,0.2);
+			}
+			.current {
+				width: 0%;
+				border-right: 1px solid #fff;
+				background: @col-primary;
+			}
+			.waveform {
+				display: none;
+			}
+			&.soundcloud {
+				padding: 0px;
+				height: 40px;
+				.current, .loaded, .waveform {
+					height: 40px;
+				}
+				.waveform {
+					background-color: #2C2C2C;
+					background-size: 100% 100%;
+					width: 100%;
+					display: block;
+				}
+			}
+			&:hover {
+				.current {
+					border-width: 3px;
+				}
+			}
+		}
+	}
+	&.inverted.reddit.menu {
+		.button {
+			cursor: pointer;
+			&:hover, &:focus {
+				background: rgba(255, 255, 255, 0.1);
+			}
+			&.active {
+				background: rgba(0,0,0,0.1);
+				color: @col-primary !important;
+				&:hover {
+					background: rgba(0,0,0,0.2) !important;
+				}
+			}
+		}
+	}
+}
+
+.ui.container {
+	position: absolute;
+	top: 45px;
+	height: ~"calc(100% - 90px)";
+	width: ~"calc(100% - 275px)";
+	left: 275px;
+	> .content {
+		padding: 1em;
+		overflow-x: hidden;
+		> .intro {
+			margin: 50px auto;
+			text-align: center;
+			.ui.header {
+				font-weight: 300;
+				font-family: @font-condensed;
+				margin: 0px;
+			}
+			.description {
+				margin: 0px;
+			}
+		}
+	}
+}
+
+.ui.container > .content.discover {
+	.ui.menu.reddit {
+		background: transparent;
+		font-style: normal;
+		.active.item {
+			background: transparent;
+			color: @col-primary !important;
+		}
+	}
+}
+
+.ui.container > .content.browse {
+	padding: 1em 2em;
+	p.description {
+		line-height: 1.5;
+	}
+}
+
+.ui.container > .content.playlist {
+	.ui.piled.segment:after, .ui.piled.segment:before {
+		background-color: #000;
+	}
+	.ui.header {
+		font-weight: 300;
+	}
+	.ups {
+		color: orangered;
+	}
+	.downs {
+		color: #5f99cf;
+	}
+	.date, .created {
+		color: rgba(231, 231, 176, 0.6);
+	}
+	.dropdown.ui {
+		z-index: 1000;
+		background: rgba(255,255,255,.0);
+		&:hover {
+			background: rgba(255,255,255,.1);
+		}
+		.menu {
+			background: rgba(59,59,59,0.95);
+			color: #fdffe8;
+			a.item, .item {
+				color: #fdffe8 !important;
+				-webkit-transition: background .2s ease-out;
+				-moz-transition: background .2s ease-out;
+				-ms-transition: background .2s ease-out;
+				-o-transition: background .2s ease-out;
+				transition: background .2s ease-out;
+				&:hover, &:focus {
+					background: rgba(71,71,71,0.95);
+				}
+				&.active {
+					cursor: default;
+					background: rgba(8,8,8,0.2) !important;
+					color: @col-primary !important;
+				}
+			}
+		}
+	}
+	.ui.vertical.playlist {
+		.ui.item {
+			clear: both;
+			cursor: pointer;
+			overflow: hidden;
+			.image {
+				margin-bottom: 0px;
+			}
+			> .content {
+				padding: .5em 2em .5em 5.5em;
+			}
+			.icon {
+				height: 1em;
+				float: left;
+				font-size: 3em;
+				margin: 0 20px 0 7px;
+			}
+			.author, .subreddit {
+				color: @col-primary;
+				font-weight: bold;
+			}
+			&:hover {
+				background: rgba(255,255,255, 0.05);
+			}
+			&.active {
+				background: rgba(255,255,255, 0.1);
+				border-left: 1px dotted @col-primary;
+				border-right: 1px dotted @col-primary;
+			}
+			.title {
+				color: #FFF;
+				line-height: 1.4;
+				font-size: 1.05em;
+				margin-bottom: 5px;
+			}
+		}
+		.more {
+			text-align: center;
+		}
+	}
+	.current.song {
+		.ui.header {
+			margin: 0px;
+			margin-left: 2em;
+			padding: .7em 0;
+		}
+		.vote {
+			display: block;
+			float: left;
+			padding-right: .5em;
+			font-size: 1.5em;
+			.upvote, .downvote {
+				display: block;
+				margin: 0em auto;
+				width: 1em;
+				height: 1em;
+			}
+			.upvote {
+				&.active {
+					color: orangered;
+				}
+				&:hover, &:focus {
+					color: fade(orangered, 50%);
+				}
+			}
+			.downvote {
+				&.active {
+					color: #5f99cf;
+				}
+				&:hover, &:focus {
+					color: fade(#5f99cf, 50%);
+				}
+			}
+		}
+		.youtube.button {
+			padding: 2.5px 0px;
+			box-shadow: 0 1px 0 rgba(0,0,0,.20);
+			background-image: -moz-linear-gradient(bottom,#dc2f2c 0,#fa362a 100%);
+			background-image: -ms-linear-gradient(bottom,#dc2f2c 0,#fa362a 100%);
+			background-image: -o-linear-gradient(bottom,#dc2f2c 0,#fa362a 100%);
+			background-image: -webkit-linear-gradient(bottom,#dc2f2c 0,#fa362a 100%);
+			background-image: linear-gradient(to top,#dc2f2c 0,#fa362a 100%);
+			filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#fa362a,EndColorStr=#dc2f2c);
+		}
+	}
+	.ui.comments {
+		.comment  {
+			.vote {
+				display: block;
+				float: left;
+				width: 2em;
+				.upvote, .downvote {
+					display: block;
+					margin: 0em auto;
+					width: 1em;
+					height: 1em;
+				}
+				.upvote {
+					&.active {
+						color: orangered;
+					}
+					&:hover, &:focus {
+						color: fade(orangered, 50%);
+					}
+				}
+				.downvote {
+					&.active {
+						color: #5f99cf;
+					}
+					&:hover, &:focus {
+						color: fade(#5f99cf, 50%);
+					}
+				}
+			}
+			.content {
+				padding: 0.2em 1em;
+				padding-left: 2em;
+				.text {
+					@import "markdown.less";
+				}
+			}
+			.metadata {
+				color: rgba(255, 255, 255, .4);
+			}
+			.actions a {
+				color: rgba(255,255,255,.3);
+				&.active, &:hover {
+					color: rgba(255,255,255,.6);
+				}
+			}
+			
+		}
+	}
+}
+
+.ui.container > .content.about {
+	.footer {
+		text-align: center;
+		max-width: @maxwidth;
+		margin: 50px auto;
+		.player {
+			margin-top: 100px;
+		}
+		.share {
+			margin-top: 50px;
+		}
+		.copyright {
+			margin-top: 100px;
+		}
+	}
+	.feature {
+		max-width: @maxwidth;
+		margin: auto;
+		padding: 10px;
+		@media @tablet {
+			margin: 50px auto;
+			padding: 20px;
+		}
+		@media @phone {
+			margin-bottom: 100px auto;
+			padding: 10px;
+			padding-bottom: 100px;
+		}
+		.ui.image {
+			display: inline-block;
+			width: 70%;
+			@media @desktop {
+				margin-left: -25px;
+			}
+			@media @tablet {
+				width: 50%;
+				margin-left: 0px;
+			}
+			@media @phone {
+				width: 100%;
+				display: block;
+				margin: auto;
+			}
+		}
+		.description {
+			display: inline-block;
+			width: 30%;
+			a {
+				font-weight: 700;
+			}
+			@media @tablet {
+				width: 50%;
+			}
+			@media @phone {
+				width: 100%;
+				display: block;
+				max-width: 700px;
+				margin: auto;
+				text-align: center;
+			}
+		}
+		.description + .ui.image {
+			// image to the right
+			@media @desktop {
+				margin-left: 25px;
+				margin-right: -25px;
+				table {
+					margin-left: -25px;
+				}
+			}
+			@media @phone {
+				margin-top: 10px;
+			}
+		}
+		.ui.image + .description {
+			// text to the right
+		}
+	}
+}
