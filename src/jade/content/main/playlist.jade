@@ -1,0 +1,42 @@
+.content.playlist
+	mixin voting
+		.vote
+			.upvote
+				i.icon.up.arrow
+			.downvote
+				i.icon.down.arrow
+	.intro
+		h1.ui.header My Playlist
+	.ui.grid.stackable
+		.ten.column.wide
+			.ui.menu.inverted.horizontal.four.item.sortMethod
+				a.sort.item.active(data-value='hot') Hot
+				a.sort.item(data-value='new') New
+				a.top.sort.item(data-value="top") Top
+				.ui.float.dropdown.icon.item.top.selection.inverted.black.topMethod
+					.text Week
+					i.dropdown.icon
+					.menu
+						a.item(data-value='top:day') Today
+						a.item(data-value='top:week') This Week
+						a.item(data-value='top:month') This Month
+						a.item(data-value='top:year') This Year
+						a.item(data-value='top:all') All Time
+
+			.music.playlist.ui.inverted.fluid.vertical.selection.menu
+				a(href="/browse").item.more
+					.name Add a few subreddits first!
+
+		.six.column.wide
+			.current.song.ui.piled.inverted.segment
+			.ui.piled.inverted.segment.comments.root
+				h2.ui.header
+					span.num_comments
+					|  Comments
+				.ui.minimal.comments.overview
+				form.ui.reply.form
+					.field
+						textarea.comment_text
+					.ui.button.teal.submit.labeled.icon.fluid.add_comment
+						i.icon.edit
+						|  Add Comment

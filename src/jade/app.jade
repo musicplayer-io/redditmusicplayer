@@ -1,0 +1,20 @@
+doctype
+html(xmlns:og='http://ogp.me/ns#')
+	head
+		meta(charset='utf-8')
+		block title
+			title #{seo.title}
+		include includes/favicon
+		block meta
+			include includes/meta
+		meta(name='viewport', content='width=device-width, initial-scale=1')
+		link(href='/css/style.css', rel='stylesheet')
+	body
+		include includes/titlebar 
+		include includes/sidebar
+		.ui.container
+			|!{ content }
+		include includes/controls
+		include includes/javascript
+		block userscript
+			include includes/authentication

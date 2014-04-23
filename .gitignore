@@ -6,6 +6,7 @@ lib-cov
 *.out
 *.pid
 *.gz
+*.log
 
 pids
 logs
@@ -15,3 +16,6 @@ build
 node_modules
 *.sublime-project
 *.sublime-workspace
+
+server/config/reddit.coffee
+src/coffee/config.coffee

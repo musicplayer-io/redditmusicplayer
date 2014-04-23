@@ -1,0 +1,7 @@
+
+module.exports =
+	base: "https://ssl.reddit.com/api"
+	client_id: "YOUR_CLIENT_ID"
+	secret: "YOUR_SECRET"
+	redirect_uri: "http://localhost:4005/auth/reddit/callback"
+	scope: "identity,read,save,vote,submit"
