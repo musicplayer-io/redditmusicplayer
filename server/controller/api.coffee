@@ -31,7 +31,7 @@ refreshTokenReddit = (request, response, callback) ->
 	data =
 		"grant_type": "refresh_token"
 		"refresh_token": request.session.refreshToken
-	token = request.session.accessToken
+	token = request.user.accessToken
 	options =
 		method: "POST"
 		url: "https://ssl.reddit.com/api/v1/access_token"
@@ -55,7 +55,7 @@ class APIController
 			comment: request.body.text
 			parent: request.body.thing_id
 
-		postToReddit "/api/comment", request.user.accessToken, data, (err, resp, body) ->
+		postToReddit "/api/comment", request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
@@ -79,7 +79,7 @@ class APIController
 			sort: request.query.sort
 		data.t = request.query.t if request.query.sort is "top"
 
-		getFromReddit request.query.permalink, request.user.accessToken, data, (err, resp, body) ->
+		getFromReddit request.query.permalink, request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
@@ -103,7 +103,7 @@ class APIController
 			dir: parseInt request.body.dir
 			id: request.body.id
 
-		postToReddit "/api/vote", request.user.accessToken, data, (err, resp, body) ->
+		postToReddit "/api/vote", request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
 				response.send
 					user: request.user._json
