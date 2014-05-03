@@ -954,6 +954,7 @@ CommentsView = Backbone.View.extend({
       thing_id: this.reply_id,
       callback: (function(_this) {
         return function(reply) {
+          RMP.playlist.current.song.set("num_comments", RMP.playlist.current.song.get("num_comments") + 1);
           if (FLAG_DEBUG) {
             console.log(reply);
           }
