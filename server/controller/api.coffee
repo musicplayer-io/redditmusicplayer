@@ -12,7 +12,7 @@ postToReddit = (url, token, data, callback) ->
 		form: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/1.0 by illyism"
+			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	console.log options
 	req(options, callback)
 
@@ -23,9 +23,24 @@ getFromReddit = (url, token, data, callback) ->
 		json: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "User-Agent: Reddit Music Player/1.0 by illyism"
+			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	console.log options
 	req(options, callback)
+
+refreshTokenReddit = (request, response, callback) ->
+	data =
+		"grant_type": "refresh_token"
+		"refresh_token": request.session.refreshToken
+	options =
+		method: "POST"
+		url: "https://ssl.reddit.com/api/v1/access_token"
+		json: data
+		headers:
+			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
+	req options, (err, resp, body) ->
+		console.log request.user, request.session
+		request.session.accessToken = body.access_token
+		callback(request, response)
 
 class APIController
 	add_comment: (request, response, callback) =>
@@ -42,13 +57,15 @@ class APIController
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
-				console.log err, resp.statusCode, resp.headers, body
-				response.send
-					error:
-						type: "APIError"
-						message: "Something went wrong."
-						status: resp.statusCode
-						data: body
+				if resp.statusCode is 401
+					refreshTokenReddit(request, response, @add_comment)
+				else
+					response.send
+						error:
+							type: "APIError"
+							message: "Something went wrong."
+							status: resp.statusCode
+							data: body
 
 	comments: (request, response, callback) =>
 		if not request.query.permalink? then return response.send
@@ -64,13 +81,15 @@ class APIController
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
-				console.log err, resp.statusCode, resp.headers, body
-				response.send
-					error:
-						type: "APIError"
-						message: "Something went wrong."
-						status: resp.statusCode
-						data: body
+				if resp.statusCode is 401
+					refreshTokenReddit(request, response, @comments)
+				else
+					response.send
+						error:
+							type: "APIError"
+							message: "Something went wrong."
+							status: resp.statusCode
+							data: body
 
 	vote: (request, response, callback) =>
 		if not request.body.id? then return response.send
@@ -84,19 +103,21 @@ class APIController
 
 		postToReddit "/api/vote", request.user.accessToken, data, (err, resp, body) ->
 			if not err? and resp.statusCode is 200
-				console.log resp.headers
 				response.send
 					user: request.user._json
 					status: resp.statusCode
 					data: body
 			else
 				console.log err, resp.statusCode, resp.headers, body
-				response.send
-					error:
-						type: "APIError"
-						message: "Something went wrong."
-						status: resp.statusCode
-						data: body
+				if resp.statusCode is 401
+					refreshTokenReddit(request, response, @vote)
+				else
+					response.send
+						error:
+							type: "APIError"
+							message: "Something went wrong."
+							status: resp.statusCode
+							data: body
 
 
 

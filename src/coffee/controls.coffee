@@ -6,7 +6,7 @@ ProgressBar = Backbone.Model.extend
 		currentSongID: -1
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		$(".controls .middle").css("width", $("body").innerWidth() - itemWidth*5.2)
+		$(".controls .middle").css("width", $("body").innerWidth() - itemWidth*5.4)
 		$(".controls .middle .progress").css("width", $("body").innerWidth() - itemWidth*9)
 	toMinSecs: (secs) ->
 		hours = Math.floor(secs / 3600)
@@ -57,6 +57,7 @@ Button = Backbone.View.extend
 	click: (e) ->
 		RMP.dispatcher.trigger @attributes.clickEvent, e
 	stateChange: (data) ->
+		console.log "Button :: StateChange", data if FLAG_DEBUG
 		if @checkState(data) is true then @$el.addClass "active" else @$el.removeClass "active"
 	initialize: () ->
 		@checkState = @attributes.checkState
@@ -78,8 +79,9 @@ Buttons = Backbone.Model.extend
 				clickEvent: "controls:play"
 				listenEvent: "player:playing player:paused player:ended"
 				checkState: (player) ->
+					player = RMP.player.controller if (player is window) 
 					if player.type is "youtube"
-						return player.getPlayerState() == 1
+						return player.player.getPlayerState() == 1
 					else
 						return player.playerState is "playing"
 		@shuffle = new Button

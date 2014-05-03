@@ -1,16 +1,21 @@
 express = require 'express'
+https = require 'https'
+credentials = require("./config/credentials")
 
 # Configure Server
 server = express()
 server.set 'baseDir', __dirname + '/..'
-server.configure require('./config/default')
-server.configure 'development', require('./config/development')
-server.configure 'production', require('./config/production')
+
+require('./config/default').call server
+require('./config/development').call server if server.get "env" is "development"
+require('./config/production').call server if server.get "env" is "production"
 
 # Set Up Routes
 require('./routes').call server
 
+secure_server = https.createServer credentials, server
 server.listen server.set('port')
+secure_server.listen 443
 
 console.log 'Server running...'
 console.log '  > Listening on port %d in %s mode', server.set('port'), server.settings.env

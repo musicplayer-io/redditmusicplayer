@@ -1,7 +1,15 @@
 express = require 'express'
+bodyParser = require 'body-parser'
+
+cookieParser = require 'cookie-parser'
+session = require 'express-session'
+RedisStore = require('connect-redis')(session);
+
 passport = require 'passport'
 jade = require 'jade'
 RedditStrategy = require('passport-reddit').Strategy
+
+logger = require "morgan"
 
 # Configure Authentication
 reddit = require './reddit'
@@ -18,13 +26,13 @@ passport.use new RedditStrategy
     scope: reddit.scope
     , (accessToken, refreshToken, profile, done) ->
         process.nextTick () ->
-            done null, profile
+            done null, profile, refreshToken
 
 module.exports = ->
     baseDir = @set 'baseDir'
     
     # The port the server should run on
-    @set 'port', process.env.PORT || 4005
+    @set 'port', process.env.PORT || 80
     
     @set 'view engine', 'jade'
     @set 'views', baseDir + '/src/jade'
@@ -32,20 +40,18 @@ module.exports = ->
     # Set the server's public directory
     @use express.static(baseDir + '/app')
 
-    @use express.logger "dev"
+    @use logger "dev"
     
-    # Allow parsing of request bodies and '_method' parameters
-    @use express.bodyParser()
-    @use express.methodOverride()
-    
-    # Session
-    @use express.cookieParser()
-    @use express.session
+    @use cookieParser()
+    @use bodyParser()
+    @use session
+        key: "rmp.id"
         secret: "Reddit Music Player"
+        store: new RedisStore()
+        cookie:
+            secure: false
+            maxAge: 30 * (24*60*60*1000) # days
     
     # Authentication
     @use passport.initialize()
     @use passport.session()
-    
-    # Mount application routes
-    @use @router
