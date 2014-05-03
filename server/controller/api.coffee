@@ -37,12 +37,19 @@ refreshTokenReddit = (request, response, callback) ->
 		url: "https://ssl.reddit.com/api/v1/access_token"
 		json: data
 		headers:
-			"Authorization": "bearer #{token}"
 			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	req options, (err, resp, body) ->
-		console.log request.user, request.session, body, resp
-		request.session.accessToken = body.access_token
-		callback(request, response) if callback?
+		request.session.accessToken = body.access_token if body.access_token?
+		if resp.statusCode is 401
+			console.log request.user, request.session, body, options
+			return response.send
+				error:
+					type: "APIError"
+					message: "Something went wrong."
+					status: resp.statusCode
+					data: body
+		else
+			callback(request, response) if callback?
 
 class APIController
 	add_comment: (request, response, callback) =>
