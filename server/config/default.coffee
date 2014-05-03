@@ -32,7 +32,7 @@ module.exports = ->
     baseDir = @set 'baseDir'
     
     # The port the server should run on
-    @set 'port', process.env.PORT || 80
+    @set 'port', process.env.PORT || 4008
     
     @set 'view engine', 'jade'
     @set 'views', baseDir + '/src/jade'
