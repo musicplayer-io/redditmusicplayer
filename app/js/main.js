@@ -5,7 +5,8 @@ window.RMP = {};
 RMP.dispatcher = _.clone(Backbone.Events);
 
 $(document).ready(function() {
-  return RMP.dispatcher.trigger("app:main");
+  RMP.dispatcher.trigger("app:main");
+  return RMP.dispatcher.trigger("app:resize");
 });
 
 $(window).resize(function() {
@@ -244,7 +245,7 @@ ProgressBar = Backbone.Model.extend({
   resize: function() {
     var itemWidth;
     itemWidth = $(".controls .left .item").outerWidth();
-    $(".controls .middle").css("width", $("body").innerWidth() - itemWidth * 5.2);
+    $(".controls .middle").css("width", $("body").innerWidth() - itemWidth * 5.4);
     return $(".controls .middle .progress").css("width", $("body").innerWidth() - itemWidth * 9);
   },
   toMinSecs: function(secs) {
@@ -310,6 +311,9 @@ Button = Backbone.View.extend({
     return RMP.dispatcher.trigger(this.attributes.clickEvent, e);
   },
   stateChange: function(data) {
+    if (FLAG_DEBUG) {
+      console.log("Button :: StateChange", data);
+    }
     if (this.checkState(data) === true) {
       return this.$el.addClass("active");
     } else {
@@ -344,8 +348,11 @@ Buttons = Backbone.Model.extend({
         clickEvent: "controls:play",
         listenEvent: "player:playing player:paused player:ended",
         checkState: function(player) {
+          if (player === window) {
+            player = RMP.player.controller;
+          }
           if (player.type === "youtube") {
-            return player.getPlayerState() === 1;
+            return player.player.getPlayerState() === 1;
           } else {
             return player.playerState === "playing";
           }
@@ -666,7 +673,7 @@ SongYoutube = Song.extend({
 
 SongSoundcloud = Song.extend({
   type: "soundcloud",
-  playable: false
+  playable: true
 });
 
 SongBandcamp = Song.extend({
@@ -864,7 +871,7 @@ CurrentSongView = Backbone.View.extend({
           return 0;
         case !target.hasClass("upvote"):
           return 1;
-        case !target.hasClass("downvote"):
+        case !target.hasClass("docuwnvote"):
           return -1;
       }
     })();
@@ -889,9 +896,6 @@ CurrentSongView = Backbone.View.extend({
       $(".current-song-sidebar .title").text(songJSON.title);
       document.title = "" + songJSON.title + " | Reddit Music Player";
       if (song.get("type") === "bandcamp") {
-        if (FLAG_DEBUG) {
-          console.log(song.attributes.media.oembed.thumbnail_url);
-        }
         return $(".current-song-sidebar .image").attr("src", song.get("media").oembed.thumbnail_url);
       } else {
         return $(".current-song-sidebar .image").attr("src", "");
@@ -1111,7 +1115,7 @@ YoutubePlayer = MusicPlayer.extend({
   },
   onPlayerStateChange: function(e) {
     if (FLAG_DEBUG) {
-      console.log(e);
+      console.log("YoutubePlayer :: StateChange", e);
     }
     switch (e.data) {
       case YT.PlayerState.UNSTARTED:
@@ -1158,7 +1162,7 @@ YoutubePlayer = MusicPlayer.extend({
       this.interval = setInterval(getData, 200);
     }
     if (FLAG_DEBUG) {
-      return console.log("INTERVAL SET " + this.interval);
+      return console.log("YoutubePlayer :: Interval Set :: " + this.interval);
     }
   },
   clean: function() {
@@ -1191,7 +1195,7 @@ YoutubePlayer = MusicPlayer.extend({
     this.init();
     this.listenTo(RMP.dispatcher, "player:playing", this.initProgress);
     if (FLAG_DEBUG) {
-      console.log(this.track);
+      console.log("YoutubePlayer :: ", this.track);
     }
     if (FLAG_DEBUG) {
       return console.log("Player :: Youtube");
@@ -1245,7 +1249,7 @@ SoundcloudPlayer = MusicPlayer.extend({
         console.log("setting up iframe");
       }
       if ($("#soundcloud").length === 0) {
-        iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?url=" + this.track.sc.uri + "'>").appendTo($("#player"));
+        iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=" + this.track.sc.uri + "'>").appendTo($("#player"));
       }
       this.player = SC.Widget("soundcloud");
       _.each(this.events(), (function(_this) {
@@ -1265,10 +1269,27 @@ SoundcloudPlayer = MusicPlayer.extend({
     return this.trigger("destroy");
   },
   init: function(callback) {
+    var track_id, url, user_id;
     this.track = this.attributes.media.oembed;
-    this.track.id = decodeURIComponent(decodeURIComponent(this.track.html)).match(/\/tracks\/(\d+)/)[1];
+    url = decodeURIComponent(decodeURIComponent(this.track.html));
+    user_id = url.match(/\/users\/(\d+)/);
+    if (user_id != null) {
+      this.track.type = "users";
+    }
+    if (user_id != null) {
+      this.track.id = user_id[1];
+    }
+    track_id = url.match(/\/tracks\/(\d+)/);
+    if (track_id != null) {
+      this.track.type = "tracks";
+    }
+    if (track_id != null) {
+      this.track.id = track_id[1];
+    }
     return $.ajax({
-      url: "" + API.Soundcloud.base + "/tracks/" + this.track.id + ".json?jsonp=?",
+      url: "" + API.Soundcloud.base + "/" + this.track.type + "/" + this.track.id + ".json?callback=?",
+      jsonp: "callback",
+      dataType: "jsonp",
       data: {
         client_id: API.Soundcloud.key
       },
@@ -1338,7 +1359,13 @@ MP3Player = MusicPlayer.extend({
     })(this);
   },
   init: function() {
+    if (FLAG_DEBUG) {
+      console.log("MP3Player :: Making Player");
+    }
     this.player = $("<audio controls autoplay='true' src='" + this.attributes.streaming_url + "'/>").appendTo(this.$el)[0];
+    if (FLAG_DEBUG) {
+      console.log(this.$el);
+    }
     this.player.play();
     return _.each(this.events(), (function(_this) {
       return function(listener, ev) {
@@ -1436,14 +1463,39 @@ BandcampPlayer = MP3Player.extend({
       })(this)
     });
   },
+  errorAvoidBandCamp: function(ids) {
+    console.error("BandCampPlayer :: Error", ids.error_message);
+    SongBandcamp.prototype.playable = false;
+    _.each(RMP.playlist.where({
+      type: "bandcamp"
+    }), function(item) {
+      return item.set("playable", false);
+    });
+    return RMP.dispatcher.trigger("controls:forward");
+  },
   getInfo: function(callback) {
     return this.getID((function(_this) {
       return function(ids) {
+        if (ids.error != null) {
+          return _this.errorAvoidBandCamp(ids);
+        }
+        if (FLAG_DEBUG) {
+          console.log("BandCampPlayer :: IDs Get");
+        }
         if (ids.track_id == null) {
+          if (FLAG_DEBUG) {
+            console.log("BandCampPlayer :: No Track ID", ids);
+          }
           if (ids.album_id != null) {
+            if (FLAG_DEBUG) {
+              console.log("BandCampPlayer :: Get Album Info");
+            }
             return _this.getAlbumInfo(callback);
           }
         } else {
+          if (FLAG_DEBUG) {
+            console.log("BandCampPlayer :: Get Track Info");
+          }
           return _this.getTrackInfo(callback);
         }
       };

@@ -28,7 +28,7 @@ SongYoutube = Song.extend
 	playable: true
 SongSoundcloud = Song.extend
 	type: "soundcloud"
-	playable: false
+	playable: true
 SongBandcamp = Song.extend
 	type: "bandcamp"
 	playable: true
@@ -159,7 +159,7 @@ CurrentSongView = Backbone.View.extend
 		dir = switch
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
-			when target.hasClass "downvote" then -1
+			when target.hasClass "docuwnvote" then -1
 		
 		RMP.reddit.vote id, dir
 
@@ -179,7 +179,6 @@ CurrentSongView = Backbone.View.extend
 			$(".current-song-sidebar .title").text(songJSON.title)
 			document.title = "#{songJSON.title} | Reddit Music Player"
 			if song.get("type") is "bandcamp"
-				console.log song.attributes.media.oembed.thumbnail_url if FLAG_DEBUG
 				$(".current-song-sidebar .image").attr "src", song.get("media").oembed.thumbnail_url
 			else
 				$(".current-song-sidebar .image").attr "src", ""

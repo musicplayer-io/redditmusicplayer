@@ -40,16 +40,20 @@ class AuthController
 			scope: reddit.scope
 		auth(request, response, callback)
 	callback: (request, response, callback) =>
-		if request.query.state == request.session.state
-			redirectBack = '/'
-			redirectBack = request.session.redirectBack if request.session.redirectBack?
-			console.log request.query
-			auth = passport.authenticate 'reddit',
-				successRedirect: redirectBack
-				failureRedirect: '/login'
-			auth(request, response, callback)
-		else
-			callback(new Error 403)
+		# callback new Error 403 if request.query.state isnt request.session.state
+		console.log "callback", request.query
+		redirectBack = '/'
+		redirectBack = request.session.redirectBack if request.session.redirectBack?
+		auth = passport.authenticate 'reddit', (err, user, refreshToken) ->
+			return callback(err) if err?
+			return response.redirect("/login") if not user?
+			request.logIn user, (err) ->
+				return callback(err) if err?
+				request.session.refreshToken = refreshToken
+				return response.redirect(redirectBack)
+			# successRedirect: redirectBack
+			# failureRedirect: '/login'
+		auth(request, response, callback)
 	isAuthenticated: (request, response, callback) ->
 		return callback() if request.isAuthenticated()
 		response.redirect "/login"

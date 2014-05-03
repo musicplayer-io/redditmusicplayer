@@ -28,7 +28,7 @@
 *,
 ::before,
 ::after {
-	-webkit-user-select: none;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -135,6 +135,7 @@ a {
 	}
 }
 .top.titlebar {
+	background: #212121 url(../images/header.png) top repeat-x;
 	.redditmusicplayer {
 		position: absolute;
 		left: 0px;
@@ -233,6 +234,11 @@ a {
 			&.active {
 				background: rgba(0,0,0,0.1);
 				color: @col-primary !important;
+				.play.icon {
+					&:before {
+						content: "\f04c";
+					}
+				}
 				&:hover {
 					background: rgba(0,0,0,0.2) !important;
 				}

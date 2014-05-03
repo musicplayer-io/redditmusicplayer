@@ -20,6 +20,8 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "coffee-script": "~1.7.1"
+    "coffee-script": "~1.7.1",
+    "redis": "^0.10.1",
+    "hiredis": "^0.1.16"
   }
 }

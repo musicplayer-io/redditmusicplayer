@@ -7,7 +7,7 @@ YoutubePlayer = MusicPlayer.extend
 	onPlayerReady: (e) ->
 		e.target.playVideo()
 	onPlayerStateChange: (e) ->
-		console.log e if FLAG_DEBUG
+		console.log "YoutubePlayer :: StateChange", e if FLAG_DEBUG
 		switch e.data
 			when YT.PlayerState.UNSTARTED then RMP.dispatcher.trigger "player:unstarted", @
 			when YT.PlayerState.PLAYING then RMP.dispatcher.trigger "player:playing", @
@@ -30,7 +30,7 @@ YoutubePlayer = MusicPlayer.extend
 			RMP.dispatcher.trigger "progress:current", @player.getCurrentTime() # secs
 			RMP.dispatcher.trigger "progress:loaded", @player.getVideoLoadedFraction() # %
 		@interval = setInterval getData, 200 if not @interval?
-		console.log "INTERVAL SET #{@interval}" if FLAG_DEBUG
+		console.log "YoutubePlayer :: Interval Set :: #{@interval}" if FLAG_DEBUG
 	clean: () ->
 		@player.destroy()
 		clearInterval @interval
@@ -55,7 +55,7 @@ YoutubePlayer = MusicPlayer.extend
 
 		@listenTo RMP.dispatcher, "player:playing", @initProgress
 		
-		console.log @track if FLAG_DEBUG
+		console.log "YoutubePlayer :: ", @track if FLAG_DEBUG
 		console.log "Player :: Youtube" if FLAG_DEBUG
 
 SoundcloudPlayer = MusicPlayer.extend
@@ -85,7 +85,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	setUp: (callback) ->
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
-			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
+			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
 				@player.bind ev, listener
@@ -97,9 +97,20 @@ SoundcloudPlayer = MusicPlayer.extend
 		@trigger "destroy"
 	init: (callback) ->
 		@track = @attributes.media.oembed
-		@track.id = decodeURIComponent(decodeURIComponent(@track.html)).match(/\/tracks\/(\d+)/)[1]
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+
+		user_id = url.match(/\/users\/(\d+)/)
+		@track.type = "users" if user_id?
+		@track.id = user_id[1] if user_id?
+
+		track_id = url.match(/\/tracks\/(\d+)/)
+		@track.type = "tracks" if track_id?
+		@track.id = track_id[1] if track_id?
+
 		$.ajax
-			url: "#{API.Soundcloud.base}/tracks/#{@track.id}.json?jsonp=?"
+			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
+			jsonp: "callback"
+			dataType: "jsonp"
 			data:
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
@@ -138,7 +149,9 @@ MP3Player = MusicPlayer.extend
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
 	init: () ->
+		console.log "MP3Player :: Making Player" if FLAG_DEBUG
 		@player = $("<audio controls autoplay='true' src='#{@attributes.streaming_url}'/>").appendTo(@$el)[0]
+		console.log @$el if FLAG_DEBUG
 		@player.play()
 		_.each @events(), (listener, ev) =>
 			$(@player).bind ev, listener
@@ -197,12 +210,24 @@ BandcampPlayer = MP3Player.extend
 			success: (data) =>
 				@set data
 				callback data
+	errorAvoidBandCamp: (ids) ->
+		console.error "BandCampPlayer :: Error", ids.error_message
+		SongBandcamp.prototype.playable = false
+		_.each RMP.playlist.where({type:"bandcamp"}), (item) ->
+			item.set "playable", false
+		RMP.dispatcher.trigger "controls:forward"
 	getInfo: (callback) ->
 		@getID (ids) =>
+			if ids.error?
+				return @errorAvoidBandCamp(ids)
+			console.log "BandCampPlayer :: IDs Get" if FLAG_DEBUG
 			if not ids.track_id?
+				console.log "BandCampPlayer :: No Track ID", ids if FLAG_DEBUG
 				if ids.album_id?
+					console.log "BandCampPlayer :: Get Album Info" if FLAG_DEBUG
 					@getAlbumInfo callback
 			else
+				console.log "BandCampPlayer :: Get Track Info" if FLAG_DEBUG
 				@getTrackInfo callback
 	switch: (song) ->
 		@set song.attributes

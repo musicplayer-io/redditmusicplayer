@@ -18,4 +18,5 @@ node_modules
 *.sublime-workspace
 
 server/config/reddit.coffee
+server/config/keys
 src/coffee/config.coffee

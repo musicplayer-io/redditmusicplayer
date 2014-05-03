@@ -4,6 +4,7 @@ RMP.dispatcher = _.clone(Backbone.Events)
 # Main
 $(document).ready ->
 	RMP.dispatcher.trigger "app:main"
+	RMP.dispatcher.trigger "app:resize"
 
 $( window ).resize ->
 	RMP.dispatcher.trigger "app:resize"
@@ -304,7 +305,7 @@ ProgressBar = Backbone.Model.extend
 		currentSongID: -1
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		$(".controls .middle").css("width", $("body").innerWidth() - itemWidth*5.2)
+		$(".controls .middle").css("width", $("body").innerWidth() - itemWidth*5.4)
 		$(".controls .middle .progress").css("width", $("body").innerWidth() - itemWidth*9)
 	toMinSecs: (secs) ->
 		hours = Math.floor(secs / 3600)
@@ -355,6 +356,7 @@ Button = Backbone.View.extend
 	click: (e) ->
 		RMP.dispatcher.trigger @attributes.clickEvent, e
 	stateChange: (data) ->
+		console.log "Button :: StateChange", data if FLAG_DEBUG
 		if @checkState(data) is true then @$el.addClass "active" else @$el.removeClass "active"
 	initialize: () ->
 		@checkState = @attributes.checkState
@@ -376,8 +378,9 @@ Buttons = Backbone.Model.extend
 				clickEvent: "controls:play"
 				listenEvent: "player:playing player:paused player:ended"
 				checkState: (player) ->
+					player = RMP.player.controller if (player is window) 
 					if player.type is "youtube"
-						return player.getPlayerState() == 1
+						return player.player.getPlayerState() == 1
 					else
 						return player.playerState is "playing"
 		@shuffle = new Button
@@ -592,7 +595,7 @@ SongYoutube = Song.extend
 	playable: true
 SongSoundcloud = Song.extend
 	type: "soundcloud"
-	playable: false
+	playable: true
 SongBandcamp = Song.extend
 	type: "bandcamp"
 	playable: true
@@ -723,7 +726,7 @@ CurrentSongView = Backbone.View.extend
 		dir = switch
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
-			when target.hasClass "downvote" then -1
+			when target.hasClass "docuwnvote" then -1
 		
 		RMP.reddit.vote id, dir
 
@@ -743,7 +746,6 @@ CurrentSongView = Backbone.View.extend
 			$(".current-song-sidebar .title").text(songJSON.title)
 			document.title = "#{songJSON.title} | Reddit Music Player"
 			if song.get("type") is "bandcamp"
-				console.log song.attributes.media.oembed.thumbnail_url if FLAG_DEBUG
 				$(".current-song-sidebar .image").attr "src", song.get("media").oembed.thumbnail_url
 			else
 				$(".current-song-sidebar .image").attr "src", ""
@@ -903,7 +905,7 @@ YoutubePlayer = MusicPlayer.extend
 	onPlayerReady: (e) ->
 		e.target.playVideo()
 	onPlayerStateChange: (e) ->
-		console.log e if FLAG_DEBUG
+		console.log "YoutubePlayer :: StateChange", e if FLAG_DEBUG
 		switch e.data
 			when YT.PlayerState.UNSTARTED then RMP.dispatcher.trigger "player:unstarted", @
 			when YT.PlayerState.PLAYING then RMP.dispatcher.trigger "player:playing", @
@@ -926,7 +928,7 @@ YoutubePlayer = MusicPlayer.extend
 			RMP.dispatcher.trigger "progress:current", @player.getCurrentTime() # secs
 			RMP.dispatcher.trigger "progress:loaded", @player.getVideoLoadedFraction() # %
 		@interval = setInterval getData, 200 if not @interval?
-		console.log "INTERVAL SET #{@interval}" if FLAG_DEBUG
+		console.log "YoutubePlayer :: Interval Set :: #{@interval}" if FLAG_DEBUG
 	clean: () ->
 		@player.destroy()
 		clearInterval @interval
@@ -951,7 +953,7 @@ YoutubePlayer = MusicPlayer.extend
 
 		@listenTo RMP.dispatcher, "player:playing", @initProgress
 		
-		console.log @track if FLAG_DEBUG
+		console.log "YoutubePlayer :: ", @track if FLAG_DEBUG
 		console.log "Player :: Youtube" if FLAG_DEBUG
 
 SoundcloudPlayer = MusicPlayer.extend
@@ -981,7 +983,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	setUp: (callback) ->
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
-			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
+			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
 				@player.bind ev, listener
@@ -993,9 +995,20 @@ SoundcloudPlayer = MusicPlayer.extend
 		@trigger "destroy"
 	init: (callback) ->
 		@track = @attributes.media.oembed
-		@track.id = decodeURIComponent(decodeURIComponent(@track.html)).match(/\/tracks\/(\d+)/)[1]
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+
+		user_id = url.match(/\/users\/(\d+)/)
+		@track.type = "users" if user_id?
+		@track.id = user_id[1] if user_id?
+
+		track_id = url.match(/\/tracks\/(\d+)/)
+		@track.type = "tracks" if track_id?
+		@track.id = track_id[1] if track_id?
+
 		$.ajax
-			url: "#{API.Soundcloud.base}/tracks/#{@track.id}.json?jsonp=?"
+			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
+			jsonp: "callback"
+			dataType: "jsonp"
 			data:
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
@@ -1034,7 +1047,9 @@ MP3Player = MusicPlayer.extend
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
 	init: () ->
+		console.log "MP3Player :: Making Player" if FLAG_DEBUG
 		@player = $("<audio controls autoplay='true' src='#{@attributes.streaming_url}'/>").appendTo(@$el)[0]
+		console.log @$el if FLAG_DEBUG
 		@player.play()
 		_.each @events(), (listener, ev) =>
 			$(@player).bind ev, listener
@@ -1093,12 +1108,24 @@ BandcampPlayer = MP3Player.extend
 			success: (data) =>
 				@set data
 				callback data
+	errorAvoidBandCamp: (ids) ->
+		console.error "BandCampPlayer :: Error", ids.error_message
+		SongBandcamp.prototype.playable = false
+		_.each RMP.playlist.where({type:"bandcamp"}), (item) ->
+			item.set "playable", false
+		RMP.dispatcher.trigger "controls:forward"
 	getInfo: (callback) ->
 		@getID (ids) =>
+			if ids.error?
+				return @errorAvoidBandCamp(ids)
+			console.log "BandCampPlayer :: IDs Get" if FLAG_DEBUG
 			if not ids.track_id?
+				console.log "BandCampPlayer :: No Track ID", ids if FLAG_DEBUG
 				if ids.album_id?
+					console.log "BandCampPlayer :: Get Album Info" if FLAG_DEBUG
 					@getAlbumInfo callback
 			else
+				console.log "BandCampPlayer :: Get Track Info" if FLAG_DEBUG
 				@getTrackInfo callback
 	switch: (song) ->
 		@set song.attributes
