@@ -222,6 +222,7 @@ CommentsView = Backbone.View.extend
 			text: text
 			thing_id: @reply_id
 			callback: (reply) =>
+				RMP.playlist.current.song.set "num_comments", RMP.playlist.current.song.get("num_comments") + 1
 				console.log reply if FLAG_DEBUG
 				@render()
 
