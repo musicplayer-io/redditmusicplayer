@@ -38,9 +38,9 @@ refreshTokenReddit = (request, response, callback) ->
 		headers:
 			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	req options, (err, resp, body) ->
-		console.log request.user, request.session
+		console.log request.user, request.session, body
 		request.session.accessToken = body.access_token
-		callback(request, response)
+		callback(request, response) if callback?
 
 class APIController
 	add_comment: (request, response, callback) =>
