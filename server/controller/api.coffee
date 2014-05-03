@@ -31,11 +31,13 @@ refreshTokenReddit = (request, response, callback) ->
 	data =
 		"grant_type": "refresh_token"
 		"refresh_token": request.session.refreshToken
+	token = request.session.accessToken
 	options =
 		method: "POST"
 		url: "https://ssl.reddit.com/api/v1/access_token"
 		json: data
 		headers:
+			"Authorization": "bearer #{token}"
 			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	req options, (err, resp, body) ->
 		console.log request.user, request.session, body, resp
