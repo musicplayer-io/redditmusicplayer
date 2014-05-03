@@ -38,7 +38,7 @@ refreshTokenReddit = (request, response, callback) ->
 		headers:
 			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
 	req options, (err, resp, body) ->
-		console.log request.user, request.session, body
+		console.log request.user, request.session, body, resp
 		request.session.accessToken = body.access_token
 		callback(request, response) if callback?
 
