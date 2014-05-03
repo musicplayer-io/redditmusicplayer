@@ -15,7 +15,7 @@ require('./routes').call server
 
 secure_server = https.createServer credentials, server
 server.listen server.set('port')
-secure_server.listen 443
+secure_server.listen 4009
 
 console.log 'Server running...'
 console.log '  > Listening on port %d in %s mode', server.set('port'), server.settings.env
