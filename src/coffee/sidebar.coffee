@@ -6,12 +6,16 @@ Sidebar = Backbone.View.extend
 	tagName: "div"
 	className: "sidepane"
 	events:
-		"click .link.item": "open"
-	open: (event) ->
-		category = event.currentTarget.parentElement.dataset.category
+		"click .link.item": "openEvent"
+	openEvent: (event) ->
 		page = event.currentTarget.dataset.page
+		@open page
+	open: (page) ->
+		element = @getElement page
+		console.log("Sidebar :: Open ", element) if FLAG_DEBUG
+		category = element.parent().data "category"
 		@model.set
-			"element": event.currentTarget
+			"element": element
 		console.log "Sidebar :: Click :: #{page}" if FLAG_DEBUG
 		RMP.router.navigate page,
 			trigger: true

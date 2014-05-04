@@ -387,14 +387,22 @@ Sidebar = Backbone.View.extend({
   tagName: "div",
   className: "sidepane",
   events: {
-    "click .link.item": "open"
+    "click .link.item": "openEvent"
   },
-  open: function(event) {
-    var category, page;
-    category = event.currentTarget.parentElement.dataset.category;
+  openEvent: function(event) {
+    var page;
     page = event.currentTarget.dataset.page;
+    return this.open(page);
+  },
+  open: function(page) {
+    var category, element;
+    element = this.getElement(page);
+    if (FLAG_DEBUG) {
+      console.log("Sidebar :: Open ", element);
+    }
+    category = element.parent().data("category");
     this.model.set({
-      "element": event.currentTarget
+      "element": element
     });
     if (FLAG_DEBUG) {
       console.log("Sidebar :: Click :: " + page);
@@ -473,6 +481,13 @@ UIModel = Backbone.View.extend({
 
 RMP.ui = new UIModel({
   el: $(".ui.container")
+});
+
+RMP.dispatcher.on("loaded:about", function(page) {
+  return $(".start.listening").click(function(e) {
+    RMP.dispatcher.trigger("controls:play");
+    return RMP.sidebar.open("playlist");
+  });
 });
 
 Subreddit = Backbone.Model.extend({
@@ -624,7 +639,14 @@ RMP.dispatcher.on("loaded:browse", function(page) {
 });
 
 RMP.dispatcher.on("app:main", function() {
-  return RMP.subredditplaylist.fetch();
+  RMP.subredditplaylist.fetch();
+  if (RMP.subredditplaylist.length === 0) {
+    return RMP.subredditplaylist.add(new Subreddit({
+      category: "Other",
+      name: "listentothis",
+      text: "Listen To This"
+    }));
+  }
 });
 
 timeSince = function(time) {
@@ -795,12 +817,18 @@ Playlist = Backbone.Collection.extend({
       }
     }
   },
+  playFirstSongIfEmpty: function() {
+    if (this.current.index === -1) {
+      return this.forward();
+    }
+  },
   initialize: function() {
     this.listenTo(RMP.subredditplaylist, "add", this.refresh);
     this.listenTo(RMP.subredditplaylist, "remove", this.refresh);
     this.listenTo(RMP.dispatcher, "controls:forward", this.forward);
     this.listenTo(RMP.dispatcher, "controls:backward", this.backward);
     this.listenTo(RMP.dispatcher, "controls:sortMethod", this.refresh);
+    this.listenTo(RMP.dispatcher, "controls:play", this.playFirstSongIfEmpty);
     this.listenTo(RMP.dispatcher, "player:ended", this.forward);
     if (FLAG_DEBUG) {
       return console.log("Playlist :: Ready");
@@ -1181,10 +1209,12 @@ YoutubePlayer = MusicPlayer.extend({
     return this.player.loadVideoById(this.track.id);
   },
   playPause: function() {
-    if (this.player.getPlayerState() === 1) {
-      return this.player.pauseVideo();
-    } else {
-      return this.player.playVideo();
+    if (this.player && (this.player.getPlayerState != null) && (this.player.pauseVideo != null) && (this.player.playVideo != null)) {
+      if (this.player.getPlayerState() === 1) {
+        return this.player.pauseVideo();
+      } else {
+        return this.player.playVideo();
+      }
     }
   },
   initialize: function() {
@@ -1560,6 +1590,9 @@ PlayerController = Backbone.Model.extend({
   playPause: function(e) {
     if (this.controller == null) {
       return;
+    }
+    if (FLAG_DEBUG) {
+      console.log("PlayerController : PlayPause");
     }
     return this.controller.playPause();
   },

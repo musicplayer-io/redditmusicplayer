@@ -102,6 +102,9 @@ Playlist = Backbone.Collection.extend
 				@backward()
 			else
 				@activate(@current.song)
+	playFirstSongIfEmpty: () ->
+		if (@current.index is -1)
+			@forward()
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @refresh
 		@listenTo RMP.subredditplaylist, "remove", @refresh
@@ -109,6 +112,7 @@ Playlist = Backbone.Collection.extend
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward
 		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
+		@listenTo RMP.dispatcher, "controls:play", @playFirstSongIfEmpty
 
 		@listenTo RMP.dispatcher, "player:ended", @forward
 

@@ -102,3 +102,8 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 
 RMP.dispatcher.on "app:main", () ->
 	RMP.subredditplaylist.fetch()
+	if (RMP.subredditplaylist.length is 0)
+		RMP.subredditplaylist.add new Subreddit
+			category: "Other"
+			name: "listentothis"
+			text: "Listen To This"

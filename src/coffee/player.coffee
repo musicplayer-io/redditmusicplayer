@@ -45,7 +45,8 @@ YoutubePlayer = MusicPlayer.extend
 
 		@player.loadVideoById @track.id
 	playPause: () ->
-		if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
+			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@track = @attributes.media.oembed
@@ -263,6 +264,7 @@ PlayerController = Backbone.Model.extend
 					@change(index, song)
 	playPause: (e) ->
 		return if not @controller?
+		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @change

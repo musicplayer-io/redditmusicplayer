@@ -403,12 +403,16 @@ Sidebar = Backbone.View.extend
 	tagName: "div"
 	className: "sidepane"
 	events:
-		"click .link.item": "open"
-	open: (event) ->
-		category = event.currentTarget.parentElement.dataset.category
+		"click .link.item": "openEvent"
+	openEvent: (event) ->
 		page = event.currentTarget.dataset.page
+		@open page
+	open: (page) ->
+		element = @getElement page
+		console.log("Sidebar :: Open ", element) if FLAG_DEBUG
+		category = element.parent().data "category"
 		@model.set
-			"element": event.currentTarget
+			"element": element
 		console.log "Sidebar :: Click :: #{page}" if FLAG_DEBUG
 		RMP.router.navigate page,
 			trigger: true
@@ -461,6 +465,14 @@ UIModel = Backbone.View.extend
 
 RMP.ui = new UIModel
 	el: $(".ui.container")
+
+RMP.dispatcher.on "loaded:about", (page) ->
+	$(".start.listening").click (e) ->
+		RMP.dispatcher.trigger "controls:play"
+		# RMP.router.navigate "playlist",
+			# trigger: true
+		RMP.sidebar.open "playlist"
+		# RMP.router.playlist()
 Subreddit = Backbone.Model.extend
 	defaults:
 		category: null
@@ -565,6 +577,11 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 
 RMP.dispatcher.on "app:main", () ->
 	RMP.subredditplaylist.fetch()
+	if (RMP.subredditplaylist.length is 0)
+		RMP.subredditplaylist.add new Subreddit
+			category: "Other"
+			name: "listentothis"
+			text: "Listen To This"
 
 timeSince = (time) ->
 	seconds = Math.floor((new Date() - time) / 1000)
@@ -669,6 +686,9 @@ Playlist = Backbone.Collection.extend
 				@backward()
 			else
 				@activate(@current.song)
+	playFirstSongIfEmpty: () ->
+		if (@current.index is -1)
+			@forward()
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @refresh
 		@listenTo RMP.subredditplaylist, "remove", @refresh
@@ -676,6 +696,7 @@ Playlist = Backbone.Collection.extend
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward
 		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
+		@listenTo RMP.dispatcher, "controls:play", @playFirstSongIfEmpty
 
 		@listenTo RMP.dispatcher, "player:ended", @forward
 
@@ -944,7 +965,8 @@ YoutubePlayer = MusicPlayer.extend
 
 		@player.loadVideoById @track.id
 	playPause: () ->
-		if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
+			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@track = @attributes.media.oembed
@@ -1162,6 +1184,7 @@ PlayerController = Backbone.Model.extend
 					@change(index, song)
 	playPause: (e) ->
 		return if not @controller?
+		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @change

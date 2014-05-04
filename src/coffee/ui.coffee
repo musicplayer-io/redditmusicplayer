@@ -28,3 +28,11 @@ UIModel = Backbone.View.extend
 
 RMP.ui = new UIModel
 	el: $(".ui.container")
+
+RMP.dispatcher.on "loaded:about", (page) ->
+	$(".start.listening").click (e) ->
+		RMP.dispatcher.trigger "controls:play"
+		# RMP.router.navigate "playlist",
+			# trigger: true
+		RMP.sidebar.open "playlist"
+		# RMP.router.playlist()
