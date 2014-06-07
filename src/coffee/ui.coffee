@@ -31,6 +31,7 @@ RMP.ui = new UIModel
 
 RMP.dispatcher.on "loaded:about", (page) ->
 	$(".start.listening").click (e) ->
+		console.log "About :: Start Listening" if FLAG_DEBUG
 		RMP.dispatcher.trigger "controls:play"
 		# RMP.router.navigate "playlist",
 			# trigger: true
