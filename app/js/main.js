@@ -485,6 +485,9 @@ RMP.ui = new UIModel({
 
 RMP.dispatcher.on("loaded:about", function(page) {
   return $(".start.listening").click(function(e) {
+    if (FLAG_DEBUG) {
+      console.log("About :: Start Listening");
+    }
     RMP.dispatcher.trigger("controls:play");
     return RMP.sidebar.open("playlist");
   });
