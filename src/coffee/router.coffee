@@ -6,6 +6,7 @@ RouterModel = Backbone.Router.extend
 		"popular": "popular"
 		"playlist": "playlist"
 		"radio": "radio"
+		"": "about"
 		"/": "about"
 		"about": "about"
 		"devices": "devices"

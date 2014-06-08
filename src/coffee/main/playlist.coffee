@@ -35,6 +35,9 @@ SongBandcamp = Song.extend
 SongMP3 = Song.extend
 	type: "mp3"
 	playable: true
+SongVimeo = Song.extend
+	type: "vimeo"
+	playable: true
 
 NotASong = Backbone.Model.extend
 	type: "link"
@@ -55,10 +58,11 @@ Playlist = Backbone.Collection.extend
 		index: -1
 	parseSong: (item) ->
 		song = switch
-			when item.domain is "youtube.com" then new SongYoutube item
+			when item.domain is "youtube.com" or item.domain is "youtu.be" or item.domain is "m.youtube.com" then new SongYoutube item
 			when item.domain is "soundcloud.com" then new SongSoundcloud item
 			when item.domain.substr(-12) is "bandcamp.com" then new SongBandcamp item
 			when item.url.substr(-4) is ".mp3" then new SongMP3 item
+			when item.domain is "vimeo.com" then new SongVimeo item
 			when item.is_self then new NotALink item
 			else new NotASong item
 	activate: (song) ->
@@ -66,6 +70,8 @@ Playlist = Backbone.Collection.extend
 		@current.song = song
 		@current.index = index
 		RMP.dispatcher.trigger "song:change", index, song
+		if @current.index >= @length  - 1
+			@more()
 	refresh: () ->
 		RMP.reddit.getMusic (items) =>
 			list = []
@@ -79,7 +85,7 @@ Playlist = Backbone.Collection.extend
 				@add @parseSong item.data
 			callback() if callback?
 	forward: () ->
-		if @current.index >= @length 
+		if @current.index >= @length  - 1
 			@more () =>
 				@forward()
 		else
@@ -136,7 +142,7 @@ PlaylistView = Backbone.View.extend
 	render: () ->
 		@$el.html ""
 		RMP.playlist.each (model) =>
-			console.log model.toJSON() if FLAG_DEBUG
+			# console.log model.toJSON() if FLAG_DEBUG
 			@$el.append @template model.toJSON()
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song
@@ -296,11 +302,14 @@ SortMethodView = Backbone.View.extend
 	render: () ->
 		@$(".item").removeClass "active"
 		@getCurrent().addClass "active"
-		@$(".ui.dropdown").dropdown()
+
+		@$(".ui.dropdown").dropdown("set selected", "top:#{RMP.reddit.get('topMethod')}")
 	select: (e) ->
 		target = $ e.currentTarget
 		method = target.data "value"
+		return if not method?
 		sortMethod = method
+		topMethod = RMP.reddit.get "topMethod"
 		if method.substr(0,3) is "top"
 			sortMethod = "top"
 			topMethod = method.substr(4)
@@ -334,3 +343,7 @@ RMP.dispatcher.on "loaded:playlist", (page) ->
 
 	RMP.sortmethodview.setElement $(".content.playlist .sortMethod")
 	RMP.sortmethodview.render()
+
+	$(".content.playlist .subreddit-count b").text RMP.subredditplaylist.length
+	$(".content.playlist .subreddit-count").on "click", (e) ->
+		RMP.sidebar.open "browse"

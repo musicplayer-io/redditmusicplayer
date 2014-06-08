@@ -8,6 +8,15 @@ $(document).ready ->
 
 $( window ).resize ->
 	RMP.dispatcher.trigger "app:resize"
+
+# Dragging
+RMP.dragging = false
+# $( window ).mousedown ->
+#	RMP.dragging = true
+
+$( window ).mouseup ->
+	RMP.dragging = false
+	RMP.dispatcher.trigger "events:stopDragging"
 API = 
 	Bandcamp:
 		base: "//api.bandcamp.com/api"
@@ -115,6 +124,11 @@ Templates =
 											<i class='icon male'></i>
 											<%= media.oembed.author_name %>
 										</a>
+									<% } else if (media.type == 'vimeo.com') { %>
+										<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
+											<i class='icon male'></i>
+											<%= media.oembed.author_name %>
+										</a>
 									<% } %>
 								<% } %>
 							</div>
@@ -184,6 +198,7 @@ RouterModel = Backbone.Router.extend
 		"popular": "popular"
 		"playlist": "playlist"
 		"radio": "radio"
+		"": "about"
 		"/": "about"
 		"about": "about"
 		"devices": "devices"
@@ -278,6 +293,13 @@ Reddit = Backbone.Model.extend
 	changeSortMethod: (sortMethod, topMethod) ->
 		@set "sortMethod", sortMethod
 		@set "topMethod", topMethod
+	save: () ->
+		localStorage["sortMethod"] = @get "sortMethod"
+		localStorage["topMethod"] = @get "topMethod"
+	initialize: () ->
+		@set "sortMethod", localStorage["sortMethod"] if localStorage["sortMethod"]?
+		@set "topMethod", localStorage["topMethod"] if localStorage["topMethod"]?
+		@listenTo @, "change", @save
 
 RMP.reddit = new Reddit
 
@@ -303,31 +325,13 @@ ProgressBar = Backbone.Model.extend
 		current: 0
 		duration: 60
 		currentSongID: -1
-	resize: () ->
-		itemWidth = $(".controls .left .item").outerWidth()
-		$(".controls .middle").css("width", $("body").innerWidth() - itemWidth*5.4)
-		$(".controls .middle .progress").css("width", $("body").innerWidth() - itemWidth*9)
-	toMinSecs: (secs) ->
-		hours = Math.floor(secs / 3600)
-		if hours
-			mins = Math.floor((secs / 60) - hours * 60)
-			secs = Math.floor(secs % 60)
-			"#{String('0'+hours).slice(-2)}:#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
-		else 
-			mins = Math.floor(secs / 60)
-			secs = Math.floor(secs % 60)
-			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	setDuration: (data) ->
 		@set "duration", data
 		@set "current", 0
-		$(".controls .end.time").text @toMinSecs data
 	setLoaded: (data) ->
 		@set "loaded", data
-		$(".controls .progress .loaded").css("width", data * 100 + "%")
 	setCurrent: (data) ->
 		@set "current", data
-		$(".controls .start.time").text @toMinSecs data
-		$(".controls .progress .current").css("width", data / @get("duration") * 100 + "%")
 	change: (index, song) ->
 		if song.get("id") isnt @get("currentSongID") and song.get("playable") is true
 			@setCurrent 0
@@ -339,16 +343,73 @@ ProgressBar = Backbone.Model.extend
 		$(".controls .progress").addClass "soundcloud"
 		$(".controls .progress .waveform").css "-webkit-mask-box-image", "url(#{waveform})"
 	initialize: () ->
-		@resize()
 		console.log "ProgressBar :: Ready" if FLAG_DEBUG
 		@listenTo RMP.dispatcher, "song:change", @change
 		@listenTo RMP.dispatcher, "progress:current", @setCurrent
 		@listenTo RMP.dispatcher, "progress:loaded", @setLoaded
 		@listenTo RMP.dispatcher, "progress:duration", @setDuration
+		
+
+ProgressBarView = Backbone.View.extend
+	events:
+		"mousemove .progress": "seeking"
+		"mousedown .progress": "startSeeking"
+	justSeeked: false
+	startSeeking: (e) ->
+		RMP.dragging = true
+		@percentage = e.offsetX / @$(".progress").outerWidth()
+		@justSeeked = true
+	seeking: (e) ->
+		return if not @justSeeked # mousedown didn't start on progressbar, return
+
+		@percentage = e.offsetX / @$(".progress").outerWidth()
+
+		if (RMP.dragging) # mouse is down, seek without playing
+			RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
+
+		@$(".progress .current").css("width", @percentage * 100 + "%")
+	stopSeeking: () ->
+		return if not @justSeeked
+		
+		RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
+		console.log "ProgressBarView :: Seek :: #{@percentage*100}%" if FLAG_DEBUG and RMP.dragging is false
+
+		@justSeeked = false
+	toMinSecs: (secs) ->
+		hours = Math.floor(secs / 3600)
+		if hours
+			mins = Math.floor((secs / 60) - hours * 60)
+			secs = Math.floor(secs % 60)
+			"#{String('0'+hours).slice(-2)}:#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
+		else 
+			mins = Math.floor(secs / 60)
+			secs = Math.floor(secs % 60)
+			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
+	resize: () ->
+		itemWidth = $(".controls .left .item").outerWidth()
+		@$el.css("width", $("body").innerWidth() - itemWidth*5.4)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*9)
+	render: () ->
+		# set end time
+		@$(".end.time").text @toMinSecs @model.get("duration")
+
+		# set loaded progress
+		@$(".progress .loaded").css("width", @model.get("loaded") * 100 + "%")
+
+		# set current
+		@$(".start.time").text @toMinSecs @model.get("current")
+		@$(".progress .current").css("width", @model.get("current") / @model.get("duration") * 100 + "%")
+	initialize: () ->
+		@resize()
+		console.log "ProgressBarView :: Ready" if FLAG_DEBUG
+		@listenTo @model, "change", @render
 		@listenTo RMP.dispatcher, "app:resize", @resize
+		@listenTo RMP.dispatcher, "events:stopDragging", @stopSeeking
 
 RMP.progressbar = new ProgressBar
-
+RMP.progressbarview = new ProgressBarView
+	el: $(".controls .middle.menu")
+	model: RMP.progressbar
 
 Button = Backbone.View.extend
 	events:
@@ -620,6 +681,9 @@ SongBandcamp = Song.extend
 SongMP3 = Song.extend
 	type: "mp3"
 	playable: true
+SongVimeo = Song.extend
+	type: "vimeo"
+	playable: true
 
 NotASong = Backbone.Model.extend
 	type: "link"
@@ -640,10 +704,11 @@ Playlist = Backbone.Collection.extend
 		index: -1
 	parseSong: (item) ->
 		song = switch
-			when item.domain is "youtube.com" then new SongYoutube item
+			when item.domain is "youtube.com" or item.domain is "youtu.be" or item.domain is "m.youtube.com" then new SongYoutube item
 			when item.domain is "soundcloud.com" then new SongSoundcloud item
 			when item.domain.substr(-12) is "bandcamp.com" then new SongBandcamp item
 			when item.url.substr(-4) is ".mp3" then new SongMP3 item
+			when item.domain is "vimeo.com" then new SongVimeo item
 			when item.is_self then new NotALink item
 			else new NotASong item
 	activate: (song) ->
@@ -651,6 +716,8 @@ Playlist = Backbone.Collection.extend
 		@current.song = song
 		@current.index = index
 		RMP.dispatcher.trigger "song:change", index, song
+		if @current.index >= @length  - 1
+			@more()
 	refresh: () ->
 		RMP.reddit.getMusic (items) =>
 			list = []
@@ -664,7 +731,7 @@ Playlist = Backbone.Collection.extend
 				@add @parseSong item.data
 			callback() if callback?
 	forward: () ->
-		if @current.index >= @length 
+		if @current.index >= @length  - 1
 			@more () =>
 				@forward()
 		else
@@ -721,7 +788,7 @@ PlaylistView = Backbone.View.extend
 	render: () ->
 		@$el.html ""
 		RMP.playlist.each (model) =>
-			console.log model.toJSON() if FLAG_DEBUG
+			# console.log model.toJSON() if FLAG_DEBUG
 			@$el.append @template model.toJSON()
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song
@@ -881,11 +948,14 @@ SortMethodView = Backbone.View.extend
 	render: () ->
 		@$(".item").removeClass "active"
 		@getCurrent().addClass "active"
-		@$(".ui.dropdown").dropdown()
+
+		@$(".ui.dropdown").dropdown("set selected", "top:#{RMP.reddit.get('topMethod')}")
 	select: (e) ->
 		target = $ e.currentTarget
 		method = target.data "value"
+		return if not method?
 		sortMethod = method
+		topMethod = RMP.reddit.get "topMethod"
 		if method.substr(0,3) is "top"
 			sortMethod = "top"
 			topMethod = method.substr(4)
@@ -920,6 +990,10 @@ RMP.dispatcher.on "loaded:playlist", (page) ->
 	RMP.sortmethodview.setElement $(".content.playlist .sortMethod")
 	RMP.sortmethodview.render()
 
+	$(".content.playlist .subreddit-count b").text RMP.subredditplaylist.length
+	$(".content.playlist .subreddit-count").on "click", (e) ->
+		RMP.sidebar.open "browse"
+
 MusicPlayer = Backbone.Model.extend
 	type: "none"
 
@@ -936,9 +1010,13 @@ YoutubePlayer = MusicPlayer.extend
 			when YT.PlayerState.ENDED then RMP.dispatcher.trigger "player:ended", @
 			when YT.PlayerState.CUED then RMP.dispatcher.trigger "player:cued", @
 			when YT.PlayerState.BUFFERING then RMP.dispatcher.trigger "player:buffering", @
+	onError: (e) ->
+		console.error "YoutubePlayer :: Error", e if FLAG_DEBUG
+		RMP.dispatcher.trigger "controls:forward"
 	events: () ->
 		"onReady": @onPlayerReady
 		"onStateChange": @onPlayerStateChange
+		"onError": @onError
 	init: () ->
 		isReady = YT?
 		if not isReady then throw "Youtube not Ready!"
@@ -968,6 +1046,8 @@ YoutubePlayer = MusicPlayer.extend
 	playPause: () ->
 		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
 			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+	seekTo: (percentage, seekAhead) ->
+		@player.seekTo percentage * @player.getDuration(), seekAhead
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@track = @attributes.media.oembed
@@ -999,6 +1079,9 @@ SoundcloudPlayer = MusicPlayer.extend
 			RMP.dispatcher.trigger "player:#{ev}", @
 	playPause: () ->
 		@player.toggle()
+	seekTo: (percentage, seekAhead) ->
+		@player.getDuration (duration) =>
+			@player.seekTo percentage * duration
 	switch: (song) ->
 		@set song.attributes
 		@init () =>
@@ -1029,6 +1112,11 @@ SoundcloudPlayer = MusicPlayer.extend
 		@track.type = "tracks" if track_id?
 		@track.id = track_id[1] if track_id?
 
+		track_id = url.match(/\/playlists\/(\d+)/)
+		@track.type = "playlists" if track_id?
+		@track.id = track_id[1] if track_id?
+
+		console.log @track
 		$.ajax
 			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
 			jsonp: "callback"
@@ -1090,6 +1178,8 @@ MP3Player = MusicPlayer.extend
 		@init()
 	playPause: () ->
 		if @playerState is "playing" then @player.pause() else @player.play()
+	seekTo: (percentage, seekAhead) ->
+		@player.currentTime = percentage * @player.duration
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@$el.html ""
@@ -1164,6 +1254,74 @@ BandcampPlayer = MP3Player.extend
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
 			@init()			
 
+VimeoPlayer = MusicPlayer.extend
+	type: "vimeo"
+	events: () ->
+		# "progress": @progress_play()
+		# "play": @event_trigger("playing")
+		# "playing": @event_trigger("playing")
+		# "pause": @event_trigger("paused")
+		# "ended": @event_trigger("ended")
+		# "durationchange": @setDuration()
+	setDuration: () ->
+		# return () =>
+		# 	RMP.dispatcher.trigger "progress:duration", @player.duration # secs
+	progress_play: (data) ->
+		# return () =>
+		# 	RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0)/@player.duration # secs
+		# 	RMP.dispatcher.trigger "progress:current", @player.currentTime # secs
+	playerState: "ended"
+	event_trigger: (ev) ->
+		# return (data) =>
+		# 	@playerState = ev
+		# 	RMP.dispatcher.trigger "player:#{ev}", @
+	init: () ->
+		console.log "VimeoPlayer :: Making Player" if FLAG_DEBUG
+		player = $("<iframe src='http://player.vimeo.com/video/#{@track.id}?api=1&autoplay=1' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
+		@$el.append player
+		
+		@player = player[0].contentWindow
+		@player.postMessage({
+			"method": "play"
+		}, "*")
+
+		# _.each @events(), (listener, ev) =>
+		# 	$(@player).bind ev, listener
+	clean: (justTheElement) ->
+		$("#player iframe").remove()
+		@$el.html ""
+		@stopListening() if not justTheElement?
+		@trigger "destroy" if not justTheElement?
+		@off if not justTheElement
+	switch: (song) ->
+		@set song.attributes
+
+		@track = @attributes.media.oembed
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+		video_id = url.match(/\/video\/(\d+)/)
+		@track.id = video_id[1] if video_id?
+
+		@clean(true)
+		@init()
+	playPause: () ->
+		if @playerState is "playing" 
+			@player.postMessage({method: "pause"}, "*")
+		else
+			@player.postMessage({method: "play"}, "*")
+	seekTo: (percentage, seekAhead) ->
+		# @player.currentTime = percentage * @player.duration
+	initialize: () ->
+		@$el = $("#player") if not @$el?
+		@$el.html ""
+
+		@track = @attributes.media.oembed
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+
+		video_id = url.match(/\/video\/(\d+)/)
+		@track.id = video_id[1] if video_id?
+		
+		@init()
+
 
 PlayerController = Backbone.Model.extend
 	change: (index, song) ->
@@ -1172,6 +1330,7 @@ PlayerController = Backbone.Model.extend
 				when song.type is "youtube" then new YoutubePlayer song.attributes
 				when song.type is "soundcloud" then new SoundcloudPlayer song.attributes
 				when song.type is "bandcamp" then new BandcampPlayer song.attributes
+				when song.type is "vimeo" then new VimeoPlayer song.attributes
 				when song.type is "mp3" then new MP3Player song.attributes
 				else throw "Not A Song Sent to Player Controller"
 		else
@@ -1187,9 +1346,13 @@ PlayerController = Backbone.Model.extend
 		return if not @controller?
 		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
+	seekTo: (percentage, seekAhead) ->
+		return if not @controller?
+		@controller.seekTo(percentage, seekAhead)
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @change
 		@listenTo RMP.dispatcher, "controls:play", @playPause
+		@listenTo RMP.dispatcher, "progress:set", @seekTo
 
 RMP.player = new PlayerController
 

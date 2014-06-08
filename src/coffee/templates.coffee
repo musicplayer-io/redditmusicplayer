@@ -94,6 +94,11 @@ Templates =
 											<i class='icon male'></i>
 											<%= media.oembed.author_name %>
 										</a>
+									<% } else if (media.type == 'vimeo.com') { %>
+										<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
+											<i class='icon male'></i>
+											<%= media.oembed.author_name %>
+										</a>
 									<% } %>
 								<% } %>
 							</div>

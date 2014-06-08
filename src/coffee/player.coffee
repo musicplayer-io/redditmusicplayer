@@ -15,9 +15,13 @@ YoutubePlayer = MusicPlayer.extend
 			when YT.PlayerState.ENDED then RMP.dispatcher.trigger "player:ended", @
 			when YT.PlayerState.CUED then RMP.dispatcher.trigger "player:cued", @
 			when YT.PlayerState.BUFFERING then RMP.dispatcher.trigger "player:buffering", @
+	onError: (e) ->
+		console.error "YoutubePlayer :: Error", e if FLAG_DEBUG
+		RMP.dispatcher.trigger "controls:forward"
 	events: () ->
 		"onReady": @onPlayerReady
 		"onStateChange": @onPlayerStateChange
+		"onError": @onError
 	init: () ->
 		isReady = YT?
 		if not isReady then throw "Youtube not Ready!"
@@ -47,6 +51,8 @@ YoutubePlayer = MusicPlayer.extend
 	playPause: () ->
 		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
 			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+	seekTo: (percentage, seekAhead) ->
+		@player.seekTo percentage * @player.getDuration(), seekAhead
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@track = @attributes.media.oembed
@@ -78,6 +84,9 @@ SoundcloudPlayer = MusicPlayer.extend
 			RMP.dispatcher.trigger "player:#{ev}", @
 	playPause: () ->
 		@player.toggle()
+	seekTo: (percentage, seekAhead) ->
+		@player.getDuration (duration) =>
+			@player.seekTo percentage * duration
 	switch: (song) ->
 		@set song.attributes
 		@init () =>
@@ -108,6 +117,11 @@ SoundcloudPlayer = MusicPlayer.extend
 		@track.type = "tracks" if track_id?
 		@track.id = track_id[1] if track_id?
 
+		track_id = url.match(/\/playlists\/(\d+)/)
+		@track.type = "playlists" if track_id?
+		@track.id = track_id[1] if track_id?
+
+		console.log @track
 		$.ajax
 			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
 			jsonp: "callback"
@@ -169,6 +183,8 @@ MP3Player = MusicPlayer.extend
 		@init()
 	playPause: () ->
 		if @playerState is "playing" then @player.pause() else @player.play()
+	seekTo: (percentage, seekAhead) ->
+		@player.currentTime = percentage * @player.duration
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@$el.html ""
@@ -243,6 +259,74 @@ BandcampPlayer = MP3Player.extend
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
 			@init()			
 
+VimeoPlayer = MusicPlayer.extend
+	type: "vimeo"
+	events: () ->
+		# "progress": @progress_play()
+		# "play": @event_trigger("playing")
+		# "playing": @event_trigger("playing")
+		# "pause": @event_trigger("paused")
+		# "ended": @event_trigger("ended")
+		# "durationchange": @setDuration()
+	setDuration: () ->
+		# return () =>
+		# 	RMP.dispatcher.trigger "progress:duration", @player.duration # secs
+	progress_play: (data) ->
+		# return () =>
+		# 	RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0)/@player.duration # secs
+		# 	RMP.dispatcher.trigger "progress:current", @player.currentTime # secs
+	playerState: "ended"
+	event_trigger: (ev) ->
+		# return (data) =>
+		# 	@playerState = ev
+		# 	RMP.dispatcher.trigger "player:#{ev}", @
+	init: () ->
+		console.log "VimeoPlayer :: Making Player" if FLAG_DEBUG
+		player = $("<iframe src='http://player.vimeo.com/video/#{@track.id}?api=1&autoplay=1' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
+		@$el.append player
+		
+		@player = player[0].contentWindow
+		@player.postMessage({
+			"method": "play"
+		}, "*")
+
+		# _.each @events(), (listener, ev) =>
+		# 	$(@player).bind ev, listener
+	clean: (justTheElement) ->
+		$("#player iframe").remove()
+		@$el.html ""
+		@stopListening() if not justTheElement?
+		@trigger "destroy" if not justTheElement?
+		@off if not justTheElement
+	switch: (song) ->
+		@set song.attributes
+
+		@track = @attributes.media.oembed
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+		video_id = url.match(/\/video\/(\d+)/)
+		@track.id = video_id[1] if video_id?
+
+		@clean(true)
+		@init()
+	playPause: () ->
+		if @playerState is "playing" 
+			@player.postMessage({method: "pause"}, "*")
+		else
+			@player.postMessage({method: "play"}, "*")
+	seekTo: (percentage, seekAhead) ->
+		# @player.currentTime = percentage * @player.duration
+	initialize: () ->
+		@$el = $("#player") if not @$el?
+		@$el.html ""
+
+		@track = @attributes.media.oembed
+		url = decodeURIComponent(decodeURIComponent(@track.html))
+
+		video_id = url.match(/\/video\/(\d+)/)
+		@track.id = video_id[1] if video_id?
+		
+		@init()
+
 
 PlayerController = Backbone.Model.extend
 	change: (index, song) ->
@@ -251,6 +335,7 @@ PlayerController = Backbone.Model.extend
 				when song.type is "youtube" then new YoutubePlayer song.attributes
 				when song.type is "soundcloud" then new SoundcloudPlayer song.attributes
 				when song.type is "bandcamp" then new BandcampPlayer song.attributes
+				when song.type is "vimeo" then new VimeoPlayer song.attributes
 				when song.type is "mp3" then new MP3Player song.attributes
 				else throw "Not A Song Sent to Player Controller"
 		else
@@ -266,9 +351,13 @@ PlayerController = Backbone.Model.extend
 		return if not @controller?
 		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
+	seekTo: (percentage, seekAhead) ->
+		return if not @controller?
+		@controller.seekTo(percentage, seekAhead)
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @change
 		@listenTo RMP.dispatcher, "controls:play", @playPause
+		@listenTo RMP.dispatcher, "progress:set", @seekTo
 
 RMP.player = new PlayerController
 

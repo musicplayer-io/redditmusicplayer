@@ -1,17 +1,22 @@
-
-## Future
-
-* Remote control from your phone
-
-## Further Future
-
-* Logging in: upvoting, downvoting
  
 ## Changelog
 
-### 0.3.0 - 21 February 104
+### 0.3.1 - 7 June 2014
+
+* Bug fixes
+* Youtu.be
+* Link to browse in playlist
+* Seeking in Progress bar
+* Saving sortmethod
+* Vimeo
+* Less pausing (no video / errors)
+
+### 0.3.0 - 21 February 2014
 
 * Complete Coffeescript Refactor
+* Upvoting, downvoting
+* Logging in
+* Comments
 
 ### 0.2.3 - 18 February 2014
 

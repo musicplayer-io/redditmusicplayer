@@ -65,5 +65,12 @@ Reddit = Backbone.Model.extend
 	changeSortMethod: (sortMethod, topMethod) ->
 		@set "sortMethod", sortMethod
 		@set "topMethod", topMethod
+	save: () ->
+		localStorage["sortMethod"] = @get "sortMethod"
+		localStorage["topMethod"] = @get "topMethod"
+	initialize: () ->
+		@set "sortMethod", localStorage["sortMethod"] if localStorage["sortMethod"]?
+		@set "topMethod", localStorage["topMethod"] if localStorage["topMethod"]?
+		@listenTo @, "change", @save
 
 RMP.reddit = new Reddit

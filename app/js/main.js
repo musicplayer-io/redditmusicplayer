@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, Reddit, RouterModel, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, RouterModel, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -11,6 +11,13 @@ $(document).ready(function() {
 
 $(window).resize(function() {
   return RMP.dispatcher.trigger("app:resize");
+});
+
+RMP.dragging = false;
+
+$(window).mouseup(function() {
+  RMP.dragging = false;
+  return RMP.dispatcher.trigger("events:stopDragging");
 });
 
 API = {
@@ -32,7 +39,7 @@ FLAG_DEBUG = true;
 Templates = {
   SubredditPlayListView: _.template("<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>"),
   PlayListView: _.template("<div class='ui item' data-id='<%= id %>'> <% if (thumbnail) { %> <% if (thumbnail == 'self' || thumbnail == 'default') { %> <% if (type == 'mp3') { %> <i class='left floated icon music large'/> <% } else { %> <i class='left floated icon chat outline large'/> <% } %> <% } else {%> <img src='<%= thumbnail %>' class='ui image rounded left floated'/> <% } %> <% } %> <div class='content'> <div class='title'><%= title %></div> <span class='ups'><%= ups %></span> / <span class='downs'><%= downs %></span> • <span class='author'><%= author %></span> in <span class='subreddit'><%= subreddit %></span> • <span class='created'><%= created_ago %></span> • <span class='origin'><%= domain %></span> • <span class='comments'><%= num_comments %> comments</span> </div> </div>"),
-  CurrentSongView: _.template("<% if (media) { %> <img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' /> <% } %> <div class='vote' id='<%= name %>'> <div class='upvote'><i class='icon up arrow'></i></div> <div class='downvote'><i class='icon down arrow'></i></div> </div> <h3 class='ui header title'><%= title %></h3> <table class='ui table inverted'> <tbody> <% if (media) { %> <tr> <td>Title</td> <td><%= media.oembed.title %></td> </tr> <tr> <td>Description</td> <td><%= media.oembed.description %></td> </tr> <% } %> <tr> <td class='four wide'>Upvotes</td> <td class='thirteen wide'><%= ups %></td> </tr><tr> <td>Downvotes</td> <td><%= downs %></td> </tr><tr> <td>Author</td> <td><%= author %></td> </tr><tr> <td>Timestamp</td> <td><%= subreddit %></td> </tr><tr> <td>Subreddit</td> <td><%= created_ago %> ago</td> </tr><tr> <td>Origin</td> <td><%= domain %></td> </tr><tr> <td>Comments</td> <td><%= num_comments %> comments</td> </tr><tr> <td colspan='2'> <div class='ui 2 fluid tiny buttons'> <a target='_blank' class='permalink ui button' href='http://www.reddit.com<%= permalink %>'> <i class='url icon'></i> Reddit </a> <% if (type == 'link') { %> <a target='_blank' class='ui external button' href='<%= url %>'> <i class='external url icon'></i> Link </a> <% } %> <% if (media) { %> <% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %> <script src='https://apis.google.com/js/platform.js'></script> <div class='ui youtube tiny button'> <div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div> </div> <% } else if (media.type == 'soundcloud.com') { %> <a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'> <i class='icon male'></i> <%= media.oembed.author_name %> </a> <% } %> <% } %> </div> </td> </tr> </tbody> </table> <% if (is_self) { %> <div class='ui divider'></div> <div class='self text'> <%= selftext_html %> </div> <% } %>"),
+  CurrentSongView: _.template("<% if (media) { %> <img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' /> <% } %> <div class='vote' id='<%= name %>'> <div class='upvote'><i class='icon up arrow'></i></div> <div class='downvote'><i class='icon down arrow'></i></div> </div> <h3 class='ui header title'><%= title %></h3> <table class='ui table inverted'> <tbody> <% if (media) { %> <tr> <td>Title</td> <td><%= media.oembed.title %></td> </tr> <tr> <td>Description</td> <td><%= media.oembed.description %></td> </tr> <% } %> <tr> <td class='four wide'>Upvotes</td> <td class='thirteen wide'><%= ups %></td> </tr><tr> <td>Downvotes</td> <td><%= downs %></td> </tr><tr> <td>Author</td> <td><%= author %></td> </tr><tr> <td>Timestamp</td> <td><%= subreddit %></td> </tr><tr> <td>Subreddit</td> <td><%= created_ago %> ago</td> </tr><tr> <td>Origin</td> <td><%= domain %></td> </tr><tr> <td>Comments</td> <td><%= num_comments %> comments</td> </tr><tr> <td colspan='2'> <div class='ui 2 fluid tiny buttons'> <a target='_blank' class='permalink ui button' href='http://www.reddit.com<%= permalink %>'> <i class='url icon'></i> Reddit </a> <% if (type == 'link') { %> <a target='_blank' class='ui external button' href='<%= url %>'> <i class='external url icon'></i> Link </a> <% } %> <% if (media) { %> <% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %> <script src='https://apis.google.com/js/platform.js'></script> <div class='ui youtube tiny button'> <div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div> </div> <% } else if (media.type == 'soundcloud.com') { %> <a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'> <i class='icon male'></i> <%= media.oembed.author_name %> </a> <% } else if (media.type == 'vimeo.com') { %> <a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'> <i class='icon male'></i> <%= media.oembed.author_name %> </a> <% } %> <% } %> </div> </td> </tr> </tbody> </table> <% if (is_self) { %> <div class='ui divider'></div> <div class='self text'> <%= selftext_html %> </div> <% } %>"),
   CommentsView: _.template("<div class='comment' id='<%= name %>' data-ups='<%= ups %>' data-downs='<%= downs %>'> <div class='vote'> <div class='upvote<% if (likes === true) print(' active') %>'><i class='icon up arrow'></i></div> <div class='downvote<% if (likes === false) print(' active') %>'><i class='icon down arrow'></i></div> </div> <div class='content'> <a class='author'><%= author %></a> <div class='metadata'> <span class='ups'><%= ups %></span>/ <span class='downs'><%= downs %></span> <span class='date'><%= created_ago %> ago</span> </div> <div class='text'><% print(_.unescape(body_html)) %></div> <div class='actions'><a class='reply'>Reply</a></div> </div> </div>"),
   ReplyTo: _.template("<span class='ui reply_to label inverted black fluid' id='<%= id %>'> Replying to <%= author %> <i class='icon close'></i> </span>"),
   AuthenticationView: _.template("<div class='item ui dropdown reddit account' id='<%= id %>'> <i class='icon user'></i> <%= name %> <i class='icon dropdown'></i> <div class='menu'> <div class='item'> <%= link_karma %> Link Karma </div> <div class='item'> <%= comment_karma %> Comment Karma </div> <% if (is_gold == true) { %> <div class='item'> Gold Member </div> <% } %> <a class='item sign-out' href='/logout'> <i class='icon off'></i> Log Out </a> </div> </div>")
@@ -45,6 +52,7 @@ RouterModel = Backbone.Router.extend({
     "popular": "popular",
     "playlist": "playlist",
     "radio": "radio",
+    "": "about",
     "/": "about",
     "about": "about",
     "devices": "devices",
@@ -208,6 +216,19 @@ Reddit = Backbone.Model.extend({
   changeSortMethod: function(sortMethod, topMethod) {
     this.set("sortMethod", sortMethod);
     return this.set("topMethod", topMethod);
+  },
+  save: function() {
+    localStorage["sortMethod"] = this.get("sortMethod");
+    return localStorage["topMethod"] = this.get("topMethod");
+  },
+  initialize: function() {
+    if (localStorage["sortMethod"] != null) {
+      this.set("sortMethod", localStorage["sortMethod"]);
+    }
+    if (localStorage["topMethod"] != null) {
+      this.set("topMethod", localStorage["topMethod"]);
+    }
+    return this.listenTo(this, "change", this.save);
   }
 });
 
@@ -242,38 +263,15 @@ ProgressBar = Backbone.Model.extend({
     duration: 60,
     currentSongID: -1
   },
-  resize: function() {
-    var itemWidth;
-    itemWidth = $(".controls .left .item").outerWidth();
-    $(".controls .middle").css("width", $("body").innerWidth() - itemWidth * 5.4);
-    return $(".controls .middle .progress").css("width", $("body").innerWidth() - itemWidth * 9);
-  },
-  toMinSecs: function(secs) {
-    var hours, mins;
-    hours = Math.floor(secs / 3600);
-    if (hours) {
-      mins = Math.floor((secs / 60) - hours * 60);
-      secs = Math.floor(secs % 60);
-      return "" + (String('0' + hours).slice(-2)) + ":" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
-    } else {
-      mins = Math.floor(secs / 60);
-      secs = Math.floor(secs % 60);
-      return "" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
-    }
-  },
   setDuration: function(data) {
     this.set("duration", data);
-    this.set("current", 0);
-    return $(".controls .end.time").text(this.toMinSecs(data));
+    return this.set("current", 0);
   },
   setLoaded: function(data) {
-    this.set("loaded", data);
-    return $(".controls .progress .loaded").css("width", data * 100 + "%");
+    return this.set("loaded", data);
   },
   setCurrent: function(data) {
-    this.set("current", data);
-    $(".controls .start.time").text(this.toMinSecs(data));
-    return $(".controls .progress .current").css("width", data / this.get("duration") * 100 + "%");
+    return this.set("current", data);
   },
   change: function(index, song) {
     if (song.get("id") !== this.get("currentSongID") && song.get("playable") === true) {
@@ -289,19 +287,89 @@ ProgressBar = Backbone.Model.extend({
     return $(".controls .progress .waveform").css("-webkit-mask-box-image", "url(" + waveform + ")");
   },
   initialize: function() {
-    this.resize();
     if (FLAG_DEBUG) {
       console.log("ProgressBar :: Ready");
     }
     this.listenTo(RMP.dispatcher, "song:change", this.change);
     this.listenTo(RMP.dispatcher, "progress:current", this.setCurrent);
     this.listenTo(RMP.dispatcher, "progress:loaded", this.setLoaded);
-    this.listenTo(RMP.dispatcher, "progress:duration", this.setDuration);
-    return this.listenTo(RMP.dispatcher, "app:resize", this.resize);
+    return this.listenTo(RMP.dispatcher, "progress:duration", this.setDuration);
+  }
+});
+
+ProgressBarView = Backbone.View.extend({
+  events: {
+    "mousemove .progress": "seeking",
+    "mousedown .progress": "startSeeking"
+  },
+  justSeeked: false,
+  startSeeking: function(e) {
+    RMP.dragging = true;
+    this.percentage = e.offsetX / this.$(".progress").outerWidth();
+    return this.justSeeked = true;
+  },
+  seeking: function(e) {
+    if (!this.justSeeked) {
+      return;
+    }
+    this.percentage = e.offsetX / this.$(".progress").outerWidth();
+    if (RMP.dragging) {
+      RMP.dispatcher.trigger("progress:set", this.percentage, !RMP.dragging);
+    }
+    return this.$(".progress .current").css("width", this.percentage * 100 + "%");
+  },
+  stopSeeking: function() {
+    if (!this.justSeeked) {
+      return;
+    }
+    RMP.dispatcher.trigger("progress:set", this.percentage, !RMP.dragging);
+    if (FLAG_DEBUG && RMP.dragging === false) {
+      console.log("ProgressBarView :: Seek :: " + (this.percentage * 100) + "%");
+    }
+    return this.justSeeked = false;
+  },
+  toMinSecs: function(secs) {
+    var hours, mins;
+    hours = Math.floor(secs / 3600);
+    if (hours) {
+      mins = Math.floor((secs / 60) - hours * 60);
+      secs = Math.floor(secs % 60);
+      return "" + (String('0' + hours).slice(-2)) + ":" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
+    } else {
+      mins = Math.floor(secs / 60);
+      secs = Math.floor(secs % 60);
+      return "" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
+    }
+  },
+  resize: function() {
+    var itemWidth;
+    itemWidth = $(".controls .left .item").outerWidth();
+    this.$el.css("width", $("body").innerWidth() - itemWidth * 5.4);
+    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 9);
+  },
+  render: function() {
+    this.$(".end.time").text(this.toMinSecs(this.model.get("duration")));
+    this.$(".progress .loaded").css("width", this.model.get("loaded") * 100 + "%");
+    this.$(".start.time").text(this.toMinSecs(this.model.get("current")));
+    return this.$(".progress .current").css("width", this.model.get("current") / this.model.get("duration") * 100 + "%");
+  },
+  initialize: function() {
+    this.resize();
+    if (FLAG_DEBUG) {
+      console.log("ProgressBarView :: Ready");
+    }
+    this.listenTo(this.model, "change", this.render);
+    this.listenTo(RMP.dispatcher, "app:resize", this.resize);
+    return this.listenTo(RMP.dispatcher, "events:stopDragging", this.stopSeeking);
   }
 });
 
 RMP.progressbar = new ProgressBar;
+
+RMP.progressbarview = new ProgressBarView({
+  el: $(".controls .middle.menu"),
+  model: RMP.progressbar
+});
 
 Button = Backbone.View.extend({
   events: {
@@ -711,6 +779,11 @@ SongMP3 = Song.extend({
   playable: true
 });
 
+SongVimeo = Song.extend({
+  type: "vimeo",
+  playable: true
+});
+
 NotASong = Backbone.Model.extend({
   type: "link",
   playable: false,
@@ -737,7 +810,7 @@ Playlist = Backbone.Collection.extend({
     var song;
     return song = (function() {
       switch (false) {
-        case item.domain !== "youtube.com":
+        case !(item.domain === "youtube.com" || item.domain === "youtu.be" || item.domain === "m.youtube.com"):
           return new SongYoutube(item);
         case item.domain !== "soundcloud.com":
           return new SongSoundcloud(item);
@@ -745,6 +818,8 @@ Playlist = Backbone.Collection.extend({
           return new SongBandcamp(item);
         case item.url.substr(-4) !== ".mp3":
           return new SongMP3(item);
+        case item.domain !== "vimeo.com":
+          return new SongVimeo(item);
         case !item.is_self:
           return new NotALink(item);
         default:
@@ -757,7 +832,10 @@ Playlist = Backbone.Collection.extend({
     index = _.indexOf(this.models, song);
     this.current.song = song;
     this.current.index = index;
-    return RMP.dispatcher.trigger("song:change", index, song);
+    RMP.dispatcher.trigger("song:change", index, song);
+    if (this.current.index >= this.length - 1) {
+      return this.more();
+    }
   },
   refresh: function() {
     return RMP.reddit.getMusic((function(_this) {
@@ -787,7 +865,7 @@ Playlist = Backbone.Collection.extend({
     })(this));
   },
   forward: function() {
-    if (this.current.index >= this.length) {
+    if (this.current.index >= this.length - 1) {
       return this.more((function(_this) {
         return function() {
           return _this.forward();
@@ -861,9 +939,6 @@ PlaylistView = Backbone.View.extend({
     this.$el.html("");
     RMP.playlist.each((function(_this) {
       return function(model) {
-        if (FLAG_DEBUG) {
-          console.log(model.toJSON());
-        }
         return _this.$el.append(_this.template(model.toJSON()));
       };
     })(this));
@@ -1085,13 +1160,17 @@ SortMethodView = Backbone.View.extend({
   render: function() {
     this.$(".item").removeClass("active");
     this.getCurrent().addClass("active");
-    return this.$(".ui.dropdown").dropdown();
+    return this.$(".ui.dropdown").dropdown("set selected", "top:" + (RMP.reddit.get('topMethod')));
   },
   select: function(e) {
     var method, sortMethod, target, topMethod;
     target = $(e.currentTarget);
     method = target.data("value");
+    if (method == null) {
+      return;
+    }
     sortMethod = method;
+    topMethod = RMP.reddit.get("topMethod");
     if (method.substr(0, 3) === "top") {
       sortMethod = "top";
       topMethod = method.substr(4);
@@ -1133,7 +1212,11 @@ RMP.dispatcher.on("loaded:playlist", function(page) {
   RMP.commentsview.setElement($(".content.playlist .comments.root"));
   RMP.commentsview.render();
   RMP.sortmethodview.setElement($(".content.playlist .sortMethod"));
-  return RMP.sortmethodview.render();
+  RMP.sortmethodview.render();
+  $(".content.playlist .subreddit-count b").text(RMP.subredditplaylist.length);
+  return $(".content.playlist .subreddit-count").on("click", function(e) {
+    return RMP.sidebar.open("browse");
+  });
 });
 
 MusicPlayer = Backbone.Model.extend({
@@ -1164,10 +1247,17 @@ YoutubePlayer = MusicPlayer.extend({
         return RMP.dispatcher.trigger("player:buffering", this);
     }
   },
+  onError: function(e) {
+    if (FLAG_DEBUG) {
+      console.error("YoutubePlayer :: Error", e);
+    }
+    return RMP.dispatcher.trigger("controls:forward");
+  },
   events: function() {
     return {
       "onReady": this.onPlayerReady,
-      "onStateChange": this.onPlayerStateChange
+      "onStateChange": this.onPlayerStateChange,
+      "onError": this.onError
     };
   },
   init: function() {
@@ -1220,6 +1310,9 @@ YoutubePlayer = MusicPlayer.extend({
       }
     }
   },
+  seekTo: function(percentage, seekAhead) {
+    return this.player.seekTo(percentage * this.player.getDuration(), seekAhead);
+  },
   initialize: function() {
     if (this.$el == null) {
       this.$el = $("#player");
@@ -1265,6 +1358,13 @@ SoundcloudPlayer = MusicPlayer.extend({
   },
   playPause: function() {
     return this.player.toggle();
+  },
+  seekTo: function(percentage, seekAhead) {
+    return this.player.getDuration((function(_this) {
+      return function(duration) {
+        return _this.player.seekTo(percentage * duration);
+      };
+    })(this));
   },
   "switch": function(song) {
     this.set(song.attributes);
@@ -1320,6 +1420,14 @@ SoundcloudPlayer = MusicPlayer.extend({
     if (track_id != null) {
       this.track.id = track_id[1];
     }
+    track_id = url.match(/\/playlists\/(\d+)/);
+    if (track_id != null) {
+      this.track.type = "playlists";
+    }
+    if (track_id != null) {
+      this.track.id = track_id[1];
+    }
+    console.log(this.track);
     return $.ajax({
       url: "" + API.Soundcloud.base + "/" + this.track.type + "/" + this.track.id + ".json?callback=?",
       jsonp: "callback",
@@ -1432,6 +1540,9 @@ MP3Player = MusicPlayer.extend({
     } else {
       return this.player.play();
     }
+  },
+  seekTo: function(percentage, seekAhead) {
+    return this.player.currentTime = percentage * this.player.duration;
   },
   initialize: function() {
     if (this.$el == null) {
@@ -1559,6 +1670,78 @@ BandcampPlayer = MP3Player.extend({
   }
 });
 
+VimeoPlayer = MusicPlayer.extend({
+  type: "vimeo",
+  events: function() {},
+  setDuration: function() {},
+  progress_play: function(data) {},
+  playerState: "ended",
+  event_trigger: function(ev) {},
+  init: function() {
+    var player;
+    if (FLAG_DEBUG) {
+      console.log("VimeoPlayer :: Making Player");
+    }
+    player = $("<iframe src='http://player.vimeo.com/video/" + this.track.id + "?api=1&autoplay=1' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>");
+    this.$el.append(player);
+    this.player = player[0].contentWindow;
+    return this.player.postMessage({
+      "method": "play"
+    }, "*");
+  },
+  clean: function(justTheElement) {
+    $("#player iframe").remove();
+    this.$el.html("");
+    if (justTheElement == null) {
+      this.stopListening();
+    }
+    if (justTheElement == null) {
+      this.trigger("destroy");
+    }
+    if (!justTheElement) {
+      return this.off;
+    }
+  },
+  "switch": function(song) {
+    var url, video_id;
+    this.set(song.attributes);
+    this.track = this.attributes.media.oembed;
+    url = decodeURIComponent(decodeURIComponent(this.track.html));
+    video_id = url.match(/\/video\/(\d+)/);
+    if (video_id != null) {
+      this.track.id = video_id[1];
+    }
+    this.clean(true);
+    return this.init();
+  },
+  playPause: function() {
+    if (this.playerState === "playing") {
+      return this.player.postMessage({
+        method: "pause"
+      }, "*");
+    } else {
+      return this.player.postMessage({
+        method: "play"
+      }, "*");
+    }
+  },
+  seekTo: function(percentage, seekAhead) {},
+  initialize: function() {
+    var url, video_id;
+    if (this.$el == null) {
+      this.$el = $("#player");
+    }
+    this.$el.html("");
+    this.track = this.attributes.media.oembed;
+    url = decodeURIComponent(decodeURIComponent(this.track.html));
+    video_id = url.match(/\/video\/(\d+)/);
+    if (video_id != null) {
+      this.track.id = video_id[1];
+    }
+    return this.init();
+  }
+});
+
 PlayerController = Backbone.Model.extend({
   change: function(index, song) {
     if (this.controller == null) {
@@ -1570,6 +1753,8 @@ PlayerController = Backbone.Model.extend({
             return new SoundcloudPlayer(song.attributes);
           case song.type !== "bandcamp":
             return new BandcampPlayer(song.attributes);
+          case song.type !== "vimeo":
+            return new VimeoPlayer(song.attributes);
           case song.type !== "mp3":
             return new MP3Player(song.attributes);
           default:
@@ -1599,9 +1784,16 @@ PlayerController = Backbone.Model.extend({
     }
     return this.controller.playPause();
   },
+  seekTo: function(percentage, seekAhead) {
+    if (this.controller == null) {
+      return;
+    }
+    return this.controller.seekTo(percentage, seekAhead);
+  },
   initialize: function() {
     this.listenTo(RMP.dispatcher, "song:change", this.change);
-    return this.listenTo(RMP.dispatcher, "controls:play", this.playPause);
+    this.listenTo(RMP.dispatcher, "controls:play", this.playPause);
+    return this.listenTo(RMP.dispatcher, "progress:set", this.seekTo);
   }
 });
 
