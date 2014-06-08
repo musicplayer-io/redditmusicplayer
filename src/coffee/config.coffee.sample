@@ -1,11 +1,11 @@
 API = 
 	Bandcamp:
-		base: "http://api.bandcamp.com/api"
+		base: "//api.bandcamp.com/api"
 		key: "YOUR_BANDCAMP_KEY"
 	Soundcloud: 
-		base: "http://api.soundcloud.com"
+		base: "//api.soundcloud.com"
 		key: "YOUR_SOUNDCLOUD_KEY"
 	Reddit:
-		base: "http://www.reddit.com"
+		base: "//www.reddit.com"
 
 FLAG_DEBUG = true

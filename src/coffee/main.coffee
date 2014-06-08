@@ -8,3 +8,12 @@ $(document).ready ->
 
 $( window ).resize ->
 	RMP.dispatcher.trigger "app:resize"
+
+# Dragging
+RMP.dragging = false
+# $( window ).mousedown ->
+#	RMP.dragging = true
+
+$( window ).mouseup ->
+	RMP.dragging = false
+	RMP.dispatcher.trigger "events:stopDragging"
