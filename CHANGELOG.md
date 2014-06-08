@@ -10,6 +10,7 @@
 * Saving sortmethod
 * Vimeo
 * Less pausing (no video / errors)
+* some subreddits added
 
 ### 0.3.0 - 21 February 2014
 
