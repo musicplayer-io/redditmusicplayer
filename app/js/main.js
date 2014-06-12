@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, RouterModel, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, RouterModel, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -227,6 +227,10 @@ Reddit = Backbone.Model.extend({
     }
     if (localStorage["topMethod"] != null) {
       this.set("topMethod", localStorage["topMethod"]);
+    }
+    if (this.get("sortMethod") !== "top" || this.get("sortMethod") !== "hot" || this.get("sortMethod") !== "new") {
+      this.changeSortMethod("hot", "week");
+      this.save();
     }
     return this.listenTo(this, "change", this.save);
   }
@@ -1810,5 +1814,46 @@ onYouTubeIframeAPIReady = function() {
   }
   return RMP.dispatcher.trigger("youtube:iframe");
 };
+
+KeyboardController = Backbone.Model.extend({
+  defaults: {
+    shifted: false
+  },
+  send: function(command, e) {
+    return RMP.dispatcher.trigger(command, e);
+  },
+  initialize: function() {
+    $("body").keyup((function(_this) {
+      return function(e) {
+        if (e.keyCode === 32) {
+          _this.send("controls:play", e);
+        }
+        if (_this.get("shifted") === true) {
+          if (e.keyCode === 40) {
+            _this.send("controls:forward", e);
+          } else if (e.keyCode === 39) {
+            _this.send("controls:forward", e);
+          } else if (e.keyCode === 37) {
+            _this.send("controls:backward", e);
+          } else if (e.keyCode === 38) {
+            _this.send("controls:backward", e);
+          }
+        }
+        if (e.keyCode === 17) {
+          return _this.set("shifted", false);
+        }
+      };
+    })(this));
+    return $("body").keydown((function(_this) {
+      return function(e) {
+        if (e.keyCode === 17) {
+          return _this.set("shifted", true);
+        }
+      };
+    })(this));
+  }
+});
+
+RMP.keyboard = new KeyboardController;
 
 //# sourceMappingURL=main.js.map

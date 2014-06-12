@@ -1,6 +1,14 @@
  
 ## Changelog
 
+### 0.3.2 - 13 June 2014
+
+* Keyboard support
+ * Ctrl + Right / Down Arrow = Next Song
+ * Ctrl + Left / Up Arrow = Previous Song
+ * Space = Play or Pause
+* More subreddits
+
 ### 0.3.1 - 7 June 2014
 
 * Bug fixes
