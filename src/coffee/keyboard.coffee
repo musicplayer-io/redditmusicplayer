@@ -6,7 +6,6 @@ KeyboardController = Backbone.Model.extend
 		RMP.dispatcher.trigger command, e
 	initialize: () ->
 		$("body").keyup (e) =>
-			if e.keyCode is 32 then @send "controls:play", e
 
 			if (@get("shifted") is true)
 				if e.keyCode is 40 then @send "controls:forward", e
@@ -18,6 +17,10 @@ KeyboardController = Backbone.Model.extend
 				@set "shifted", false
 
 		$("body").keydown (e) =>
+			if e.keyCode is 32
+				@send "controls:play", e
+				e.preventDefault()
+				return false
 			if e.keyCode is 17
 				@set "shifted", true
 
