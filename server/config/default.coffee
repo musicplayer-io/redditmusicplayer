@@ -44,7 +44,7 @@ module.exports = ->
     @use logger "dev"
     
     @use cookieParser()
-    @use bodyParser.json()
+    @use bodyParser.urlencoded()
     @use session
         resave: true
         saveUninitialized: true
