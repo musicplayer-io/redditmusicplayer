@@ -21,6 +21,7 @@ Reddit = Backbone.Model.extend
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"

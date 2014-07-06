@@ -1,0 +1,19 @@
+.content.song
+	.switcher
+		i.icon.music
+		span.page Current Song
+		//- include ../switcher
+	.ui.inverted.segment
+		include ../video
+	.current.song.ui.inverted.segment
+	.ui.inverted.segment.comments.root
+		h2.ui.header
+			span.num_comments
+			|  Comments
+		.ui.minimal.comments.overview
+		form.ui.reply.form
+			.field
+				textarea.comment_text
+			.ui.button.teal.submit.labeled.icon.fluid.add_comment
+				i.icon.edit
+				|  Add Comment

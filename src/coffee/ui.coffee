@@ -7,17 +7,20 @@ UIModel = Backbone.View.extend
 		if page of @cache and (ignoreCache is false or not ignoreCache?)
 			return callback @cache[page]
 
+		console.log "UI :: Load :: ", page if FLAG_DEBUG
 		$.get("/#{page}", (data) =>
 			@cache[page] = data
 			callback data
 		)
-	navigate: (category, page) ->
+	navigate: (category, page, container) ->
+		@setElementview $(".ui.container.#{container}") if container?
 		@load page, (data) =>
 			@render data, page
 	getElement: (page) ->
 		@$("[data-page=#{page}]")
 	render: (data, page) ->
 		@$el.html data.content
+		@$el.find(".ui.dropdown").dropdown()
 		document.title = data.seo.title
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
@@ -27,7 +30,7 @@ UIModel = Backbone.View.extend
 
 
 RMP.ui = new UIModel
-	el: $(".ui.container")
+	el: $(".ui.container.two")
 
 RMP.dispatcher.on "loaded:about", (page) ->
 	$(".start.listening").click (e) ->
@@ -37,3 +40,8 @@ RMP.dispatcher.on "loaded:about", (page) ->
 			# trigger: true
 		RMP.sidebar.open "playlist"
 		# RMP.router.playlist()
+
+RMP.dispatcher.on "app:main", () ->
+	$(".ui.container").each (i, el) ->
+		item = $ el
+		RMP.dispatcher.trigger "loaded:#{item.data('page')}"
