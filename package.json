@@ -22,6 +22,10 @@
   "dependencies": {
     "coffee-script": "~1.7.1",
     "redis": "^0.10.1",
-    "hiredis": "^0.1.16"
+    "hiredis": "^0.1.16",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-watch": "^0.5.3",
+    "grunt-contrib-jade": "^0.8.0",
+    "grunt-contrib-less": "^0.8.3"
   }
 }

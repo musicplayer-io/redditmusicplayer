@@ -47,7 +47,10 @@ module.exports = ->
     @use session
         key: "rmp.id"
         secret: "Reddit Music Player"
-        store: new RedisStore({db: "rmp"})
+        store: new RedisStore
+            prefix: "sess"
+            port: 6379
+            host: "23.95.112.34"
         cookie:
             secure: false
             maxAge: 30 * (24*60*60*1000) # days

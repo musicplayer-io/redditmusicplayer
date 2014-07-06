@@ -13,14 +13,14 @@ KeyboardController = Backbone.Model.extend
 				else if e.keyCode is 37 then @send "controls:backward", e
 				else if e.keyCode is 38 then @send "controls:backward", e
 
+				if e.keyCode is 32
+					@send "controls:play", e
+					e.preventDefault()
+
 			if e.keyCode is 17
 				@set "shifted", false
 
 		$("body").keydown (e) =>
-			if e.keyCode is 32
-				@send "controls:play", e
-				e.preventDefault()
-				return false
 			if e.keyCode is 17
 				@set "shifted", true
 

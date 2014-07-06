@@ -43,7 +43,7 @@ class AuthController
 		# callback new Error 403 if request.query.state isnt request.session.state
 		console.log "callback", request.query
 		redirectBack = '/'
-		redirectBack = request.session.redirectBack if request.session.redirectBack?
+		redirectBack = request.session.redirectBack if request.session? and request.session.redirectBack?
 		auth = passport.authenticate 'reddit', (err, user, refreshToken) ->
 			return callback(err) if err?
 			return response.redirect("/login") if not user?
