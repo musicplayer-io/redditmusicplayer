@@ -4,6 +4,8 @@ credentials = require("./config/credentials")
 
 # Configure Server
 server = express()
+http = require('http').Server(server)
+io = require('socket.io')(http)
 server.set 'baseDir', __dirname + '/..'
 
 require('./config/default').call server
