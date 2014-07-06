@@ -43,9 +43,10 @@ module.exports = ->
     @use logger "dev"
     
     @use cookieParser()
-    @use bodyParser()
     @use session
-        key: "rmp.id"
+        resave: true
+        saveUninitialized: true
+        name: "rmp.id"
         secret: "Reddit Music Player"
         store: new RedisStore
             prefix: "sess"
