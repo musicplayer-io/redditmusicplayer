@@ -22,7 +22,7 @@ class AuthController
 
 
 	login: (request, response, callback) =>
-		request.session.redirectBack = request.query.redirect
+		request.session.redirectBack = request.query.redirect if request.session?
 		response.redirect '/auth/reddit'
 	logout: (request, response) =>
 		request.logout()
