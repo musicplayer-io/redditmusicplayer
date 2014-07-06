@@ -32,6 +32,30 @@ UIModel = Backbone.View.extend
 RMP.ui = new UIModel
 	el: $(".ui.container.two")
 
+MobileUI = Backbone.View.extend
+	tagName: "div"
+	className: "mobilebar"
+	events:
+		"click .item": "click"
+	click: (e) ->
+		item = $ e.currentTarget
+
+		console.log item
+		page = item.data "page"
+		container = $(".ui.container[data-page=#{page}]")
+		
+		$(".ui.container").removeClass "active"
+		container.addClass "active"
+
+		@$(".item").removeClass "active"
+		item.addClass "active"
+	initialize: () ->
+		console.log "MobileUI :: Ready" if FLAG_DEBUG
+
+
+RMP.mobileui = new MobileUI
+	el: $(".ui.mobilebar")
+
 RMP.dispatcher.on "loaded:about", (page) ->
 	$(".start.listening").click (e) ->
 		console.log "About :: Start Listening" if FLAG_DEBUG
