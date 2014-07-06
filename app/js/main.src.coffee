@@ -219,6 +219,7 @@ Reddit = Backbone.Model.extend
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
 		data = {}
@@ -230,6 +231,7 @@ Reddit = Backbone.Model.extend
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getComments: (permalink, callback) ->
 		data = {}
@@ -243,6 +245,7 @@ Reddit = Backbone.Model.extend
 			url: url
 			data: data
 			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r[1].data.children
 	addComment: (params) ->
 		data = 
@@ -253,8 +256,9 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "/api/add_comment"
 			data: data
-			success: (resp) =>
-				params.callback(resp)
+			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+				params.callback(r)
 	changeSortMethod: (sortMethod, topMethod) ->
 		@set "sortMethod", sortMethod
 		@set "topMethod", topMethod

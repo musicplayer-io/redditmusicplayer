@@ -89,6 +89,9 @@ Reddit = Backbone.Model.extend({
       data: data,
       success: (function(_this) {
         return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
           return callback(r.data.children);
         };
       })(this)
@@ -108,6 +111,9 @@ Reddit = Backbone.Model.extend({
       data: data,
       success: (function(_this) {
         return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
           return callback(r.data.children);
         };
       })(this)
@@ -133,6 +139,9 @@ Reddit = Backbone.Model.extend({
       data: data,
       success: (function(_this) {
         return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
           return callback(r[1].data.children);
         };
       })(this)
@@ -150,8 +159,11 @@ Reddit = Backbone.Model.extend({
       url: "/api/add_comment",
       data: data,
       success: (function(_this) {
-        return function(resp) {
-          return params.callback(resp);
+        return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
+          return params.callback(r);
         };
       })(this)
     });
