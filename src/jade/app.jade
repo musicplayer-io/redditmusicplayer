@@ -11,9 +11,12 @@ html(xmlns:og='http://ogp.me/ns#')
 		link(href='/css/style.css', rel='stylesheet')
 	body
 		include includes/titlebar 
-		include includes/sidebar
-		.ui.container
-			|!{ content }
+		.ui.container.one(data-page="browse", style="width: 20%;")
+			include content/main/browse
+		.ui.container.two(data-page="playlist", style="width: 46.66%; left: 20%;")
+			include content/main/playlist
+		.ui.container.three(data-page="song")
+			include content/main/song
 		include includes/controls
 		include includes/javascript
 		block userscript

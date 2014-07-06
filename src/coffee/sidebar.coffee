@@ -36,4 +36,4 @@ Sidebar = Backbone.View.extend
 
 RMP.sidebar = new Sidebar
 	model: new SidebarModel
-	el: $(".ui.sidepane")	
+	el: $(".content.navigation")	

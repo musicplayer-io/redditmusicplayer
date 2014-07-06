@@ -191,42 +191,6 @@ Templates =
 			</div>
 		")
 
-RouterModel = Backbone.Router.extend
-	routes:
-		"discover": "discover"
-		"browse": "browse"
-		"popular": "popular"
-		"playlist": "playlist"
-		"radio": "radio"
-		"": "about"
-		"/": "about"
-		"about": "about"
-		"devices": "devices"
-		"saved": "saved"
-		"recent": "recent"
-		"statistics": "statistics"
-		"settings": "settings"
-	discover: () ->
-		console.log "Router :: Discover" if FLAG_DEBUG
-		RMP.dispatcher.trigger "app:page", "main", "discover"
-	about: () ->
-		console.log "Router :: About" if FLAG_DEBUG
-		RMP.dispatcher.trigger "app:page", "main", "about"
-	browse: () ->
-		console.log "Router :: Browse" if FLAG_DEBUG
-		RMP.dispatcher.trigger "app:page", "main", "browse"
-	playlist: () ->
-		console.log "Router :: Playlist" if FLAG_DEBUG
-		RMP.dispatcher.trigger "app:page", "main", "playlist"
-	initialize: () ->
-		console.log "Router :: Ready" if FLAG_DEBUG
-
-RMP.router = new RouterModel
-
-RMP.dispatcher.on "app:main", (category, page) -> 
-	Backbone.history.start({pushState: true}) if not Backbone.History.started
-	console.log "History :: Ready" if FLAG_DEBUG
-
 
 Reddit = Backbone.Model.extend
 	defaults:
@@ -249,6 +213,7 @@ Reddit = Backbone.Model.extend
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
@@ -390,8 +355,7 @@ ProgressBarView = Backbone.View.extend
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$el.css("width", $("body").innerWidth() - itemWidth*5.4)
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*9)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*6)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -497,7 +461,7 @@ Sidebar = Backbone.View.extend
 
 RMP.sidebar = new Sidebar
 	model: new SidebarModel
-	el: $(".ui.sidepane")	
+	el: $(".content.navigation")	
 
 
 UIModel = Backbone.View.extend
@@ -508,17 +472,20 @@ UIModel = Backbone.View.extend
 		if page of @cache and (ignoreCache is false or not ignoreCache?)
 			return callback @cache[page]
 
+		console.log "UI :: Load :: ", page if FLAG_DEBUG
 		$.get("/#{page}", (data) =>
 			@cache[page] = data
 			callback data
 		)
-	navigate: (category, page) ->
+	navigate: (category, page, container) ->
+		@setElementview $(".ui.container.#{container}") if container?
 		@load page, (data) =>
 			@render data, page
 	getElement: (page) ->
 		@$("[data-page=#{page}]")
 	render: (data, page) ->
 		@$el.html data.content
+		@$el.find(".ui.dropdown").dropdown()
 		document.title = data.seo.title
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
@@ -528,7 +495,7 @@ UIModel = Backbone.View.extend
 
 
 RMP.ui = new UIModel
-	el: $(".ui.container")
+	el: $(".ui.container.two")
 
 RMP.dispatcher.on "loaded:about", (page) ->
 	$(".start.listening").click (e) ->
@@ -538,6 +505,11 @@ RMP.dispatcher.on "loaded:about", (page) ->
 			# trigger: true
 		RMP.sidebar.open "playlist"
 		# RMP.router.playlist()
+
+RMP.dispatcher.on "app:main", () ->
+	$(".ui.container").each (i, el) ->
+		item = $ el
+		RMP.dispatcher.trigger "loaded:#{item.data('page')}"
 Subreddit = Backbone.Model.extend
 	defaults:
 		category: null
@@ -805,6 +777,47 @@ PlaylistView = Backbone.View.extend
 		@listenTo RMP.dispatcher, "song:change", @setCurrent
 		console.log "PlayListView :: Ready" if FLAG_DEBUG
 
+SortMethodView = Backbone.View.extend
+	events:
+		"click .item": "select"
+	getCurrent: () ->
+		@$("[data-value='#{RMP.reddit.get('sortMethod')}']")
+	render: () ->
+		@$(".item").removeClass "active"
+		@getCurrent().addClass "active"
+
+		@$(".ui.dropdown").dropdown("set selected", "top:#{RMP.reddit.get('topMethod')}")
+	select: (e) ->
+		target = $ e.currentTarget
+		method = target.data "value"
+		return if not method?
+		sortMethod = method
+		topMethod = RMP.reddit.get "topMethod"
+		if method.substr(0,3) is "top"
+			sortMethod = "top"
+			topMethod = method.substr(4)
+
+		RMP.reddit.changeSortMethod(sortMethod, topMethod)
+		RMP.dispatcher.trigger "controls:sortMethod", sortMethod, topMethod
+		
+		@render()
+	initialize: () ->
+		@render()
+
+RMP.playlist = new Playlist
+RMP.playlistview = new PlaylistView
+	el: $(".content.playlist .music.playlist")
+
+RMP.sortmethodview = new SortMethodView
+	el: $(".content.playlist .sortMethod")
+
+RMP.dispatcher.on "loaded:playlist", (page) ->
+	RMP.playlistview.setElement $(".content.playlist .music.playlist")
+	RMP.playlistview.render() if RMP.playlist.length > 0
+
+	RMP.sortmethodview.setElement $(".content.playlist .sortMethod")
+	RMP.sortmethodview.render()
+
 CurrentSongView = Backbone.View.extend
 	template: Templates.CurrentSongView
 	events:
@@ -943,59 +956,17 @@ CommentsView = Backbone.View.extend
 		@listenTo RMP.dispatcher, "song:change", @render
 		console.log "CommentsView :: Ready" if FLAG_DEBUG
 
-SortMethodView = Backbone.View.extend
-	events:
-		"click .item": "select"
-	getCurrent: () ->
-		@$("[data-value='#{RMP.reddit.get('sortMethod')}']")
-	render: () ->
-		@$(".item").removeClass "active"
-		@getCurrent().addClass "active"
-
-		@$(".ui.dropdown").dropdown("set selected", "top:#{RMP.reddit.get('topMethod')}")
-	select: (e) ->
-		target = $ e.currentTarget
-		method = target.data "value"
-		return if not method?
-		sortMethod = method
-		topMethod = RMP.reddit.get "topMethod"
-		if method.substr(0,3) is "top"
-			sortMethod = "top"
-			topMethod = method.substr(4)
-
-		RMP.reddit.changeSortMethod(sortMethod, topMethod)
-		RMP.dispatcher.trigger "controls:sortMethod", sortMethod, topMethod
-		
-		@render()
-	initialize: () ->
-		@render()
-
-RMP.playlist = new Playlist
-RMP.playlistview = new PlaylistView
-	el: $(".content.playlist .music.playlist")
 RMP.currentsongview = new CurrentSongView
 	el: $(".content.playlist .current.song")
 RMP.commentsview = new CommentsView
 	el: $(".content.playlist .comments.root")
-RMP.sortmethodview = new SortMethodView
-	el: $(".content.playlist .sortMethod")
 
 RMP.dispatcher.on "loaded:playlist", (page) ->
-	RMP.playlistview.setElement $(".content.playlist .music.playlist")
-	RMP.playlistview.render() if RMP.playlist.length > 0
-
-	RMP.currentsongview.setElement $(".content.playlist .current.song")
+	RMP.currentsongview.setElement $(".content.song .current.song")
 	RMP.currentsongview.render()
 
-	RMP.commentsview.setElement $(".content.playlist .comments.root")
+	RMP.commentsview.setElement $(".content.song .comments.root")
 	RMP.commentsview.render()
-
-	RMP.sortmethodview.setElement $(".content.playlist .sortMethod")
-	RMP.sortmethodview.render()
-
-	$(".content.playlist .subreddit-count b").text RMP.subredditplaylist.length
-	$(".content.playlist .subreddit-count").on "click", (e) ->
-		RMP.sidebar.open "browse"
 
 MusicPlayer = Backbone.Model.extend
 	type: "none"

@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, RouterModel, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -45,66 +45,6 @@ Templates = {
   AuthenticationView: _.template("<div class='item ui dropdown reddit account' id='<%= id %>'> <i class='icon user'></i> <%= name %> <i class='icon dropdown'></i> <div class='menu'> <div class='item'> <%= link_karma %> Link Karma </div> <div class='item'> <%= comment_karma %> Comment Karma </div> <% if (is_gold == true) { %> <div class='item'> Gold Member </div> <% } %> <a class='item sign-out' href='/logout'> <i class='icon off'></i> Log Out </a> </div> </div>")
 };
 
-RouterModel = Backbone.Router.extend({
-  routes: {
-    "discover": "discover",
-    "browse": "browse",
-    "popular": "popular",
-    "playlist": "playlist",
-    "radio": "radio",
-    "": "about",
-    "/": "about",
-    "about": "about",
-    "devices": "devices",
-    "saved": "saved",
-    "recent": "recent",
-    "statistics": "statistics",
-    "settings": "settings"
-  },
-  discover: function() {
-    if (FLAG_DEBUG) {
-      console.log("Router :: Discover");
-    }
-    return RMP.dispatcher.trigger("app:page", "main", "discover");
-  },
-  about: function() {
-    if (FLAG_DEBUG) {
-      console.log("Router :: About");
-    }
-    return RMP.dispatcher.trigger("app:page", "main", "about");
-  },
-  browse: function() {
-    if (FLAG_DEBUG) {
-      console.log("Router :: Browse");
-    }
-    return RMP.dispatcher.trigger("app:page", "main", "browse");
-  },
-  playlist: function() {
-    if (FLAG_DEBUG) {
-      console.log("Router :: Playlist");
-    }
-    return RMP.dispatcher.trigger("app:page", "main", "playlist");
-  },
-  initialize: function() {
-    if (FLAG_DEBUG) {
-      return console.log("Router :: Ready");
-    }
-  }
-});
-
-RMP.router = new RouterModel;
-
-RMP.dispatcher.on("app:main", function(category, page) {
-  if (!Backbone.History.started) {
-    Backbone.history.start({
-      pushState: true
-    });
-  }
-  if (FLAG_DEBUG) {
-    return console.log("History :: Ready");
-  }
-});
-
 Reddit = Backbone.Model.extend({
   defaults: {
     sortMethod: "hot",
@@ -139,6 +79,9 @@ Reddit = Backbone.Model.extend({
     data.sort = this.get("sortMethod");
     if (this.get("sortMethod") === "top") {
       data.t = this.get("topMethod");
+    }
+    if (FLAG_DEBUG) {
+      console.log("Reddit :: GetMusic :: ", this.subreddits());
     }
     return $.ajax({
       dataType: "json",
@@ -348,8 +291,7 @@ ProgressBarView = Backbone.View.extend({
   resize: function() {
     var itemWidth;
     itemWidth = $(".controls .left .item").outerWidth();
-    this.$el.css("width", $("body").innerWidth() - itemWidth * 5.4);
-    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 9);
+    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 6);
   },
   render: function() {
     this.$(".end.time").text(this.toMinSecs(this.model.get("duration")));
@@ -509,7 +451,7 @@ Sidebar = Backbone.View.extend({
 
 RMP.sidebar = new Sidebar({
   model: new SidebarModel,
-  el: $(".ui.sidepane")
+  el: $(".content.navigation")
 });
 
 UIModel = Backbone.View.extend({
@@ -520,6 +462,9 @@ UIModel = Backbone.View.extend({
     if (page in this.cache && (ignoreCache === false || (ignoreCache == null))) {
       return callback(this.cache[page]);
     }
+    if (FLAG_DEBUG) {
+      console.log("UI :: Load :: ", page);
+    }
     return $.get("/" + page, (function(_this) {
       return function(data) {
         _this.cache[page] = data;
@@ -527,7 +472,10 @@ UIModel = Backbone.View.extend({
       };
     })(this));
   },
-  navigate: function(category, page) {
+  navigate: function(category, page, container) {
+    if (container != null) {
+      this.setElementview($(".ui.container." + container));
+    }
     return this.load(page, (function(_this) {
       return function(data) {
         return _this.render(data, page);
@@ -539,6 +487,7 @@ UIModel = Backbone.View.extend({
   },
   render: function(data, page) {
     this.$el.html(data.content);
+    this.$el.find(".ui.dropdown").dropdown();
     document.title = data.seo.title;
     return RMP.dispatcher.trigger("loaded:" + page);
   },
@@ -552,7 +501,7 @@ UIModel = Backbone.View.extend({
 });
 
 RMP.ui = new UIModel({
-  el: $(".ui.container")
+  el: $(".ui.container.two")
 });
 
 RMP.dispatcher.on("loaded:about", function(page) {
@@ -562,6 +511,14 @@ RMP.dispatcher.on("loaded:about", function(page) {
     }
     RMP.dispatcher.trigger("controls:play");
     return RMP.sidebar.open("playlist");
+  });
+});
+
+RMP.dispatcher.on("app:main", function() {
+  return $(".ui.container").each(function(i, el) {
+    var item;
+    item = $(el);
+    return RMP.dispatcher.trigger("loaded:" + (item.data('page')));
   });
 });
 
@@ -964,6 +921,59 @@ PlaylistView = Backbone.View.extend({
   }
 });
 
+SortMethodView = Backbone.View.extend({
+  events: {
+    "click .item": "select"
+  },
+  getCurrent: function() {
+    return this.$("[data-value='" + (RMP.reddit.get('sortMethod')) + "']");
+  },
+  render: function() {
+    this.$(".item").removeClass("active");
+    this.getCurrent().addClass("active");
+    return this.$(".ui.dropdown").dropdown("set selected", "top:" + (RMP.reddit.get('topMethod')));
+  },
+  select: function(e) {
+    var method, sortMethod, target, topMethod;
+    target = $(e.currentTarget);
+    method = target.data("value");
+    if (method == null) {
+      return;
+    }
+    sortMethod = method;
+    topMethod = RMP.reddit.get("topMethod");
+    if (method.substr(0, 3) === "top") {
+      sortMethod = "top";
+      topMethod = method.substr(4);
+    }
+    RMP.reddit.changeSortMethod(sortMethod, topMethod);
+    RMP.dispatcher.trigger("controls:sortMethod", sortMethod, topMethod);
+    return this.render();
+  },
+  initialize: function() {
+    return this.render();
+  }
+});
+
+RMP.playlist = new Playlist;
+
+RMP.playlistview = new PlaylistView({
+  el: $(".content.playlist .music.playlist")
+});
+
+RMP.sortmethodview = new SortMethodView({
+  el: $(".content.playlist .sortMethod")
+});
+
+RMP.dispatcher.on("loaded:playlist", function(page) {
+  RMP.playlistview.setElement($(".content.playlist .music.playlist"));
+  if (RMP.playlist.length > 0) {
+    RMP.playlistview.render();
+  }
+  RMP.sortmethodview.setElement($(".content.playlist .sortMethod"));
+  return RMP.sortmethodview.render();
+});
+
 CurrentSongView = Backbone.View.extend({
   template: Templates.CurrentSongView,
   events: {
@@ -1154,46 +1164,6 @@ CommentsView = Backbone.View.extend({
   }
 });
 
-SortMethodView = Backbone.View.extend({
-  events: {
-    "click .item": "select"
-  },
-  getCurrent: function() {
-    return this.$("[data-value='" + (RMP.reddit.get('sortMethod')) + "']");
-  },
-  render: function() {
-    this.$(".item").removeClass("active");
-    this.getCurrent().addClass("active");
-    return this.$(".ui.dropdown").dropdown("set selected", "top:" + (RMP.reddit.get('topMethod')));
-  },
-  select: function(e) {
-    var method, sortMethod, target, topMethod;
-    target = $(e.currentTarget);
-    method = target.data("value");
-    if (method == null) {
-      return;
-    }
-    sortMethod = method;
-    topMethod = RMP.reddit.get("topMethod");
-    if (method.substr(0, 3) === "top") {
-      sortMethod = "top";
-      topMethod = method.substr(4);
-    }
-    RMP.reddit.changeSortMethod(sortMethod, topMethod);
-    RMP.dispatcher.trigger("controls:sortMethod", sortMethod, topMethod);
-    return this.render();
-  },
-  initialize: function() {
-    return this.render();
-  }
-});
-
-RMP.playlist = new Playlist;
-
-RMP.playlistview = new PlaylistView({
-  el: $(".content.playlist .music.playlist")
-});
-
 RMP.currentsongview = new CurrentSongView({
   el: $(".content.playlist .current.song")
 });
@@ -1202,25 +1172,11 @@ RMP.commentsview = new CommentsView({
   el: $(".content.playlist .comments.root")
 });
 
-RMP.sortmethodview = new SortMethodView({
-  el: $(".content.playlist .sortMethod")
-});
-
 RMP.dispatcher.on("loaded:playlist", function(page) {
-  RMP.playlistview.setElement($(".content.playlist .music.playlist"));
-  if (RMP.playlist.length > 0) {
-    RMP.playlistview.render();
-  }
-  RMP.currentsongview.setElement($(".content.playlist .current.song"));
+  RMP.currentsongview.setElement($(".content.song .current.song"));
   RMP.currentsongview.render();
-  RMP.commentsview.setElement($(".content.playlist .comments.root"));
-  RMP.commentsview.render();
-  RMP.sortmethodview.setElement($(".content.playlist .sortMethod"));
-  RMP.sortmethodview.render();
-  $(".content.playlist .subreddit-count b").text(RMP.subredditplaylist.length);
-  return $(".content.playlist .subreddit-count").on("click", function(e) {
-    return RMP.sidebar.open("browse");
-  });
+  RMP.commentsview.setElement($(".content.song .comments.root"));
+  return RMP.commentsview.render();
 });
 
 MusicPlayer = Backbone.Model.extend({

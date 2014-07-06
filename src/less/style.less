@@ -47,6 +47,7 @@ body {
 	margin: 0px;
 	background: @col-bg;
 	color: @col-fg;
+	overflow: hidden;
 }
 
 a {
@@ -107,39 +108,11 @@ a {
 }
 
 // Menus
-.ui.sidepane.sidebar {
-	top: 45px;
-	height: ~"calc(100% - 90px)" !important;
-	overflow-x: hidden;
-	.item {
-		font-size: 0.9rem;
-		color: fade(@col-fg, 70%);
-		> .menu {
-			font-size: 1rem;
-			> .item {
-				padding: .5rem 1rem;
-				.icon {
-					float: left;
-					margin: 0 1em 0 0;
-				}
-			}
-		}
-		&.disabled, &.disabled:hover {
-			color: rgba(255,255,255,.2) !important;
-			text-decoration: line-through;
-		}
-	}
-	iframe, audio, video {
-		border: 0px;
-		width: 100%;
-	}
-}
 .top.titlebar {
 	background: #212121 url(../images/header.png) top repeat-x;
+	.item {
+	}
 	.redditmusicplayer {
-		position: absolute;
-		left: 0px;
-		right: 0px;
 		text-align: center;
 		font-weight: 400;
 		font-family: @font-condensed;
@@ -181,8 +154,7 @@ a {
 
 .ui.controls {
 	.middle {
-		width: 50%;
-		float: left;
+		float: right;
 		text-align: center;
 		.progress {
 			height: 20px;
@@ -247,17 +219,36 @@ a {
 	}
 }
 
+
+// video
+.content.video {
+	iframe, audio, video {
+		border: 0px;
+		width: 100%;
+	}
+	.menu {
+		display: none;
+	}
+}
+
+
 .ui.container {
-	position: absolute;
+	position: fixed;
 	top: 45px;
+	height: 100%;
 	height: ~"calc(100% - 90px)";
-	width: ~"calc(100% - 275px)";
-	left: 275px;
+	width: 33.33%;
+	overflow-y: scroll;
+
+	&.one {left: 0%;}
+	&.two {left: 33.33%;}
+	&.three {left: 66.66%;}
+
 	> .content {
-		padding: 1em;
+		padding: .5em 1em;
 		overflow-x: hidden;
 		> .intro {
-			margin: 50px auto;
+			margin: 0px auto 1em;
 			text-align: center;
 			.ui.header {
 				font-weight: 300;
@@ -267,6 +258,44 @@ a {
 			.description {
 				margin: 0px;
 			}
+		}
+	}
+}
+
+// switcher
+.switcher {
+	.dropdown {
+		float: right;
+		position: absolute;
+		right: 0px;
+		top: 0px;
+		margin: .5em;
+		padding: .5em;
+	}
+	margin-bottom: 1em;
+	border-bottom: 1px dashed darken(@col-fg, 40%);
+	padding-bottom: 1em;
+
+}
+
+
+.ui.container > .content.navigation {
+	.item {
+		font-size: 0.9rem;
+		color: fade(@col-fg, 70%);
+		> .menu {
+			font-size: 1rem;
+			> .item {
+				padding: .5rem 1rem;
+				.icon {
+					float: left;
+					margin: 0 1em 0 0;
+				}
+			}
+		}
+		&.disabled, &.disabled:hover {
+			color: rgba(255,255,255,.2) !important;
+			text-decoration: line-through;
 		}
 	}
 }
@@ -283,95 +312,12 @@ a {
 }
 
 .ui.container > .content.browse {
-	padding: 1em 2em;
 	p.description {
 		line-height: 1.5;
 	}
 }
 
-.ui.container > .content.playlist {
-	.ui.piled.segment:after, .ui.piled.segment:before {
-		background-color: #000;
-	}
-	.ui.header {
-		font-weight: 300;
-	}
-	.ups {
-		color: orangered;
-	}
-	.downs {
-		color: #5f99cf;
-	}
-	.date, .created {
-		color: rgba(231, 231, 176, 0.6);
-	}
-	.dropdown.ui {
-		z-index: 1000;
-		background: rgba(255,255,255,.0);
-		&:hover {
-			background: rgba(255,255,255,.1);
-		}
-		.menu {
-			background: rgba(59,59,59,0.95);
-			color: #fdffe8;
-			a.item, .item {
-				color: #fdffe8 !important;
-				-webkit-transition: background .2s ease-out;
-				-moz-transition: background .2s ease-out;
-				-ms-transition: background .2s ease-out;
-				-o-transition: background .2s ease-out;
-				transition: background .2s ease-out;
-				&:hover, &:focus {
-					background: rgba(71,71,71,0.95);
-				}
-				&.active {
-					cursor: default;
-					background: rgba(8,8,8,0.2) !important;
-					color: @col-primary !important;
-				}
-			}
-		}
-	}
-	.ui.vertical.playlist {
-		.ui.item {
-			clear: both;
-			cursor: pointer;
-			overflow: hidden;
-			.image {
-				margin-bottom: 0px;
-			}
-			> .content {
-				padding: .5em 2em .5em 5.5em;
-			}
-			.icon {
-				height: 1em;
-				float: left;
-				font-size: 3em;
-				margin: 0 20px 0 7px;
-			}
-			.author, .subreddit {
-				color: @col-primary;
-				font-weight: bold;
-			}
-			&:hover {
-				background: rgba(255,255,255, 0.05);
-			}
-			&.active {
-				background: rgba(255,255,255, 0.1);
-				border-left: 1px dotted @col-primary;
-				border-right: 1px dotted @col-primary;
-			}
-			.title {
-				color: #FFF;
-				line-height: 1.4;
-				font-size: 1.05em;
-				margin-bottom: 5px;
-			}
-		}
-		.more {
-			text-align: center;
-		}
-	}
+.ui.container > .content.song {
 	.current.song {
 		.ui.header {
 			margin: 0px;
@@ -467,6 +413,97 @@ a {
 	}
 }
 
+.ui.container > .content.playlist,
+.ui.container > .content.song {
+	.ups {
+		color: orangered;
+	}
+	.downs {
+		color: #5f99cf;
+	}
+	.date, .created {
+		color: rgba(231, 231, 176, 0.6);
+	}
+	.ui.piled.segment:after, .ui.piled.segment:before {
+		background-color: #000;
+	}
+	.ui.header {
+		font-weight: 300;
+	}
+	
+}
+
+.ui.container > .content.playlist {
+	.dropdown.ui.topMethod {
+		z-index: 1000;
+		background: rgba(255,255,255,.0);
+		&:hover {
+			background: rgba(255,255,255,.1);
+		}
+		.menu {
+			background: rgba(59,59,59,0.95);
+			color: #fdffe8;
+			a.item, .item {
+				color: #fdffe8 !important;
+				-webkit-transition: background .2s ease-out;
+				-moz-transition: background .2s ease-out;
+				-ms-transition: background .2s ease-out;
+				-o-transition: background .2s ease-out;
+				transition: background .2s ease-out;
+				&:hover, &:focus {
+					background: rgba(71,71,71,0.95);
+				}
+				&.active {
+					cursor: default;
+					background: rgba(8,8,8,0.2) !important;
+					color: @col-primary !important;
+				}
+			}
+		}
+	}
+	.ui.vertical.playlist {
+		.ui.item {
+			clear: both;
+			cursor: pointer;
+			overflow: hidden;
+			.image {
+				margin-bottom: 0px;
+			}
+			> .content {
+				padding: .5em 2em .5em 5.5em;
+			}
+			.icon {
+				height: 1em;
+				float: left;
+				font-size: 3em;
+				margin: 0 20px 0 7px;
+			}
+			.author, .subreddit {
+				color: @col-primary;
+				font-weight: bold;
+			}
+			&:hover {
+				background: rgba(255,255,255, 0.05);
+			}
+			&.active {
+				background: rgba(255,255,255, 0.1);
+				border-left: 1px dotted @col-primary;
+				border-right: 1px dotted @col-primary;
+			}
+			.title {
+				color: #FFF;
+				line-height: 1.4;
+				font-size: 1.05em;
+				margin-bottom: 5px;
+			}
+		}
+		.more {
+			text-align: center;
+		}
+	}
+	
+}
+
 .ui.container > .content.about {
 	.footer {
 		text-align: center;
@@ -483,62 +520,12 @@ a {
 		}
 	}
 	.feature {
-		max-width: @maxwidth;
 		margin: auto;
 		padding: 10px;
-		@media @tablet {
-			margin: 50px auto;
-			padding: 20px;
-		}
-		@media @phone {
-			margin-bottom: 100px auto;
-			padding: 10px;
-			padding-bottom: 100px;
-		}
-		.ui.image {
-			display: inline-block;
-			width: 70%;
-			@media @desktop {
-				margin-left: -25px;
-			}
-			@media @tablet {
-				width: 50%;
-				margin-left: 0px;
-			}
-			@media @phone {
-				width: 100%;
-				display: block;
-				margin: auto;
-			}
-		}
+		.ui.image {}
 		.description {
-			display: inline-block;
-			width: 30%;
 			a {
 				font-weight: 700;
-			}
-			@media @tablet {
-				width: 50%;
-			}
-			@media @phone {
-				width: 100%;
-				display: block;
-				max-width: 700px;
-				margin: auto;
-				text-align: center;
-			}
-		}
-		.description + .ui.image {
-			// image to the right
-			@media @desktop {
-				margin-left: 25px;
-				margin-right: -25px;
-				table {
-					margin-left: -25px;
-				}
-			}
-			@media @phone {
-				margin-top: 10px;
 			}
 		}
 		.ui.image + .description {
