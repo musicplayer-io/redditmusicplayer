@@ -3,6 +3,7 @@ bodyParser = require 'body-parser'
 
 cookieParser = require 'cookie-parser'
 session = require 'express-session'
+bodyParser = require('body-parser')
 RedisStore = require('connect-redis')(session);
 
 passport = require 'passport'
@@ -43,6 +44,7 @@ module.exports = ->
     @use logger "dev"
     
     @use cookieParser()
+    @use bodyParser.json()
     @use session
         resave: true
         saveUninitialized: true
