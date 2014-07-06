@@ -1,9 +1,14 @@
  
 ## Changelog
 
+### 0.3.4 - 6 July 2014
+
+* Mobile
+
 ### 0.3.3 - 6 July 2014
 
 * Space for Play or Pause is now Ctrl + Space
+* New UI
 
 ### 0.3.2 - 13 June 2014
 

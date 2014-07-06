@@ -278,6 +278,42 @@ a {
 
 }
 
+.top.fixed.menu.ui.mobilebar {
+	display: none;
+	top: 45px;
+}
+@media @tablet {
+	.ui.container {
+		width: 100% !important;
+		left: 100% !important;
+		.transition(0.15s, ease-out);
+		&.active {
+			left: 0% !important;
+		}
+		top: 90px;
+		height: ~"calc(100% - 135px)";
+	}
+	.top.fixed.menu.ui.mobilebar {
+		display: block;
+
+	}
+}
+@media @phone {
+	.ui.container {
+		width: 100% !important;
+		left: 100% !important;
+		&.active {
+			left: 0% !important;
+		}
+		top: 90px;
+		height: ~"calc(100% - 135px)";
+		.transition(0.15s, ease-out);
+	}
+	.top.fixed.menu.ui.mobilebar {
+		display: block;
+
+	}
+}
 
 .ui.container > .content.navigation {
 	.item {

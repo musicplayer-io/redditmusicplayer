@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -303,7 +303,7 @@ ProgressBarView = Backbone.View.extend({
   resize: function() {
     var itemWidth;
     itemWidth = $(".controls .left .item").outerWidth();
-    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 6);
+    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 6.2);
   },
   render: function() {
     this.$(".end.time").text(this.toMinSecs(this.model.get("duration")));
@@ -514,6 +514,34 @@ UIModel = Backbone.View.extend({
 
 RMP.ui = new UIModel({
   el: $(".ui.container.two")
+});
+
+MobileUI = Backbone.View.extend({
+  tagName: "div",
+  className: "mobilebar",
+  events: {
+    "click .item": "click"
+  },
+  click: function(e) {
+    var container, item, page;
+    item = $(e.currentTarget);
+    console.log(item);
+    page = item.data("page");
+    container = $(".ui.container[data-page=" + page + "]");
+    $(".ui.container").removeClass("active");
+    container.addClass("active");
+    this.$(".item").removeClass("active");
+    return item.addClass("active");
+  },
+  initialize: function() {
+    if (FLAG_DEBUG) {
+      return console.log("MobileUI :: Ready");
+    }
+  }
+});
+
+RMP.mobileui = new MobileUI({
+  el: $(".ui.mobilebar")
 });
 
 RMP.dispatcher.on("loaded:about", function(page) {
