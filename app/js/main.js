@@ -1835,6 +1835,10 @@ KeyboardController = Backbone.Model.extend({
           } else if (e.keyCode === 38) {
             _this.send("controls:backward", e);
           }
+          if (e.keyCode === 32) {
+            _this.send("controls:play", e);
+            e.preventDefault();
+          }
         }
         if (e.keyCode === 17) {
           return _this.set("shifted", false);
@@ -1843,11 +1847,6 @@ KeyboardController = Backbone.Model.extend({
     })(this));
     return $("body").keydown((function(_this) {
       return function(e) {
-        if (e.keyCode === 32) {
-          _this.send("controls:play", e);
-          e.preventDefault();
-          return false;
-        }
         if (e.keyCode === 17) {
           return _this.set("shifted", true);
         }

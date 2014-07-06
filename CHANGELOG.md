@@ -1,6 +1,10 @@
  
 ## Changelog
 
+### 0.3.3 - 6 July 2014
+
+* Space for Play or Pause is now Ctrl + Space
+
 ### 0.3.2 - 13 June 2014
 
 * Keyboard support
