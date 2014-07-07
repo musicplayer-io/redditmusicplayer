@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Sidebar, SidebarModel, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -404,72 +404,19 @@ Buttons = Backbone.Model.extend({
 
 RMP.buttons = new Buttons;
 
-SidebarModel = Backbone.Model.extend({
-  category: "main",
-  page: "discover"
-});
-
-Sidebar = Backbone.View.extend({
-  tagName: "div",
-  className: "sidepane",
-  events: {
-    "click .link.item": "openEvent"
-  },
-  openEvent: function(event) {
-    var page;
-    page = event.currentTarget.dataset.page;
-    return this.open(page);
-  },
-  open: function(page) {
-    var category, element;
-    element = this.getElement(page);
-    if (FLAG_DEBUG) {
-      console.log("Sidebar :: Open ", element);
-    }
-    category = element.parent().data("category");
-    this.model.set({
-      "element": element
-    });
-    if (FLAG_DEBUG) {
-      console.log("Sidebar :: Click :: " + page);
-    }
-    return RMP.router.navigate(page, {
-      trigger: true
-    });
-  },
-  navigate: function(category, page) {
-    return this.model.set({
-      "category": category,
-      "page": page
-    });
-  },
-  getElement: function(page) {
-    return this.$("[data-page=" + page + "]");
-  },
-  render: function() {
-    if (this.model.previous("element") != null) {
-      this.getElement(this.model.previous("page")).removeClass("active");
-    }
-    return this.getElement(this.model.get("page")).addClass("active");
-  },
-  initialize: function() {
-    if (FLAG_DEBUG) {
-      console.log("Sidebar :: Ready");
-    }
-    this.listenTo(this.model, "change:page", this.render);
-    return this.listenTo(RMP.dispatcher, "app:page", this.navigate);
-  }
-});
-
-RMP.sidebar = new Sidebar({
-  model: new SidebarModel,
-  el: $(".content.navigation")
-});
-
 UIModel = Backbone.View.extend({
   tagName: "div",
   className: "container",
   cache: {},
+  events: {
+    "click .switcher .item": "open"
+  },
+  open: function(e) {
+    var item, page;
+    item = $(e.currentTarget);
+    page = item.data("page");
+    return this.navigate(page);
+  },
   load: function(page, callback, ignoreCache) {
     if (page in this.cache && (ignoreCache === false || (ignoreCache == null))) {
       return callback(this.cache[page]);
@@ -484,10 +431,7 @@ UIModel = Backbone.View.extend({
       };
     })(this));
   },
-  navigate: function(category, page, container) {
-    if (container != null) {
-      this.setElementview($(".ui.container." + container));
-    }
+  navigate: function(page) {
     return this.load(page, (function(_this) {
       return function(data) {
         return _this.render(data, page);
@@ -500,7 +444,6 @@ UIModel = Backbone.View.extend({
   render: function(data, page) {
     this.$el.html(data.content);
     this.$el.find(".ui.dropdown").dropdown();
-    document.title = data.seo.title;
     return RMP.dispatcher.trigger("loaded:" + page);
   },
   initialize: function() {
@@ -512,9 +455,15 @@ UIModel = Backbone.View.extend({
   }
 });
 
-RMP.ui = new UIModel({
-  el: $(".ui.container.two")
-});
+RMP.ui = [
+  new UIModel({
+    el: $(".ui.container.one")
+  }), new UIModel({
+    el: $(".ui.container.two")
+  }), new UIModel({
+    el: $(".ui.container.three")
+  })
+];
 
 MobileUI = Backbone.View.extend({
   tagName: "div",

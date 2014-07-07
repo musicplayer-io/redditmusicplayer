@@ -3,6 +3,12 @@ UIModel = Backbone.View.extend
 	tagName: "div"
 	className: "container"
 	cache: {}
+	events:
+		"click .switcher .item": "open"
+	open: (e) ->
+		item = $ e.currentTarget
+		page = item.data("page")
+		@navigate page
 	load: (page, callback, ignoreCache) ->
 		if page of @cache and (ignoreCache is false or not ignoreCache?)
 			return callback @cache[page]
@@ -12,8 +18,7 @@ UIModel = Backbone.View.extend
 			@cache[page] = data
 			callback data
 		)
-	navigate: (category, page, container) ->
-		@setElementview $(".ui.container.#{container}") if container?
+	navigate: (page) ->
 		@load page, (data) =>
 			@render data, page
 	getElement: (page) ->
@@ -21,7 +26,6 @@ UIModel = Backbone.View.extend
 	render: (data, page) ->
 		@$el.html data.content
 		@$el.find(".ui.dropdown").dropdown()
-		document.title = data.seo.title
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
 		console.log "UI :: Ready" if FLAG_DEBUG
@@ -29,8 +33,14 @@ UIModel = Backbone.View.extend
 		@listenTo RMP.dispatcher, "app:page", @navigate
 
 
-RMP.ui = new UIModel
-	el: $(".ui.container.two")
+RMP.ui = [
+	new UIModel
+		el: $(".ui.container.one")
+	new UIModel
+		el: $(".ui.container.two")
+	new UIModel
+		el: $(".ui.container.three")
+]
 
 MobileUI = Backbone.View.extend
 	tagName: "div"
