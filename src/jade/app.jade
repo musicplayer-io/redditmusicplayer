@@ -13,11 +13,16 @@ html(xmlns:og='http://ogp.me/ns#')
 		include includes/titlebar 
 		.ui.container.active.one(data-page="browse", style="width: 20%;")
 			include content/main/browse
-		.ui.container.two(data-page="playlist", style="width: 46.66%; left: 20%;")
-			include content/main/playlist
+		if page && content
+			.ui.container.two(data-page=page, style="width: 46.66%; left: 20%;")
+				|!{content}
+		else
+			.ui.container.two(data-page="playlist", style="width: 46.66%; left: 20%;")
+				include content/main/playlist
 		.ui.container.three(data-page="song")
 			include content/main/song
 		include includes/controls
 		include includes/javascript
 		block userscript
 			include includes/authentication
+			include includes/url

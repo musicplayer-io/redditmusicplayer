@@ -32,6 +32,11 @@ Templates =
 			<% if (media) { %>
 				<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
 			<% } %>
+			<% if (url.indexOf('imgur') >= 0) { %>
+				<a class='ui image fluid' href='<%= url %>' target='_blank'>
+					<img src='<%= url %>' />
+				</a>
+			<% } %>
 			<div class='vote' id='<%= name %>'>
 				<div class='upvote'><i class='icon up arrow'></i></div>
 				<div class='downvote'><i class='icon down arrow'></i></div>
