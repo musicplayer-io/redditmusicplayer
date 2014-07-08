@@ -1,6 +1,7 @@
 
 seo = require './seo'
 req = require 'request'
+reddit = require '../config/reddit'
 
 # Auth controller
 # Provider Reddit Interaction
@@ -31,12 +32,19 @@ refreshTokenReddit = (request, response, callback) ->
 	data =
 		"grant_type": "refresh_token"
 		"refresh_token": request.session.refreshToken
+		"client_id": reddit.client_id
+		"client_secret": reddit.secret
+		"scope": reddit.scope
+		"state": "fresh"
+		"duration": "permanent"
+		"redirect_uri": reddit.redirect_uri
 	token = request.user.accessToken
 	options =
 		method: "POST"
 		url: "https://ssl.reddit.com/api/v1/access_token"
 		json: data
 		headers:
+			"Authorization": "#{reddit.client_id}:#{reddit.secret}"
 			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
 	req options, (err, resp, body) ->
 		request.session.accessToken = body.access_token if body.access_token?
