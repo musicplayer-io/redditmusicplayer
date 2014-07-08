@@ -43,8 +43,10 @@ refreshTokenReddit = (request, response, callback) ->
 		method: "POST"
 		url: "https://ssl.reddit.com/api/v1/access_token"
 		json: data
+		auth:
+			user: reddit.client_id
+			pass: reddit.secret
 		headers:
-			"Authorization": "#{reddit.client_id}:#{reddit.secret}"
 			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
 	req options, (err, resp, body) ->
 		request.session.accessToken = body.access_token if body.access_token?
