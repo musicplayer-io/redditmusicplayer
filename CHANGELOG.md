@@ -1,11 +1,12 @@
  
 ## Changelog
 
-### 0.3.4 - 6 July 2014
+### 0.3.4 - 8 July 2014
 
 * Mobile
 * custom subreddits: /r/custom+custom2+...
 * autoplay: /r/custom?autoplay
+* bug fixes with logging in
 
 ### 0.3.3 - 6 July 2014
 
