@@ -100,6 +100,7 @@ class APIController
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
+				console.error "API :: ", err, body
 				if resp.statusCode is 401
 					refreshTokenReddit(request, response, @comments)
 				else
