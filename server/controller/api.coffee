@@ -49,8 +49,6 @@ refreshTokenReddit = (request, response, callback) ->
 		headers:
 			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
 	req options, (err, resp, body) ->
-		request.session.accessToken = body.access_token if body.access_token?
-		request.user.accessToken = body.access_token if body.access_token?
 		if resp.statusCode is 401 or body.error?
 			console.log request.user, request.session, body, options
 			return response.send
@@ -60,6 +58,9 @@ refreshTokenReddit = (request, response, callback) ->
 					status: resp.statusCode
 					data: body
 		else
+			console.log "Refreshed Token :: ", body
+			request.session.accessToken = body.access_token if body.access_token?
+			request.user.accessToken = body.access_token if body.access_token?
 			callback(request, response) if callback?
 
 class APIController
@@ -101,7 +102,6 @@ class APIController
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
-				console.error "API :: ", err, body
 				if resp.statusCode is 401
 					refreshTokenReddit(request, response, @comments)
 				else
