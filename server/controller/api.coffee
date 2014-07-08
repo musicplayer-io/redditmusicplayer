@@ -30,9 +30,8 @@ getFromReddit = (url, token, data, callback) ->
 
 refreshTokenReddit = (request, response, callback) ->
 	data =
-		form:
-			"grant_type": "refresh_token"
-			"refresh_token": request.session.refreshToken
+		"grant_type": "refresh_token"
+		"refresh_token": request.session.refreshToken
 		"client_id": reddit.client_id
 		"client_secret": reddit.secret
 		"scope": reddit.scope
@@ -43,7 +42,7 @@ refreshTokenReddit = (request, response, callback) ->
 	options =
 		method: "POST"
 		url: "https://ssl.reddit.com/api/v1/access_token"
-		json: data
+		form: data
 		auth:
 			user: reddit.client_id
 			pass: reddit.secret
