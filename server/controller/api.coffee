@@ -58,8 +58,13 @@ refreshTokenReddit = (request, response, callback) ->
 					status: resp.statusCode
 					data: body
 		else
-			json = JSON.parse body
-			request.user.accessToken = request.session.accessToken = request.user._json.token = json.access_token if json.access_token?
+			p = body
+			try
+				p = JSON.parse body
+			catch e
+				console.error e			
+			console.log "Refresh Token :: ", p
+			request.user.accessToken = request.session.accessToken = request.user._json.token = p.access_token if p.access_token?
 			callback(request, response) if callback?
 
 class APIController
