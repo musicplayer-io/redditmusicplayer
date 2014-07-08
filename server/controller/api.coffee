@@ -30,8 +30,9 @@ getFromReddit = (url, token, data, callback) ->
 
 refreshTokenReddit = (request, response, callback) ->
 	data =
-		"grant_type": "refresh_token"
-		"refresh_token": request.session.refreshToken
+		form:
+			"grant_type": "refresh_token"
+			"refresh_token": request.session.refreshToken
 		"client_id": reddit.client_id
 		"client_secret": reddit.secret
 		"scope": reddit.scope
