@@ -50,7 +50,7 @@ refreshTokenReddit = (request, response, callback) ->
 			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
 	req options, (err, resp, body) ->
 		request.session.accessToken = body.access_token if body.access_token?
-		console.log err, body
+		request.user.accessToken = body.access_token if body.access_token?
 		if resp.statusCode is 401 or body.error?
 			console.log request.user, request.session, body, options
 			return response.send
