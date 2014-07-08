@@ -16,7 +16,10 @@ Reddit = Backbone.Model.extend
 			success: (resp) =>
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
-		return RMP.subredditplaylist.toString()
+		if RMP.subredditplaylist.length is 0
+			return "listentothis"
+		else
+			return RMP.subredditplaylist.toString()
 	getMusic: (callback) ->
 		data = {}
 		data.sort = @get("sortMethod")
