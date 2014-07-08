@@ -1,0 +1,18 @@
+if (subreddits != null && subreddits.length > 0)
+	script(type="text/javascript").
+		(function() {
+			RMP.URLsubreddits = !{JSON.stringify(subreddits)};
+		})();
+if (comment != null)
+	script(type="text/javascript").
+		(function() {
+			RMP.URLcomment = !{JSON.stringify(comment)};
+		})();
+if (autoplay != null)
+	script(type="text/javascript").
+		(function() {
+			RMP.autoplay = true;
+			RMP.dispatcher.once("app:loadedMusic", function() {
+				RMP.dispatcher.trigger("controls:play");
+			});
+		})();

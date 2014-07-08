@@ -4,6 +4,8 @@
 ### 0.3.4 - 6 July 2014
 
 * Mobile
+* custom subreddits: /r/custom+custom2+...
+* autoplay: /r/custom?autoplay
 
 ### 0.3.3 - 6 July 2014
 

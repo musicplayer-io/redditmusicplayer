@@ -62,6 +62,11 @@ Templates =
 			<% if (media) { %>
 				<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
 			<% } %>
+			<% if (url.indexOf('imgur') >= 0) { %>
+				<a class='ui image fluid' href='<%= url %>' target='_blank'>
+					<img src='<%= url %>' />
+				</a>
+			<% } %>
 			<div class='vote' id='<%= name %>'>
 				<div class='upvote'><i class='icon up arrow'></i></div>
 				<div class='downvote'><i class='icon down arrow'></i></div>
@@ -611,7 +616,16 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.subredditplaylistview.render() if RMP.subredditplaylist.length > 0
 
 RMP.dispatcher.on "app:main", () ->
-	RMP.subredditplaylist.fetch()
+	if (RMP.URLsubreddits?)
+		RMP.subredditplaylist.reset()
+		for sub in RMP.URLsubreddits
+			RMP.subredditplaylist.add new Subreddit
+				category: "url"
+				name: sub
+				text: sub
+		
+	else
+		RMP.subredditplaylist.fetch()
 	if (RMP.subredditplaylist.length is 0)
 		RMP.subredditplaylist.add new Subreddit
 			category: "Other"
@@ -697,6 +711,7 @@ Playlist = Backbone.Collection.extend
 			_.each items, (item) =>
 				list.push @parseSong item.data
 			@reset list
+			RMP.dispatcher.trigger "app:loadedMusic"
 	more: (callback) ->
 		RMP.reddit.getMore @last().get("name"), (items) =>
 			console.log items if FLAG_DEBUG

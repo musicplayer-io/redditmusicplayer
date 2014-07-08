@@ -101,7 +101,16 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.subredditplaylistview.render() if RMP.subredditplaylist.length > 0
 
 RMP.dispatcher.on "app:main", () ->
-	RMP.subredditplaylist.fetch()
+	if (RMP.URLsubreddits?)
+		RMP.subredditplaylist.reset()
+		for sub in RMP.URLsubreddits
+			RMP.subredditplaylist.add new Subreddit
+				category: "url"
+				name: sub
+				text: sub
+		
+	else
+		RMP.subredditplaylist.fetch()
 	if (RMP.subredditplaylist.length is 0)
 		RMP.subredditplaylist.add new Subreddit
 			category: "Other"
