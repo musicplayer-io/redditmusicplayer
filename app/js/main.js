@@ -71,7 +71,11 @@ Reddit = Backbone.Model.extend({
     });
   },
   subreddits: function() {
-    return RMP.subredditplaylist.toString();
+    if (RMP.subredditplaylist.length === 0) {
+      return "listentothis";
+    } else {
+      return RMP.subredditplaylist.toString();
+    }
   },
   getMusic: function(callback) {
     var data;
