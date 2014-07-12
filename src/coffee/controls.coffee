@@ -126,7 +126,7 @@ Buttons = Backbone.Model.extend
 
 VolumeControl = Backbone.Model.extend
 	defaults:
-		volume: 0.1
+		volume: 1
 		size: 100
 
 	volumeChange: () ->
