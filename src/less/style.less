@@ -180,7 +180,7 @@ a {
 
 .ui.controls {
 	.middle {
-		float: right;
+		float: left;
 		text-align: center;
 		.progress {
 			height: 20px;
@@ -240,6 +240,28 @@ a {
 				&:hover {
 					background: rgba(0,0,0,0.2) !important;
 				}
+			}
+		}
+	}
+	.volume.button {
+		.volume-control, .volume-bar {
+			display: none;
+		}
+		&:hover {
+			.volume-control, .volume-bar {
+				display: block;
+				position: fixed;
+				bottom: 43px;
+				right: 0px;
+				height: 100px;
+				width: 54px;
+
+				background: fade(@col-gold_dark, 50%);
+				z-index: 10;
+			}
+			.volume-bar {
+				background: @col-primary;
+				z-index: 5;
 			}
 		}
 	}

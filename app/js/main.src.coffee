@@ -371,7 +371,7 @@ ProgressBarView = Backbone.View.extend
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*6.2)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -427,16 +427,53 @@ Buttons = Backbone.Model.extend
 						return player.player.getPlayerState() == 1
 					else
 						return player.playerState is "playing"
-		@shuffle = new Button
-			el: $(".controls .shuffle.button")
-			attributes:
-				clickEvent: "controls:shuffle"
-				listenEvent: "player:shuffle"
-		@repeat = new Button
-			el: $(".controls .repeat.button")
-			attributes:
-				clickEvent: "controls:repeat"
-				listenEvent: "player:repeat"
+
+
+VolumeControl = Backbone.Model.extend
+	defaults:
+		volume: 0.1
+		size: 100
+
+	volumeChange: () ->
+		RMP.dispatcher.trigger "controls:volume", @get("volume")
+
+		try
+			localStorage["volume"] = @get("volume")
+		catch e
+			console.error e
+		
+	initialize: () ->
+		@listenTo @, "change:volume", @volumeChange
+		@set "volume", (localStorage["volume"]) if localStorage["volume"]?
+
+VolumeControlView = Backbone.View.extend
+	events:
+		"click .volume-control": "click"
+	click: (e) ->
+
+		max = @model.get("size")
+		current = (e.offsetY - max) * -1
+
+		ratio = current / max
+
+		@model.set "volume", ratio
+	render: () ->
+		@$(".volume-bar").css("height", (@model.get("volume") * @model.get("size")) + "px")
+
+		if @model.get("volume") >= 0.5
+			@$(".icon.volume").removeClass("off up down").addClass "up"
+		else if @model.get("volume") <= 0.1
+			@$(".icon.volume").removeClass("off up down").addClass "off"
+		else
+			@$(".icon.volume").removeClass("off up down").addClass "down"
+		
+	initialize: () ->
+		@listenTo @model, "change:volume", @render
+		@render()
+
+RMP.volumecontrol = new VolumeControlView
+	model: new VolumeControl
+	el: $(".controls .volume.button")
 
 RMP.buttons = new Buttons
 
@@ -1018,6 +1055,7 @@ YoutubePlayer = MusicPlayer.extend
 			videoId: @track.id
 			events: @events()
 	initProgress: () ->
+		@player.setVolume(RMP.volumecontrol.model.get("volume") * 100)
 		RMP.dispatcher.trigger "progress:duration", @player.getDuration() # secs
 		getData = () =>
 			RMP.dispatcher.trigger "progress:current", @player.getCurrentTime() # secs
@@ -1040,6 +1078,8 @@ YoutubePlayer = MusicPlayer.extend
 	playPause: () ->
 		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
 			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+	volume: (value) ->
+		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
 		@player.seekTo percentage * @player.getDuration(), seekAhead
 	initialize: () ->
@@ -1067,12 +1107,15 @@ SoundcloudPlayer = MusicPlayer.extend
 	playerState: "ended"
 	event_trigger: (ev) ->
 		return (data) =>
+			@player.setVolume(RMP.volumecontrol.model.get("volume") * 100) # didn't work on ready event
 			@player.getDuration (duration) =>
 				RMP.dispatcher.trigger "progress:duration", duration / 1000 # secs
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
 	playPause: () ->
 		@player.toggle()
+	volume: (value) ->
+		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
 		@player.getDuration (duration) =>
 			@player.seekTo percentage * duration
@@ -1129,7 +1172,6 @@ SoundcloudPlayer = MusicPlayer.extend
 		@init () =>
 			@player.load @track.sc.uri,
 				auto_play: true
-		
 	
 MP3Player = MusicPlayer.extend
 	type: "mp3"
@@ -1157,6 +1199,7 @@ MP3Player = MusicPlayer.extend
 		@player = $("<audio controls autoplay='true' src='#{@attributes.streaming_url}'/>").appendTo(@$el)[0]
 		console.log @$el if FLAG_DEBUG
 		@player.play()
+		@player.volume = RMP.volumecontrol.model.get("volume")
 		_.each @events(), (listener, ev) =>
 			$(@player).bind ev, listener
 	clean: (justTheElement) ->
@@ -1172,6 +1215,8 @@ MP3Player = MusicPlayer.extend
 		@init()
 	playPause: () ->
 		if @playerState is "playing" then @player.pause() else @player.play()
+	volume: (value) ->
+		@player.volume = value
 	seekTo: (percentage, seekAhead) ->
 		@player.currentTime = percentage * @player.duration
 	initialize: () ->
@@ -1340,12 +1385,17 @@ PlayerController = Backbone.Model.extend
 		return if not @controller?
 		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
+	volume: (value) ->
+		return if not @controller?
+		console.log "PlayerController :: Volume" if FLAG_DEBUG
+		@controller.volume value
 	seekTo: (percentage, seekAhead) ->
 		return if not @controller?
 		@controller.seekTo(percentage, seekAhead)
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @change
 		@listenTo RMP.dispatcher, "controls:play", @playPause
+		@listenTo RMP.dispatcher, "controls:volume", @volume
 		@listenTo RMP.dispatcher, "progress:set", @seekTo
 
 RMP.player = new PlayerController

@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -313,7 +313,7 @@ ProgressBarView = Backbone.View.extend({
   resize: function() {
     var itemWidth;
     itemWidth = $(".controls .left .item").outerWidth();
-    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 6.2);
+    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 7);
   },
   render: function() {
     this.$(".end.time").text(this.toMinSecs(this.model.get("duration")));
@@ -378,7 +378,7 @@ Buttons = Backbone.Model.extend({
         clickEvent: "controls:forward"
       }
     });
-    this.play = new Button({
+    return this.play = new Button({
       el: $(".controls .play.button"),
       attributes: {
         clickEvent: "controls:play",
@@ -395,21 +395,62 @@ Buttons = Backbone.Model.extend({
         }
       }
     });
-    this.shuffle = new Button({
-      el: $(".controls .shuffle.button"),
-      attributes: {
-        clickEvent: "controls:shuffle",
-        listenEvent: "player:shuffle"
-      }
-    });
-    return this.repeat = new Button({
-      el: $(".controls .repeat.button"),
-      attributes: {
-        clickEvent: "controls:repeat",
-        listenEvent: "player:repeat"
-      }
-    });
   }
+});
+
+VolumeControl = Backbone.Model.extend({
+  defaults: {
+    volume: 0.1,
+    size: 100
+  },
+  volumeChange: function() {
+    var e;
+    RMP.dispatcher.trigger("controls:volume", this.get("volume"));
+    try {
+      return localStorage["volume"] = this.get("volume");
+    } catch (_error) {
+      e = _error;
+      return console.error(e);
+    }
+  },
+  initialize: function() {
+    this.listenTo(this, "change:volume", this.volumeChange);
+    if (localStorage["volume"] != null) {
+      return this.set("volume", localStorage["volume"]);
+    }
+  }
+});
+
+VolumeControlView = Backbone.View.extend({
+  events: {
+    "click .volume-control": "click"
+  },
+  click: function(e) {
+    var current, max, ratio;
+    max = this.model.get("size");
+    current = (e.offsetY - max) * -1;
+    ratio = current / max;
+    return this.model.set("volume", ratio);
+  },
+  render: function() {
+    this.$(".volume-bar").css("height", (this.model.get("volume") * this.model.get("size")) + "px");
+    if (this.model.get("volume") >= 0.5) {
+      return this.$(".icon.volume").removeClass("off up down").addClass("up");
+    } else if (this.model.get("volume") <= 0.1) {
+      return this.$(".icon.volume").removeClass("off up down").addClass("off");
+    } else {
+      return this.$(".icon.volume").removeClass("off up down").addClass("down");
+    }
+  },
+  initialize: function() {
+    this.listenTo(this.model, "change:volume", this.render);
+    return this.render();
+  }
+});
+
+RMP.volumecontrol = new VolumeControlView({
+  model: new VolumeControl,
+  el: $(".controls .volume.button")
 });
 
 RMP.buttons = new Buttons;
@@ -1247,6 +1288,7 @@ YoutubePlayer = MusicPlayer.extend({
   },
   initProgress: function() {
     var getData;
+    this.player.setVolume(RMP.volumecontrol.model.get("volume") * 100);
     RMP.dispatcher.trigger("progress:duration", this.player.getDuration());
     getData = (function(_this) {
       return function() {
@@ -1283,6 +1325,9 @@ YoutubePlayer = MusicPlayer.extend({
         return this.player.playVideo();
       }
     }
+  },
+  volume: function(value) {
+    return this.player.setVolume(value * 100);
   },
   seekTo: function(percentage, seekAhead) {
     return this.player.seekTo(percentage * this.player.getDuration(), seekAhead);
@@ -1322,6 +1367,7 @@ SoundcloudPlayer = MusicPlayer.extend({
   event_trigger: function(ev) {
     return (function(_this) {
       return function(data) {
+        _this.player.setVolume(RMP.volumecontrol.model.get("volume") * 100);
         _this.player.getDuration(function(duration) {
           return RMP.dispatcher.trigger("progress:duration", duration / 1000);
         });
@@ -1332,6 +1378,9 @@ SoundcloudPlayer = MusicPlayer.extend({
   },
   playPause: function() {
     return this.player.toggle();
+  },
+  volume: function(value) {
+    return this.player.setVolume(value * 100);
   },
   seekTo: function(percentage, seekAhead) {
     return this.player.getDuration((function(_this) {
@@ -1483,6 +1532,7 @@ MP3Player = MusicPlayer.extend({
       console.log(this.$el);
     }
     this.player.play();
+    this.player.volume = RMP.volumecontrol.model.get("volume");
     return _.each(this.events(), (function(_this) {
       return function(listener, ev) {
         return $(_this.player).bind(ev, listener);
@@ -1514,6 +1564,9 @@ MP3Player = MusicPlayer.extend({
     } else {
       return this.player.play();
     }
+  },
+  volume: function(value) {
+    return this.player.volume = value;
   },
   seekTo: function(percentage, seekAhead) {
     return this.player.currentTime = percentage * this.player.duration;
@@ -1758,6 +1811,15 @@ PlayerController = Backbone.Model.extend({
     }
     return this.controller.playPause();
   },
+  volume: function(value) {
+    if (this.controller == null) {
+      return;
+    }
+    if (FLAG_DEBUG) {
+      console.log("PlayerController :: Volume");
+    }
+    return this.controller.volume(value);
+  },
   seekTo: function(percentage, seekAhead) {
     if (this.controller == null) {
       return;
@@ -1767,6 +1829,7 @@ PlayerController = Backbone.Model.extend({
   initialize: function() {
     this.listenTo(RMP.dispatcher, "song:change", this.change);
     this.listenTo(RMP.dispatcher, "controls:play", this.playPause);
+    this.listenTo(RMP.dispatcher, "controls:volume", this.volume);
     return this.listenTo(RMP.dispatcher, "progress:set", this.seekTo);
   }
 });

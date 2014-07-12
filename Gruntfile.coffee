@@ -28,7 +28,7 @@ module.exports = (grunt) =>
 				tasks: ["less"]
 			coffee:
 				files: ["src/coffee/*", "src/coffee/*/*"]
-				tasks: ["coffee"]
+				tasks: ["coffee", "uglify"]
 			livereload:
 				options:
 					livereload: true
@@ -41,5 +41,5 @@ module.exports = (grunt) =>
 
 	grunt.registerTask "c", ["coffee"]
 	grunt.registerTask "l", ["less"]
-	grunt.registerTask "default", ["coffee", "less", "watch"]
+	grunt.registerTask "default", ["coffee", "uglify", "less", "watch"]
 	grunt.registerTask "build", ["coffee", "uglify", "less"]

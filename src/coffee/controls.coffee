@@ -66,7 +66,7 @@ ProgressBarView = Backbone.View.extend
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*6.2)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -122,15 +122,52 @@ Buttons = Backbone.Model.extend
 						return player.player.getPlayerState() == 1
 					else
 						return player.playerState is "playing"
-		@shuffle = new Button
-			el: $(".controls .shuffle.button")
-			attributes:
-				clickEvent: "controls:shuffle"
-				listenEvent: "player:shuffle"
-		@repeat = new Button
-			el: $(".controls .repeat.button")
-			attributes:
-				clickEvent: "controls:repeat"
-				listenEvent: "player:repeat"
+
+
+VolumeControl = Backbone.Model.extend
+	defaults:
+		volume: 0.1
+		size: 100
+
+	volumeChange: () ->
+		RMP.dispatcher.trigger "controls:volume", @get("volume")
+
+		try
+			localStorage["volume"] = @get("volume")
+		catch e
+			console.error e
+		
+	initialize: () ->
+		@listenTo @, "change:volume", @volumeChange
+		@set "volume", (localStorage["volume"]) if localStorage["volume"]?
+
+VolumeControlView = Backbone.View.extend
+	events:
+		"click .volume-control": "click"
+	click: (e) ->
+
+		max = @model.get("size")
+		current = (e.offsetY - max) * -1
+
+		ratio = current / max
+
+		@model.set "volume", ratio
+	render: () ->
+		@$(".volume-bar").css("height", (@model.get("volume") * @model.get("size")) + "px")
+
+		if @model.get("volume") >= 0.5
+			@$(".icon.volume").removeClass("off up down").addClass "up"
+		else if @model.get("volume") <= 0.1
+			@$(".icon.volume").removeClass("off up down").addClass "off"
+		else
+			@$(".icon.volume").removeClass("off up down").addClass "down"
+		
+	initialize: () ->
+		@listenTo @model, "change:volume", @render
+		@render()
+
+RMP.volumecontrol = new VolumeControlView
+	model: new VolumeControl
+	el: $(".controls .volume.button")
 
 RMP.buttons = new Buttons
