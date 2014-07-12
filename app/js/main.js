@@ -177,8 +177,14 @@ Reddit = Backbone.Model.extend({
     return this.set("topMethod", topMethod);
   },
   save: function() {
-    localStorage["sortMethod"] = this.get("sortMethod");
-    return localStorage["topMethod"] = this.get("topMethod");
+    var e;
+    try {
+      localStorage["sortMethod"] = this.get("sortMethod");
+      return localStorage["topMethod"] = this.get("topMethod");
+    } catch (_error) {
+      e = _error;
+      return console.error(e);
+    }
   },
   initialize: function() {
     if (localStorage["sortMethod"] != null) {

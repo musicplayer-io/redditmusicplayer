@@ -271,8 +271,12 @@ Reddit = Backbone.Model.extend
 		@set "sortMethod", sortMethod
 		@set "topMethod", topMethod
 	save: () ->
-		localStorage["sortMethod"] = @get "sortMethod"
-		localStorage["topMethod"] = @get "topMethod"
+		try
+			localStorage["sortMethod"] = @get "sortMethod"
+			localStorage["topMethod"] = @get "topMethod"
+		catch e
+			console.error e
+		
 	initialize: () ->
 		@set "sortMethod", localStorage["sortMethod"] if localStorage["sortMethod"]?
 		@set "topMethod", localStorage["topMethod"] if localStorage["topMethod"]?
