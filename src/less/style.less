@@ -19,7 +19,10 @@
 
 @col-bg: #111;
 @col-fg: #fff;
-@col-primary: #00B5AD;
+@col-primary: #FDC00F;
+
+@col-gold: #FDC00F;
+@col-gold_dark: #f99b1d;
 
 @font-default: "Roboto", Arial, Helvetica, sans-serif;
 @font-condensed: "Roboto Condensed", Arial, Helvetica, sans-serif;
@@ -38,7 +41,7 @@ html, body, window {
 }
 
 ::selection {
-	background: #F75858;
+	background: @col-gold_dark;
 }
 
 body {
@@ -89,6 +92,29 @@ a {
     	background: fade(@col-fg, 5%);
     }
 }
+
+
+// color override
+/*--- button ---*/
+.ui.gold.buttons .button,
+.ui.gold.button {
+  background-color: @col-gold;
+  color: #000;
+}
+.ui.gold.buttons .button:hover,
+.ui.gold.button:hover,
+.ui.gold.buttons .active.button,
+.ui.gold.button.active {
+  background-color: lighten(@col-gold, 5%);
+  color: #000;
+}
+.ui.gold.buttons .button:active,
+.ui.gold.button:active {
+  background-color: darken(@col-gold, 5%);
+  color: #000;
+}
+
+
 
 .ui.inverted.menu .dropdown.reddit, .ui.inverted.menu .dropdown.reddit
 .dropdown.reddit {
@@ -350,6 +376,9 @@ a {
 .ui.container > .content.browse {
 	p.description {
 		line-height: 1.5;
+	}
+	.subreddits.menu .item .menu .active.item {
+		border-left: 2px solid @col-primary;
 	}
 }
 
