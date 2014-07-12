@@ -1,6 +1,12 @@
  
 ## Changelog
 
+### 0.3.5 - 12 July 2014
+
+* Different Colors, minor UI tweaks
+* Bug fix for Safari
+* Volume control
+
 ### 0.3.4 - 8 July 2014
 
 * Mobile
