@@ -26,13 +26,25 @@ SubredditPlayListView = Backbone.View.extend
 		"click .menu.selection .item": "remove"
 	remove: (e) ->
 		currentReddit = e.currentTarget.dataset.value
-		RMP.subredditplaylist.get(currentReddit).destroy()
-		RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
+		if e.currentTarget.dataset.category is "multi"
+			RMP.multi = null
+			RMP.playlist.refresh()
+			@render()
+		else
+			RMP.subredditplaylist.get(currentReddit).destroy()
+			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
 	template: Templates.SubredditPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
-		RMP.subredditplaylist.each (model) =>
-			@$(".menu.selection").append @template model.toJSON()
+		if RMP.multi
+			sub = new Subreddit
+				category: "multi"
+				name: RMP.multi
+				text: RMP.multi
+			@$(".menu.selection").append @template sub.toJSON()
+		else
+			RMP.subredditplaylist.each (model) =>
+				@$(".menu.selection").append @template model.toJSON()
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
