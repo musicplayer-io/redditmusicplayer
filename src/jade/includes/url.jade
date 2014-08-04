@@ -16,3 +16,8 @@ if (autoplay != null)
 				RMP.dispatcher.trigger("controls:play");
 			});
 		})();
+if (multi != null)
+	script(type="text/javascript").
+		(function() {
+			RMP.multi = "!{multi}";
+		})();

@@ -79,6 +79,9 @@ Reddit = Backbone.Model.extend({
   },
   getMusic: function(callback) {
     var data;
+    if (RMP.multi != null) {
+      return this.getMulti(callback);
+    }
     data = {};
     data.sort = this.get("sortMethod");
     if (this.get("sortMethod") === "top") {
@@ -90,6 +93,33 @@ Reddit = Backbone.Model.extend({
     return $.ajax({
       dataType: "json",
       url: "" + API.Reddit.base + "/r/" + (this.subreddits()) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
+      data: data,
+      success: (function(_this) {
+        return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
+          return callback(r.data.children);
+        };
+      })(this)
+    });
+  },
+  getMulti: function(callback) {
+    var data;
+    data = {};
+    if (!this.has("multi")) {
+      this.set("multi", RMP.multi);
+    }
+    data.sort = this.get("sortMethod");
+    if (this.get("sortMethod") === "top") {
+      data.t = this.get("topMethod");
+    }
+    if (FLAG_DEBUG) {
+      console.log("Reddit :: GetMulti ::", this.get("multi"));
+    }
+    return $.ajax({
+      dataType: "json",
+      url: "" + API.Reddit.base + "/user/" + (this.get('multi')) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
       data: data,
       success: (function(_this) {
         return function(r) {
@@ -603,17 +633,33 @@ SubredditPlayListView = Backbone.View.extend({
   remove: function(e) {
     var currentReddit;
     currentReddit = e.currentTarget.dataset.value;
-    RMP.subredditplaylist.get(currentReddit).destroy();
-    return RMP.subredditplaylist.remove(RMP.subredditplaylist.get(currentReddit));
+    if (e.currentTarget.dataset.category === "multi") {
+      RMP.multi = null;
+      RMP.playlist.refresh();
+      return this.render();
+    } else {
+      RMP.subredditplaylist.get(currentReddit).destroy();
+      return RMP.subredditplaylist.remove(RMP.subredditplaylist.get(currentReddit));
+    }
   },
   template: Templates.SubredditPlayListView,
   render: function() {
+    var sub;
     this.$(".menu.selection").html("");
-    return RMP.subredditplaylist.each((function(_this) {
-      return function(model) {
-        return _this.$(".menu.selection").append(_this.template(model.toJSON()));
-      };
-    })(this));
+    if (RMP.multi) {
+      sub = new Subreddit({
+        category: "multi",
+        name: RMP.multi,
+        text: RMP.multi
+      });
+      return this.$(".menu.selection").append(this.template(sub.toJSON()));
+    } else {
+      return RMP.subredditplaylist.each((function(_this) {
+        return function(model) {
+          return _this.$(".menu.selection").append(_this.template(model.toJSON()));
+        };
+      })(this));
+    }
   },
   initialize: function() {
     this.listenTo(RMP.subredditplaylist, "add", this.render);

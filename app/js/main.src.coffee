@@ -218,6 +218,8 @@ Reddit = Backbone.Model.extend
 		else
 			return RMP.subredditplaylist.toString()
 	getMusic: (callback) ->
+		if RMP.multi?
+			return @getMulti callback
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
@@ -225,6 +227,20 @@ Reddit = Backbone.Model.extend
 		$.ajax
 			dataType: "json"
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+			data: data
+			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+				callback r.data.children
+	getMulti: (callback) ->
+		data = {}
+		if not @has("multi")
+			@set "multi", RMP.multi
+		data.sort = @get("sortMethod")
+		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		console.log "Reddit :: GetMulti ::", @get("multi") if FLAG_DEBUG
+		$.ajax
+			dataType: "json"
+			url: "#{API.Reddit.base}/user/#{@get('multi')}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
@@ -585,13 +601,25 @@ SubredditPlayListView = Backbone.View.extend
 		"click .menu.selection .item": "remove"
 	remove: (e) ->
 		currentReddit = e.currentTarget.dataset.value
-		RMP.subredditplaylist.get(currentReddit).destroy()
-		RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
+		if e.currentTarget.dataset.category is "multi"
+			RMP.multi = null
+			RMP.playlist.refresh()
+			@render()
+		else
+			RMP.subredditplaylist.get(currentReddit).destroy()
+			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
 	template: Templates.SubredditPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
-		RMP.subredditplaylist.each (model) =>
-			@$(".menu.selection").append @template model.toJSON()
+		if RMP.multi
+			sub = new Subreddit
+				category: "multi"
+				name: RMP.multi
+				text: RMP.multi
+			@$(".menu.selection").append @template sub.toJSON()
+		else
+			RMP.subredditplaylist.each (model) =>
+				@$(".menu.selection").append @template model.toJSON()
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render

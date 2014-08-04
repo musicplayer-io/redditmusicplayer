@@ -21,6 +21,8 @@ Reddit = Backbone.Model.extend
 		else
 			return RMP.subredditplaylist.toString()
 	getMusic: (callback) ->
+		if RMP.multi?
+			return @getMulti callback
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
@@ -28,6 +30,20 @@ Reddit = Backbone.Model.extend
 		$.ajax
 			dataType: "json"
 			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+			data: data
+			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+				callback r.data.children
+	getMulti: (callback) ->
+		data = {}
+		if not @has("multi")
+			@set "multi", RMP.multi
+		data.sort = @get("sortMethod")
+		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		console.log "Reddit :: GetMulti ::", @get("multi") if FLAG_DEBUG
+		$.ajax
+			dataType: "json"
+			url: "#{API.Reddit.base}/user/#{@get('multi')}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?

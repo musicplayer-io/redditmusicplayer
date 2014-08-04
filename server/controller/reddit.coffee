@@ -17,6 +17,7 @@ class RedditController
 		data.autoplay = true if request.query.autoplay?
 		@render request, response, data, "comments"
 	multiReddit: (request, response, callback) =>
+		data = {multi: request.params[0]}
 		@render request, response, data, "multi"
 	render: (request, response, data, page) ->
 		data.user = request.user._json if request.user?
