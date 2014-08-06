@@ -40,8 +40,13 @@ Pages =
 
 class SEOController
 	generate: (page) ->
-		return Pages[page] if page of Pages
-		return Pages.default
+		if page of Pages
+			seo = Pages[page] 
+		else
+			seo = Pages.default
+
+		seo.description = seo.description + " - " + Pages.default
+		return seo
 
 controller = new SEOController
 module.exports = controller

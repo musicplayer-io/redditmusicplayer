@@ -1,7 +1,7 @@
 
 # Reddit Music Player
 
-Music listening for reddit.
+All of the music subreddits in one beautiful music player. Right now.
 
 [Reddit Music Player is available here!](http://reddit.music.player.il.ly/)
 
@@ -9,9 +9,8 @@ Music listening for reddit.
 
 Module | Status
 --- | --- | ---
-**Global Version** | 0.3.7
+**Global Version** | 0.3.8
 **Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
-**Web Player** |  [reddit.music.player.il.ly/player/](http://reddit.music.player.il.ly/player/)
 **Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)
 
 ---
@@ -21,15 +20,11 @@ Module | Status
 You need node installed and running.
 Run **npm install** in the main directory and in the *server* directory.
 
-To run the server you need to build the packages using grunt.
-Here are the grunt tasks you can run using grunt-cli.
-
-* **grunt**: Default - jshint, jade, less, livereload
-* **grunt server**: Server - jshint, less, browserify, livreload
-* **grunt build**: Building for node-webkit - jshint, less, jade, browserify
-* **grunt chrome --force**: Build for Chrome Apps - jshint, less, jade, browserify, build for chrome
+Build less and coffee using **grunt**.
 
 You can run the server by **npm start**.
+
+You'll also need a redis session running to debug authenticated modes.
 
 # License
 

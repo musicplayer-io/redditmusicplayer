@@ -53,7 +53,7 @@ module.exports = ->
         store: new RedisStore
             prefix: "sess"
             port: 6379
-            host: "23.95.112.34"
+            host: "localhost"
         cookie:
             secure: false
             maxAge: 30 * (24*60*60*1000) # days

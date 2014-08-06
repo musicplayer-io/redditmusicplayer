@@ -43,13 +43,23 @@ SubredditPlayListView = Backbone.View.extend
 			RMP.multi = null
 			RMP.playlist.refresh()
 			@render()
+		else if e.currentTarget.dataset.category is "search"
+			RMP.search = null
+			RMP.playlist.refresh()
+			@render()
 		else
 			RMP.subredditplaylist.get(currentReddit).destroy()
 			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
 	template: Templates.SubredditPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
-		if RMP.multi
+		if RMP.search?
+			sub = new Subreddit
+				category: "search"
+				name: "search: #{RMP.search.get('text')}"
+				text: "search: #{RMP.search.get('text')}"
+			@$(".menu.selection").append @template sub.toJSON()
+		else if RMP.multi
 			sub = new Subreddit
 				category: "multi"
 				name: RMP.multi
@@ -109,6 +119,33 @@ SubredditSelectionView = Backbone.View.extend
 
 		console.log "Subreddit :: View Made" if FLAG_DEBUG
 
+CustomSubreddit = Backbone.View.extend
+	events:
+		"keyup input": "enter"
+		"click .button": "submit"
+	enter: (e) ->
+		return if e.keyCode isnt 13
+		@submit()
+	submit: () ->
+		val = @$("input").val()
+
+		return if not val?
+		return if val.trim().length < 3
+
+		val = val.toLowerCase()
+		return if RMP.subredditplaylist.where({name: val}).length isnt 0
+
+		sub = new Subreddit
+				category: "custom"
+				name: val
+				text: val
+
+		RMP.subredditplaylist.add sub
+
+
+		@$("input").val("")
+	initialize: () ->
+		console.log "Custom Subreddit :: Ready" if FLAG_DEBUG
 
 
 RMP.subredditsSelection = []
@@ -116,6 +153,9 @@ RMP.subredditsSelection = []
 RMP.subredditplaylist = new SubredditPlaylist
 RMP.subredditplaylistview = new SubredditPlayListView
 	el: $(".content.browse .my.reddit.menu")
+
+RMP.customsubreddit = new CustomSubreddit
+	el: $(".content.browse .custom-subreddit")
 
 RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.subredditsSelection = []
@@ -126,6 +166,8 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	console.timeEnd "Making Views" if FLAG_DEBUG
 	RMP.subredditplaylistview.setElement $(".content.browse .my.reddit.menu")
 	RMP.subredditplaylistview.render() if RMP.subredditplaylist.length > 0
+
+	RMP.customsubreddit.setElement $(".content.browse .custom-subreddit")
 
 RMP.dispatcher.on "app:main", () ->
 	if (RMP.URLsubreddits?)

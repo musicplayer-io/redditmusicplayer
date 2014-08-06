@@ -22,7 +22,9 @@ class AppController
 	playlist: (request, response, callback) =>
 		render(request, response, "playlist")
 	remote: (request, response, callback) =>
-		render(request, response, "remote")	
+		render(request, response, "remote")
+	search: (request, response, callback) =>
+		render(request, response, "search")	
 
 controller = new AppController
 module.exports = controller

@@ -66,7 +66,7 @@ ProgressBarView = Backbone.View.extend
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7.5)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")

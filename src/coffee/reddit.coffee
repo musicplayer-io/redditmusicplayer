@@ -20,12 +20,17 @@ Reddit = Backbone.Model.extend
 			return "listentothis"
 		else
 			return RMP.subredditplaylist.toString()
-	getMusic: (callback) ->
-		if RMP.multi?
-			return @getMulti callback
+	getMusic: (callback, after) ->
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		data.after = after if after?
+
+		if RMP.search?
+			return @getSearch callback, data
+		if RMP.multi?
+			return @getMulti callback, data
+
 		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
@@ -34,12 +39,21 @@ Reddit = Backbone.Model.extend
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
-	getMulti: (callback) ->
-		data = {}
+
+	getSearch: (callback, data) ->
+		@set "search", RMP.search
+		console.log "Reddit :: GetSearch ::", @get("search") if FLAG_DEBUG
+		$.ajax
+			dataType: "json"
+			url: "#{API.Reddit.base}/search.json?q=#{@get('search')}&jsonp=?"
+			data: data
+			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+				callback r.data.children
+
+	getMulti: (callback, data) ->
 		if not @has("multi")
 			@set "multi", RMP.multi
-		data.sort = @get("sortMethod")
-		data.t = @get("topMethod") if @get("sortMethod") is "top"
 		console.log "Reddit :: GetMulti ::", @get("multi") if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
@@ -49,17 +63,18 @@ Reddit = Backbone.Model.extend
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
-		data = {}
-		data.sort = @get("sortMethod")
-		data.t = @get("topMethod") if @get("sortMethod") is "top"
-		data.after = last
-		$.ajax
-			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
-			data: data
-			success: (r) =>
-				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+		@getMusic callback, last
+		# data = {}
+		# data.sort = @get("sortMethod")
+		# data.t = @get("topMethod") if @get("sortMethod") is "top"
+		# data.after = last
+		# $.ajax
+		# 	dataType: "json"
+		# 	url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+		# 	data: data
+		# 	success: (r) =>
+		# 		return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+		# 		callback r.data.children
 	getComments: (permalink, callback) ->
 		data = {}
 		data.sort = @get("sortMethod")
