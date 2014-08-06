@@ -8,6 +8,7 @@ module.exports = ->
     @get '/about', main.about
     @get '/browse', main.browse
     @get '/playlist', main.playlist
+    @get '/remote', main.remote
 
     # Authentication
     authentication = require('./controller/authentication')

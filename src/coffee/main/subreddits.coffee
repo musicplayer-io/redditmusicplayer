@@ -14,10 +14,23 @@ SubredditPlaylist = Backbone.Collection.extend
 	localStorage: new Backbone.LocalStorage("Subreddits")
 	toString: () ->
 		RMP.subredditplaylist.pluck("name").join("+")
+	parseFromRemote: (strSubs) ->
+		subs = [] 
+
+		for i in strSubs.split("+")
+			sub = new Subreddit
+				category: "remote"
+				name: i
+				text: i
+			subs.push sub
+
+		@reset subs
 	initialize: () ->
 		console.log "SubredditPlaylist :: Ready" if FLAG_DEBUG
 		@listenTo @, "add", @save
+		@listenTo @, "reset", @save
 		@listenTo @, "remove", @save
+		@listenTo RMP.dispatcher, "remote:subreddits", @parseFromRemote
 
 SubredditPlayListView = Backbone.View.extend
 	tagName: "div"
@@ -48,6 +61,7 @@ SubredditPlayListView = Backbone.View.extend
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
+		@listenTo RMP.subredditplaylist, "reset", @render
 		
 		console.log "SubredditPlayListView :: Ready" if FLAG_DEBUG
 
@@ -91,6 +105,7 @@ SubredditSelectionView = Backbone.View.extend
 
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
+		@listenTo RMP.subredditplaylist, "reset", @render
 
 		console.log "Subreddit :: View Made" if FLAG_DEBUG
 

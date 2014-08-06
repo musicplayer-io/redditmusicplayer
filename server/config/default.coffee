@@ -2,8 +2,8 @@ express = require 'express'
 bodyParser = require 'body-parser'
 
 cookieParser = require 'cookie-parser'
-session = require 'express-session'
 bodyParser = require('body-parser')
+session = require 'express-session'
 RedisStore = require('connect-redis')(session);
 
 passport = require 'passport'

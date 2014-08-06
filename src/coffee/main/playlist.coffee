@@ -115,6 +115,7 @@ Playlist = Backbone.Collection.extend
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @refresh
 		@listenTo RMP.subredditplaylist, "remove", @refresh
+		@listenTo RMP.subredditplaylist, "reset", @refresh
 
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward

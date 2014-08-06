@@ -1,0 +1,31 @@
+.content.remote
+	.switcher
+		i.icon.bullhorn
+		span.page Remote
+		include ../switcher
+
+	.ui.dimmer.active
+		.content
+			.center
+				h2.ui.inverted.icon.header
+					i.icon.circular.inverted.emphasized.red.close
+					| You need to log in first.
+
+	.ui.inverted.segment
+		.ui.toggle.checkbox.receiver
+			input(type="checkbox", name="receiver", checked)
+			label Receive commands in this session.
+
+	.ui.inverted.segment.remote-controls
+		.ui.three.buttons.fluid.black
+			.ui.backward.button(data-type="controls:backward").disabled
+				i.icon.backward
+			.ui.play.button(data-type="controls:play").disabled
+				i.icon.play
+			.ui.forward.button(data-type="controls:forward").disabled
+				i.icon.forward
+
+	.ui.inverted.segment
+		.ui.button.black.fluid.subreddits-copy.disabled
+			i.icon.copy
+			| Send Subreddits Selection

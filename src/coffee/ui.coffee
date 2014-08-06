@@ -26,10 +26,12 @@ UIModel = Backbone.View.extend
 	render: (data, page) ->
 		@$el.html data.content
 		@$el.find(".ui.dropdown").dropdown()
+		@$el.find(".ui.checkbox").checkbox()
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
 		console.log "UI :: Ready" if FLAG_DEBUG
 		$(".ui.dropdown").dropdown()
+		$(".ui.checkbox").checkbox()
 		@listenTo RMP.dispatcher, "app:page", @navigate
 
 
