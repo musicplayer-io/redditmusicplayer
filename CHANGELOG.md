@@ -1,6 +1,14 @@
  
 ## Changelog
 
+### 0.3.7 - 6 August 2014
+
+* Remote Control
+
+### 0.3.6 - 4 August 2014
+
+* Multireddits
+
 ### 0.3.5 - 12 July 2014
 
 * Different Colors, minor UI tweaks
