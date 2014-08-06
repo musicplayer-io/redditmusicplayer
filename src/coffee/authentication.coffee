@@ -8,6 +8,7 @@ Authentication = Backbone.Model.extend
 		if @get ("name")
 			@$el.html @template @attributes
 			@$(".ui.dropdown").dropdown()
+		RMP.dispatcher.trigger "authenticated", @
 
 
 RMP.dispatcher.on "app:page", (category, page) -> 

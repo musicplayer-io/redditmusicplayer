@@ -312,6 +312,7 @@ Authentication = Backbone.Model.extend
 		if @get ("name")
 			@$el.html @template @attributes
 			@$(".ui.dropdown").dropdown()
+		RMP.dispatcher.trigger "authenticated", @
 
 
 RMP.dispatcher.on "app:page", (category, page) -> 
@@ -520,10 +521,12 @@ UIModel = Backbone.View.extend
 	render: (data, page) ->
 		@$el.html data.content
 		@$el.find(".ui.dropdown").dropdown()
+		@$el.find(".ui.checkbox").checkbox()
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
 		console.log "UI :: Ready" if FLAG_DEBUG
 		$(".ui.dropdown").dropdown()
+		$(".ui.checkbox").checkbox()
 		@listenTo RMP.dispatcher, "app:page", @navigate
 
 
@@ -589,10 +592,23 @@ SubredditPlaylist = Backbone.Collection.extend
 	localStorage: new Backbone.LocalStorage("Subreddits")
 	toString: () ->
 		RMP.subredditplaylist.pluck("name").join("+")
+	parseFromRemote: (strSubs) ->
+		subs = [] 
+
+		for i in strSubs.split("+")
+			sub = new Subreddit
+				category: "remote"
+				name: i
+				text: i
+			subs.push sub
+
+		@reset subs
 	initialize: () ->
 		console.log "SubredditPlaylist :: Ready" if FLAG_DEBUG
 		@listenTo @, "add", @save
+		@listenTo @, "reset", @save
 		@listenTo @, "remove", @save
+		@listenTo RMP.dispatcher, "remote:subreddits", @parseFromRemote
 
 SubredditPlayListView = Backbone.View.extend
 	tagName: "div"
@@ -623,6 +639,7 @@ SubredditPlayListView = Backbone.View.extend
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
+		@listenTo RMP.subredditplaylist, "reset", @render
 		
 		console.log "SubredditPlayListView :: Ready" if FLAG_DEBUG
 
@@ -666,6 +683,7 @@ SubredditSelectionView = Backbone.View.extend
 
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
+		@listenTo RMP.subredditplaylist, "reset", @render
 
 		console.log "Subreddit :: View Made" if FLAG_DEBUG
 
@@ -820,6 +838,7 @@ Playlist = Backbone.Collection.extend
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @refresh
 		@listenTo RMP.subredditplaylist, "remove", @refresh
+		@listenTo RMP.subredditplaylist, "reset", @refresh
 
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward
@@ -1436,6 +1455,73 @@ RMP.dispatcher.once "app:main", () ->
 onYouTubeIframeAPIReady = () ->
 	console.log "Youtube :: iFramed" if FLAG_DEBUG
 	RMP.dispatcher.trigger "youtube:iframe"
+
+
+Remote = Backbone.Model.extend
+	defaults:
+		receiver: true
+	triggerOnEmit: (type) ->
+		@socket.on type, (data) =>
+			return if @get("receiver") is false
+			console.log "Socket :: Receive :: #{type}", data if FLAG_DEBUG
+			RMP.dispatcher.trigger type, data
+	send: (type, data) ->
+		console.log "Socket :: Send :: #{type}", data if FLAG_DEBUG
+		@socket.emit type, data
+	setReceiver: (bool) ->
+		@set "receiver", bool
+	initialize: () ->
+		RMP.dispatcher.once "authenticated", (authentication) =>
+			@set "name", authentication.get("name")
+			@socket = io()
+
+			simpleEvents = ["controls:forward", "controls:backward", "controls:play", "remote:subreddits"]
+
+			for ev in simpleEvents
+				@triggerOnEmit ev
+
+RemoteView = Backbone.View.extend
+	events:
+		"click .remote-controls .button": "button"
+		"click .subreddits-copy": "copySubreddits"
+	copySubreddits: () ->
+		@model.send "remote:subreddits", RMP.subredditplaylist.toString()
+	button: (e) ->
+		item = $ e.currentTarget
+		return if item.hasClass "disabled"
+		type = item.data "type"
+		@model.send type
+	render: () ->
+		if @model.get("receiver") is true
+			@$(".ui.button").addClass "disabled"
+		else
+			@$(".ui.button").removeClass "disabled"
+	setReceiver: () ->
+		RMP.remoteview.model.set("receiver", true)
+	setCommander: () ->
+		RMP.remoteview.model.set("receiver", false)
+	changeElement: () ->
+		@$(".checkbox.receiver").checkbox
+			onEnable: @setReceiver
+			onDisable: @setCommander
+		@render()
+		if @model.has("name")
+			@$(".dimmer").dimmer("hide")
+	initialize: () ->
+		@render()
+		@listenTo @model, "change", @render
+		RMP.dispatcher.once "authenticated", (authentication) =>
+			@$(".dimmer").dimmer("hide")
+
+
+RMP.remote = new Remote
+RMP.remoteview = new RemoteView
+	model: RMP.remote
+	el: $(".content.remote")
+
+RMP.dispatcher.on "loaded:remote", (page) ->
+	RMP.remoteview.setElement $(".content.remote")
+	RMP.remoteview.changeElement()
 
 KeyboardController = Backbone.Model.extend
 	defaults:

@@ -116,11 +116,13 @@ a {
 
 
 
-.ui.inverted.menu .dropdown.reddit, .ui.inverted.menu .dropdown.reddit
-.dropdown.reddit {
+.ui.inverted.menu .dropdown.reddit,
+.ui.inverted.menu .dropdown.reddit .dropdown.reddit,
+.ui.dropdown.reddit {
 	.menu {
 		background: lighten(@col-bg, 10%);
 		color: @col-fg !important;
+		z-index: 100000;
 		.item {
 			color: @col-fg !important;
 			&:hover, &:focus {
@@ -129,6 +131,9 @@ a {
 			&.active {
 				background: lighten(@col-bg, 20%);
 			}
+		}
+		&:after {
+			background: lighten(@col-bg, 10%);
 		}
 	}
 }
@@ -329,6 +334,7 @@ a {
 .top.fixed.menu.ui.mobilebar {
 	display: none;
 	top: 45px;
+	text-transform: capitalize;
 }
 @media @tablet {
 	.ui.container {
@@ -390,16 +396,6 @@ a {
 	}
 }
 
-.ui.container > .content.discover {
-	.ui.menu.reddit {
-		background: transparent;
-		font-style: normal;
-		.active.item {
-			background: transparent;
-			color: @col-primary !important;
-		}
-	}
-}
 
 .ui.container > .content.browse {
 	p.description {
@@ -624,5 +620,17 @@ a {
 		.ui.image + .description {
 			// text to the right
 		}
+	}
+}
+
+.ui.container > .content.remote {
+	.ui.checkbox {
+		label {
+			color: #fff;
+		}
+	}
+	.ui.dimmer.active {
+		height: 92%;
+		top: 8% !important;
 	}
 }

@@ -16,17 +16,13 @@ render = (request, response, page) ->
 
 class AppController
 	about: (request, response, callback) =>
-		response.render "content/main/about", (err, html) =>
-			return console.error err if err
-			render(request, response, "about")
+		render(request, response, "about")
 	browse: (request, response, callback) =>
-		response.render "content/main/browse", (err, html) =>
-			return console.error err if err
-			render(request, response, "browse")
+		render(request, response, "browse")
 	playlist: (request, response, callback) =>
-		response.render "content/main/playlist", (err, html) =>
-			return console.error err if err
-			render(request, response, "playlist")		
+		render(request, response, "playlist")
+	remote: (request, response, callback) =>
+		render(request, response, "remote")	
 
 controller = new AppController
 module.exports = controller

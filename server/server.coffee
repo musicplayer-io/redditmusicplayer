@@ -1,25 +1,28 @@
-express = require 'express'
 https = require 'https'
 credentials = require("./config/credentials")
 
 # Configure Server
-server = express()
-http = require('http').Server(server)
-io = require('socket.io')(http)
-server.set 'baseDir', __dirname + '/..'
+app = require('express')()
 
-require('./config/default').call server
-require('./config/development').call server if server.get "env" is "development"
-require('./config/production').call server if server.get "env" is "production"
+app.set 'baseDir', __dirname + '/..'
+
+require('./config/default').call app
+require('./config/development').call app if app.get "env" is "development"
+require('./config/production').call app if app.get "env" is "production"
 
 # Set Up Routes
-require('./routes').call server
+require('./routes').call app
 
-secure_server = https.createServer credentials, server
-server.listen server.set('port')
-secure_server.listen 4009
+# Listen in
+http = require('http').Server(app)
+http.listen app.get('port'), () ->
+  console.log('Express server listening on port ' + app.get('port'))
 
-console.log 'Server running...'
-console.log '  > Listening on port %d in %s mode', server.set('port'), server.settings.env
+# Socket IO
+io = require('socket.io') http
+require("./sockets") io
 
-module.exports = server
+module.exports = app
+
+# secure_server = https.createServer credentials, app
+# secure_server.listen 4009

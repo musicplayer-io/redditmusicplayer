@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Remote, RemoteView, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -242,8 +242,9 @@ Authentication = Backbone.Model.extend({
     };
     if (this.get("name")) {
       this.$el.html(this.template(this.attributes));
-      return this.$(".ui.dropdown").dropdown();
+      this.$(".ui.dropdown").dropdown();
     }
+    return RMP.dispatcher.trigger("authenticated", this);
   }
 });
 
@@ -525,6 +526,7 @@ UIModel = Backbone.View.extend({
   render: function(data, page) {
     this.$el.html(data.content);
     this.$el.find(".ui.dropdown").dropdown();
+    this.$el.find(".ui.checkbox").checkbox();
     return RMP.dispatcher.trigger("loaded:" + page);
   },
   initialize: function() {
@@ -532,6 +534,7 @@ UIModel = Backbone.View.extend({
       console.log("UI :: Ready");
     }
     $(".ui.dropdown").dropdown();
+    $(".ui.checkbox").checkbox();
     return this.listenTo(RMP.dispatcher, "app:page", this.navigate);
   }
 });
@@ -615,12 +618,29 @@ SubredditPlaylist = Backbone.Collection.extend({
   toString: function() {
     return RMP.subredditplaylist.pluck("name").join("+");
   },
+  parseFromRemote: function(strSubs) {
+    var i, sub, subs, _i, _len, _ref;
+    subs = [];
+    _ref = strSubs.split("+");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      i = _ref[_i];
+      sub = new Subreddit({
+        category: "remote",
+        name: i,
+        text: i
+      });
+      subs.push(sub);
+    }
+    return this.reset(subs);
+  },
   initialize: function() {
     if (FLAG_DEBUG) {
       console.log("SubredditPlaylist :: Ready");
     }
     this.listenTo(this, "add", this.save);
-    return this.listenTo(this, "remove", this.save);
+    this.listenTo(this, "reset", this.save);
+    this.listenTo(this, "remove", this.save);
+    return this.listenTo(RMP.dispatcher, "remote:subreddits", this.parseFromRemote);
   }
 });
 
@@ -664,6 +684,7 @@ SubredditPlayListView = Backbone.View.extend({
   initialize: function() {
     this.listenTo(RMP.subredditplaylist, "add", this.render);
     this.listenTo(RMP.subredditplaylist, "remove", this.render);
+    this.listenTo(RMP.subredditplaylist, "reset", this.render);
     if (FLAG_DEBUG) {
       return console.log("SubredditPlayListView :: Ready");
     }
@@ -723,6 +744,7 @@ SubredditSelectionView = Backbone.View.extend({
     this.render();
     this.listenTo(RMP.subredditplaylist, "add", this.render);
     this.listenTo(RMP.subredditplaylist, "remove", this.render);
+    this.listenTo(RMP.subredditplaylist, "reset", this.render);
     if (FLAG_DEBUG) {
       return console.log("Subreddit :: View Made");
     }
@@ -968,6 +990,7 @@ Playlist = Backbone.Collection.extend({
   initialize: function() {
     this.listenTo(RMP.subredditplaylist, "add", this.refresh);
     this.listenTo(RMP.subredditplaylist, "remove", this.refresh);
+    this.listenTo(RMP.subredditplaylist, "reset", this.refresh);
     this.listenTo(RMP.dispatcher, "controls:forward", this.forward);
     this.listenTo(RMP.dispatcher, "controls:backward", this.backward);
     this.listenTo(RMP.dispatcher, "controls:sortMethod", this.refresh);
@@ -1893,6 +1916,113 @@ onYouTubeIframeAPIReady = function() {
   }
   return RMP.dispatcher.trigger("youtube:iframe");
 };
+
+Remote = Backbone.Model.extend({
+  defaults: {
+    receiver: true
+  },
+  triggerOnEmit: function(type) {
+    return this.socket.on(type, (function(_this) {
+      return function(data) {
+        if (_this.get("receiver") === false) {
+          return;
+        }
+        if (FLAG_DEBUG) {
+          console.log("Socket :: Receive :: " + type, data);
+        }
+        return RMP.dispatcher.trigger(type, data);
+      };
+    })(this));
+  },
+  send: function(type, data) {
+    if (FLAG_DEBUG) {
+      console.log("Socket :: Send :: " + type, data);
+    }
+    return this.socket.emit(type, data);
+  },
+  setReceiver: function(bool) {
+    return this.set("receiver", bool);
+  },
+  initialize: function() {
+    return RMP.dispatcher.once("authenticated", (function(_this) {
+      return function(authentication) {
+        var ev, simpleEvents, _i, _len, _results;
+        _this.set("name", authentication.get("name"));
+        _this.socket = io();
+        simpleEvents = ["controls:forward", "controls:backward", "controls:play", "remote:subreddits"];
+        _results = [];
+        for (_i = 0, _len = simpleEvents.length; _i < _len; _i++) {
+          ev = simpleEvents[_i];
+          _results.push(_this.triggerOnEmit(ev));
+        }
+        return _results;
+      };
+    })(this));
+  }
+});
+
+RemoteView = Backbone.View.extend({
+  events: {
+    "click .remote-controls .button": "button",
+    "click .subreddits-copy": "copySubreddits"
+  },
+  copySubreddits: function() {
+    return this.model.send("remote:subreddits", RMP.subredditplaylist.toString());
+  },
+  button: function(e) {
+    var item, type;
+    item = $(e.currentTarget);
+    if (item.hasClass("disabled")) {
+      return;
+    }
+    type = item.data("type");
+    return this.model.send(type);
+  },
+  render: function() {
+    if (this.model.get("receiver") === true) {
+      return this.$(".ui.button").addClass("disabled");
+    } else {
+      return this.$(".ui.button").removeClass("disabled");
+    }
+  },
+  setReceiver: function() {
+    return RMP.remoteview.model.set("receiver", true);
+  },
+  setCommander: function() {
+    return RMP.remoteview.model.set("receiver", false);
+  },
+  changeElement: function() {
+    this.$(".checkbox.receiver").checkbox({
+      onEnable: this.setReceiver,
+      onDisable: this.setCommander
+    });
+    this.render();
+    if (this.model.has("name")) {
+      return this.$(".dimmer").dimmer("hide");
+    }
+  },
+  initialize: function() {
+    this.render();
+    this.listenTo(this.model, "change", this.render);
+    return RMP.dispatcher.once("authenticated", (function(_this) {
+      return function(authentication) {
+        return _this.$(".dimmer").dimmer("hide");
+      };
+    })(this));
+  }
+});
+
+RMP.remote = new Remote;
+
+RMP.remoteview = new RemoteView({
+  model: RMP.remote,
+  el: $(".content.remote")
+});
+
+RMP.dispatcher.on("loaded:remote", function(page) {
+  RMP.remoteview.setElement($(".content.remote"));
+  return RMP.remoteview.changeElement();
+});
 
 KeyboardController = Backbone.Model.extend({
   defaults: {
