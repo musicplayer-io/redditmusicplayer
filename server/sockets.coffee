@@ -4,17 +4,16 @@ RedisStore = require('connect-redis')(session)
 cookieParser = require 'cookie-parser'
 
 onAuthorizeSuccess = (data, accept) ->
-	console.log('successful connection to socket.io')
+	# console.log('successful connection to socket.io')
 	accept()
 
 onAuthorizeFail = (data, message, error, accept) ->
-	console.log('failed connection to socket.io:', message)
+	# console.log('failed connection to socket.io:', message)
 	if error?
 		accept(new Error(message))
 
 sendToRoomOnTrigger = (socket, type) ->
 	socket.on type, (data) ->
-		console.log "Socket :: #{type} :: #{data}"
 		socket.to(socket.request.user.name).emit type, data
 
 module.exports = (io) ->
@@ -27,16 +26,16 @@ module.exports = (io) ->
 		store: new RedisStore
 			prefix: "sess"
 			port: 6379
-			host: "23.95.112.34"
+			host: "localhost"
 		success: onAuthorizeSuccess
 		fail: onAuthorizeFail
 
 	io.on "connection", (socket) ->
 		return if not socket.request.user
-		console.log "Socket :: User Connected :: #{socket.request.user.name}"
-
-		socket.on "disconnect", () ->
-			console.log "Socket :: User Disconnected :: #{socket.request.user.name}"
+		
+		# # console.log "Socket :: User Connected :: #{socket.request.user.name}"
+		# socket.on "disconnect", () ->
+		# 	# console.log "Socket :: User Disconnected :: #{socket.request.user.name}"
 
 		socket.join socket.request.user.name
 

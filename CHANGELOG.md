@@ -1,6 +1,11 @@
  
 ## Changelog
 
+### 0.3.8 - 6 August 2014
+
+* Custom Subreddits
+* Search Reddit
+
 ### 0.3.7 - 6 August 2014
 
 * Remote Control

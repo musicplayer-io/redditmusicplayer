@@ -404,6 +404,22 @@ a {
 	.subreddits.menu .item .menu .active.item {
 		border-left: 2px solid @col-primary;
 	}
+	.custom-subreddit, .search-reddit {
+		margin: 8px auto;
+		input {
+			background-color: rgba(255, 255, 255, .1);
+			color: rgba(255, 255, 255, .7);
+			&:hover, &:active {
+				color: rgba(255, 255, 255, .8);
+				&::-webkit-input-placeholder {
+					color: rgba(255, 255, 255, .8);
+				}
+			}
+			&:focus {
+				color: #fff;
+			}
+		}
+	}
 }
 
 .ui.container > .content.song {

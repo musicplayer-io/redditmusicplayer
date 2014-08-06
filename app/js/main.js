@@ -1,4 +1,4 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Remote, RemoteView, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, CustomSubreddit, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Remote, RemoteView, Search, SearchView, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
@@ -77,15 +77,21 @@ Reddit = Backbone.Model.extend({
       return RMP.subredditplaylist.toString();
     }
   },
-  getMusic: function(callback) {
+  getMusic: function(callback, after) {
     var data;
-    if (RMP.multi != null) {
-      return this.getMulti(callback);
-    }
     data = {};
     data.sort = this.get("sortMethod");
     if (this.get("sortMethod") === "top") {
       data.t = this.get("topMethod");
+    }
+    if (after != null) {
+      data.after = after;
+    }
+    if (RMP.search != null) {
+      return this.getSearch(callback, data);
+    }
+    if (RMP.multi != null) {
+      return this.getMulti(callback, data);
     }
     if (FLAG_DEBUG) {
       console.log("Reddit :: GetMusic :: ", this.subreddits());
@@ -104,15 +110,28 @@ Reddit = Backbone.Model.extend({
       })(this)
     });
   },
-  getMulti: function(callback) {
-    var data;
-    data = {};
+  getSearch: function(callback, data) {
+    this.set("search", RMP.search);
+    if (FLAG_DEBUG) {
+      console.log("Reddit :: GetSearch ::", this.get("search"));
+    }
+    return $.ajax({
+      dataType: "json",
+      url: "" + API.Reddit.base + "/search.json?q=" + (this.get('search')) + "&jsonp=?",
+      data: data,
+      success: (function(_this) {
+        return function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
+          return callback(r.data.children);
+        };
+      })(this)
+    });
+  },
+  getMulti: function(callback, data) {
     if (!this.has("multi")) {
       this.set("multi", RMP.multi);
-    }
-    data.sort = this.get("sortMethod");
-    if (this.get("sortMethod") === "top") {
-      data.t = this.get("topMethod");
     }
     if (FLAG_DEBUG) {
       console.log("Reddit :: GetMulti ::", this.get("multi"));
@@ -132,26 +151,7 @@ Reddit = Backbone.Model.extend({
     });
   },
   getMore: function(last, callback) {
-    var data;
-    data = {};
-    data.sort = this.get("sortMethod");
-    if (this.get("sortMethod") === "top") {
-      data.t = this.get("topMethod");
-    }
-    data.after = last;
-    return $.ajax({
-      dataType: "json",
-      url: "" + API.Reddit.base + "/r/" + (this.subreddits()) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
-      data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return callback(r.data.children);
-        };
-      })(this)
-    });
+    return this.getMusic(callback, last);
   },
   getComments: function(permalink, callback) {
     var data, url;
@@ -344,7 +344,7 @@ ProgressBarView = Backbone.View.extend({
   resize: function() {
     var itemWidth;
     itemWidth = $(".controls .left .item").outerWidth();
-    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 7);
+    return this.$(".progress").css("width", $("body").innerWidth() - itemWidth * 7.5);
   },
   render: function() {
     this.$(".end.time").text(this.toMinSecs(this.model.get("duration")));
@@ -657,6 +657,10 @@ SubredditPlayListView = Backbone.View.extend({
       RMP.multi = null;
       RMP.playlist.refresh();
       return this.render();
+    } else if (e.currentTarget.dataset.category === "search") {
+      RMP.search = null;
+      RMP.playlist.refresh();
+      return this.render();
     } else {
       RMP.subredditplaylist.get(currentReddit).destroy();
       return RMP.subredditplaylist.remove(RMP.subredditplaylist.get(currentReddit));
@@ -666,7 +670,14 @@ SubredditPlayListView = Backbone.View.extend({
   render: function() {
     var sub;
     this.$(".menu.selection").html("");
-    if (RMP.multi) {
+    if (RMP.search != null) {
+      sub = new Subreddit({
+        category: "search",
+        name: "search: " + (RMP.search.get('text')),
+        text: "search: " + (RMP.search.get('text'))
+      });
+      return this.$(".menu.selection").append(this.template(sub.toJSON()));
+    } else if (RMP.multi) {
       sub = new Subreddit({
         category: "multi",
         name: RMP.multi,
@@ -751,12 +762,57 @@ SubredditSelectionView = Backbone.View.extend({
   }
 });
 
+CustomSubreddit = Backbone.View.extend({
+  events: {
+    "keyup input": "enter",
+    "click .button": "submit"
+  },
+  enter: function(e) {
+    if (e.keyCode !== 13) {
+      return;
+    }
+    return this.submit();
+  },
+  submit: function() {
+    var sub, val;
+    val = this.$("input").val();
+    if (val == null) {
+      return;
+    }
+    if (val.trim().length < 3) {
+      return;
+    }
+    val = val.toLowerCase();
+    if (RMP.subredditplaylist.where({
+      name: val
+    }).length !== 0) {
+      return;
+    }
+    sub = new Subreddit({
+      category: "custom",
+      name: val,
+      text: val
+    });
+    RMP.subredditplaylist.add(sub);
+    return this.$("input").val("");
+  },
+  initialize: function() {
+    if (FLAG_DEBUG) {
+      return console.log("Custom Subreddit :: Ready");
+    }
+  }
+});
+
 RMP.subredditsSelection = [];
 
 RMP.subredditplaylist = new SubredditPlaylist;
 
 RMP.subredditplaylistview = new SubredditPlayListView({
   el: $(".content.browse .my.reddit.menu")
+});
+
+RMP.customsubreddit = new CustomSubreddit({
+  el: $(".content.browse .custom-subreddit")
 });
 
 RMP.dispatcher.on("loaded:browse", function(page) {
@@ -774,8 +830,9 @@ RMP.dispatcher.on("loaded:browse", function(page) {
   }
   RMP.subredditplaylistview.setElement($(".content.browse .my.reddit.menu"));
   if (RMP.subredditplaylist.length > 0) {
-    return RMP.subredditplaylistview.render();
+    RMP.subredditplaylistview.render();
   }
+  return RMP.customsubreddit.setElement($(".content.browse .custom-subreddit"));
 });
 
 RMP.dispatcher.on("app:main", function() {
@@ -1916,6 +1973,60 @@ onYouTubeIframeAPIReady = function() {
   }
   return RMP.dispatcher.trigger("youtube:iframe");
 };
+
+Search = Backbone.Model.extend({
+  defaults: {
+    sites: "site:youtube.com OR site:soundcloud.com OR site:bandcamp.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com"
+  },
+  toString: function() {
+    return this.get("text") + " " + this.get("sites");
+  },
+  initialize: function(text) {
+    this.text = text;
+  }
+});
+
+SearchView = Backbone.View.extend({
+  events: {
+    "keyup input": "enter",
+    "click .button": "submit"
+  },
+  enter: function(e) {
+    if (e.keyCode !== 13) {
+      return;
+    }
+    return this.submit();
+  },
+  submit: function() {
+    var val;
+    val = this.$("input").val();
+    if (val == null) {
+      return;
+    }
+    if (val.trim().length < 3) {
+      return;
+    }
+    RMP.search = new Search({
+      text: val
+    });
+    RMP.playlist.refresh();
+    return RMP.subredditplaylistview.render();
+  },
+  initialize: function() {
+    if (FLAG_DEBUG) {
+      return console.log("Search View :: Ready");
+    }
+  }
+});
+
+RMP.searchview = new SearchView({
+  model: RMP.remote,
+  el: $(".content.browse .search-reddit")
+});
+
+RMP.dispatcher.on("loaded:browse", function(page) {
+  return RMP.searchview.setElement($(".content.browse .search-reddit"));
+});
 
 Remote = Backbone.Model.extend({
   defaults: {

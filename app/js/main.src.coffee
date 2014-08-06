@@ -217,12 +217,17 @@ Reddit = Backbone.Model.extend
 			return "listentothis"
 		else
 			return RMP.subredditplaylist.toString()
-	getMusic: (callback) ->
-		if RMP.multi?
-			return @getMulti callback
+	getMusic: (callback, after) ->
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
+		data.after = after if after?
+
+		if RMP.search?
+			return @getSearch callback, data
+		if RMP.multi?
+			return @getMulti callback, data
+
 		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
@@ -231,12 +236,21 @@ Reddit = Backbone.Model.extend
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
-	getMulti: (callback) ->
-		data = {}
+
+	getSearch: (callback, data) ->
+		@set "search", RMP.search
+		console.log "Reddit :: GetSearch ::", @get("search") if FLAG_DEBUG
+		$.ajax
+			dataType: "json"
+			url: "#{API.Reddit.base}/search.json?q=#{@get('search')}&jsonp=?"
+			data: data
+			success: (r) =>
+				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+				callback r.data.children
+
+	getMulti: (callback, data) ->
 		if not @has("multi")
 			@set "multi", RMP.multi
-		data.sort = @get("sortMethod")
-		data.t = @get("topMethod") if @get("sortMethod") is "top"
 		console.log "Reddit :: GetMulti ::", @get("multi") if FLAG_DEBUG
 		$.ajax
 			dataType: "json"
@@ -246,17 +260,18 @@ Reddit = Backbone.Model.extend
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
-		data = {}
-		data.sort = @get("sortMethod")
-		data.t = @get("topMethod") if @get("sortMethod") is "top"
-		data.after = last
-		$.ajax
-			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
-			data: data
-			success: (r) =>
-				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+		@getMusic callback, last
+		# data = {}
+		# data.sort = @get("sortMethod")
+		# data.t = @get("topMethod") if @get("sortMethod") is "top"
+		# data.after = last
+		# $.ajax
+		# 	dataType: "json"
+		# 	url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+		# 	data: data
+		# 	success: (r) =>
+		# 		return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+		# 		callback r.data.children
 	getComments: (permalink, callback) ->
 		data = {}
 		data.sort = @get("sortMethod")
@@ -388,7 +403,7 @@ ProgressBarView = Backbone.View.extend
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7.5)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -621,13 +636,23 @@ SubredditPlayListView = Backbone.View.extend
 			RMP.multi = null
 			RMP.playlist.refresh()
 			@render()
+		else if e.currentTarget.dataset.category is "search"
+			RMP.search = null
+			RMP.playlist.refresh()
+			@render()
 		else
 			RMP.subredditplaylist.get(currentReddit).destroy()
 			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
 	template: Templates.SubredditPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
-		if RMP.multi
+		if RMP.search?
+			sub = new Subreddit
+				category: "search"
+				name: "search: #{RMP.search.get('text')}"
+				text: "search: #{RMP.search.get('text')}"
+			@$(".menu.selection").append @template sub.toJSON()
+		else if RMP.multi
 			sub = new Subreddit
 				category: "multi"
 				name: RMP.multi
@@ -687,6 +712,33 @@ SubredditSelectionView = Backbone.View.extend
 
 		console.log "Subreddit :: View Made" if FLAG_DEBUG
 
+CustomSubreddit = Backbone.View.extend
+	events:
+		"keyup input": "enter"
+		"click .button": "submit"
+	enter: (e) ->
+		return if e.keyCode isnt 13
+		@submit()
+	submit: () ->
+		val = @$("input").val()
+
+		return if not val?
+		return if val.trim().length < 3
+
+		val = val.toLowerCase()
+		return if RMP.subredditplaylist.where({name: val}).length isnt 0
+
+		sub = new Subreddit
+				category: "custom"
+				name: val
+				text: val
+
+		RMP.subredditplaylist.add sub
+
+
+		@$("input").val("")
+	initialize: () ->
+		console.log "Custom Subreddit :: Ready" if FLAG_DEBUG
 
 
 RMP.subredditsSelection = []
@@ -694,6 +746,9 @@ RMP.subredditsSelection = []
 RMP.subredditplaylist = new SubredditPlaylist
 RMP.subredditplaylistview = new SubredditPlayListView
 	el: $(".content.browse .my.reddit.menu")
+
+RMP.customsubreddit = new CustomSubreddit
+	el: $(".content.browse .custom-subreddit")
 
 RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.subredditsSelection = []
@@ -704,6 +759,8 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	console.timeEnd "Making Views" if FLAG_DEBUG
 	RMP.subredditplaylistview.setElement $(".content.browse .my.reddit.menu")
 	RMP.subredditplaylistview.render() if RMP.subredditplaylist.length > 0
+
+	RMP.customsubreddit.setElement $(".content.browse .custom-subreddit")
 
 RMP.dispatcher.on "app:main", () ->
 	if (RMP.URLsubreddits?)
@@ -1455,6 +1512,44 @@ RMP.dispatcher.once "app:main", () ->
 onYouTubeIframeAPIReady = () ->
 	console.log "Youtube :: iFramed" if FLAG_DEBUG
 	RMP.dispatcher.trigger "youtube:iframe"
+# john site:youtube OR site:soundcloud OR site:basecamp self:no
+# http://www.reddit.com/search.json?q=john%20site:youtube%20OR%20site:soundcloud%20OR%20site:basecamp%20self:no
+
+Search = Backbone.Model.extend
+	defaults:
+		sites: "site:youtube.com OR site:soundcloud.com OR site:bandcamp.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com"
+	toString: () ->
+		return @get("text") + " " + @get("sites")
+	initialize: (@text) ->
+
+SearchView = Backbone.View.extend
+	events:
+		"keyup input": "enter"
+		"click .button": "submit"
+	enter: (e) ->
+		return if e.keyCode isnt 13
+		@submit()
+	submit: () ->
+		val = @$("input").val()
+
+		return if not val?
+		return if val.trim().length < 3
+
+		RMP.search = new Search
+			text: val
+
+		RMP.playlist.refresh()
+		RMP.subredditplaylistview.render()
+	initialize: () ->
+		console.log "Search View :: Ready" if FLAG_DEBUG
+
+
+RMP.searchview = new SearchView
+	model: RMP.remote
+	el: $(".content.browse .search-reddit")
+
+RMP.dispatcher.on "loaded:browse", (page) ->
+	RMP.searchview.setElement $(".content.browse .search-reddit")
 
 
 Remote = Backbone.Model.extend
