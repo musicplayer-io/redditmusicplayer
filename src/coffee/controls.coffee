@@ -36,12 +36,14 @@ ProgressBarView = Backbone.View.extend
 	justSeeked: false
 	startSeeking: (e) ->
 		RMP.dragging = true
-		@percentage = e.offsetX / @$(".progress").outerWidth()
+		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		@percentage = offset / @$(".progress").outerWidth()
 		@justSeeked = true
 	seeking: (e) ->
 		return if not @justSeeked # mousedown didn't start on progressbar, return
 
-		@percentage = e.offsetX / @$(".progress").outerWidth()
+		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		@percentage = offset / @$(".progress").outerWidth()
 
 		if (RMP.dragging) # mouse is down, seek without playing
 			RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
@@ -145,12 +147,14 @@ VolumeControlView = Backbone.View.extend
 	events:
 		"click .volume-control": "click"
 	click: (e) ->
-
 		max = @model.get("size")
-		current = (e.offsetY - max) * -1
+		
+		offset = e.offsetY || e.layerY || e.originalEvent.layerY || 0 # firefox
+		current = (offset - max) * -1
+
+		console.log offset, current
 
 		ratio = current / max
-
 		@model.set "volume", ratio
 	render: () ->
 		@$(".volume-bar").css("height", (@model.get("volume") * @model.get("size")) + "px")

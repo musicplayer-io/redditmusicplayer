@@ -304,15 +304,19 @@ ProgressBarView = Backbone.View.extend({
   },
   justSeeked: false,
   startSeeking: function(e) {
+    var offset;
     RMP.dragging = true;
-    this.percentage = e.offsetX / this.$(".progress").outerWidth();
+    offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0;
+    this.percentage = offset / this.$(".progress").outerWidth();
     return this.justSeeked = true;
   },
   seeking: function(e) {
+    var offset;
     if (!this.justSeeked) {
       return;
     }
-    this.percentage = e.offsetX / this.$(".progress").outerWidth();
+    offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0;
+    this.percentage = offset / this.$(".progress").outerWidth();
     if (RMP.dragging) {
       RMP.dispatcher.trigger("progress:set", this.percentage, !RMP.dragging);
     }
@@ -457,9 +461,11 @@ VolumeControlView = Backbone.View.extend({
     "click .volume-control": "click"
   },
   click: function(e) {
-    var current, max, ratio;
+    var current, max, offset, ratio;
     max = this.model.get("size");
-    current = (e.offsetY - max) * -1;
+    offset = e.offsetY || e.layerY || e.originalEvent.layerY || 0;
+    current = (offset - max) * -1;
+    console.log(offset, current);
     ratio = current / max;
     return this.model.set("volume", ratio);
   },
