@@ -1,5 +1,3 @@
-https = require 'https'
-credentials = require("./config/credentials")
 
 # Configure Server
 app = require('express')()
@@ -24,5 +22,6 @@ require("./sockets") io
 
 module.exports = app
 
-# secure_server = https.createServer credentials, app
-# secure_server.listen 4009
+credentials = require("./config/credentials")
+secure_server = require("https").Server credentials, app
+secure_server.listen 4009
