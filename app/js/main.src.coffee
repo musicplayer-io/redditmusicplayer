@@ -60,7 +60,9 @@ Templates =
 		")
 	CurrentSongView: _.template("
 			<% if (media) { %>
-				<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
+				<% if (url.indexOf('youtu') == -1) { %>
+					<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
+				<% } %>
 			<% } %>
 			<% if (url.indexOf('imgur') >= 0) { %>
 				<a class='ui image fluid' href='<%= url %>' target='_blank'>
@@ -300,7 +302,7 @@ Reddit = Backbone.Model.extend
 	initialize: () ->
 		@set "sortMethod", localStorage["sortMethod"] if localStorage["sortMethod"]?
 		@set "topMethod", localStorage["topMethod"] if localStorage["topMethod"]?
-		if (@get("sortMethod") isnt "top" or @get("sortMethod") isnt "hot" or @get("sortMethod") isnt "new")
+		if (not (@get("sortMethod") is "top" or @get("sortMethod") is "hot" or @get("sortMethod") is "new"))
 			@changeSortMethod("hot", "week")
 			@save()
 		@listenTo @, "change", @save
@@ -978,6 +980,8 @@ CurrentSongView = Backbone.View.extend
 		"click .upvote": "vote"
 		"click .downvote": "vote"
 	vote: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".vote")
 		id = parent.attr('id')
@@ -1021,6 +1025,8 @@ CommentsView = Backbone.View.extend
 		"click .form .add_comment": "add_comment"
 		"click .reply_to .close": "reply_close"
 	reply: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')
@@ -1037,6 +1043,8 @@ CommentsView = Backbone.View.extend
 		@reply_id = @reply_author = null
 		target.remove()
 	add_comment: (e) ->
+		return if not RMP.authentication?
+		
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')
@@ -1053,6 +1061,8 @@ CommentsView = Backbone.View.extend
 				@render()
 
 	vote: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')

@@ -5,6 +5,8 @@ CurrentSongView = Backbone.View.extend
 		"click .upvote": "vote"
 		"click .downvote": "vote"
 	vote: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".vote")
 		id = parent.attr('id')
@@ -48,6 +50,8 @@ CommentsView = Backbone.View.extend
 		"click .form .add_comment": "add_comment"
 		"click .reply_to .close": "reply_close"
 	reply: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')
@@ -64,6 +68,8 @@ CommentsView = Backbone.View.extend
 		@reply_id = @reply_author = null
 		target.remove()
 	add_comment: (e) ->
+		return if not RMP.authentication?
+		
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')
@@ -80,6 +86,8 @@ CommentsView = Backbone.View.extend
 				@render()
 
 	vote: (e) ->
+		return if not RMP.authentication?
+
 		target = $(e.currentTarget)
 		parent = target.parents(".comment")
 		id = parent.attr('id')

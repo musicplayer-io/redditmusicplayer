@@ -5,6 +5,7 @@
 
 * Handling https on reverse proxy with nginx
 * Fixes for firefox
+* Hiding bigger thumbnail on youtube videos
 
 ### 0.3.8 - 6 August 2014
 
