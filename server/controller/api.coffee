@@ -13,7 +13,7 @@ postToReddit = (url, token, data, callback) ->
 		form: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
+			"User-Agent": "Reddit Music Player/0.3.9 by illyism"
 	console.log options
 	req(options, callback)
 
@@ -24,7 +24,7 @@ getFromReddit = (url, token, data, callback) ->
 		json: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
+			"User-Agent": "Reddit Music Player/0.3.9 by illyism"
 	console.log options
 	req(options, callback)
 
@@ -47,7 +47,7 @@ refreshTokenReddit = (request, response, callback) ->
 			user: reddit.client_id
 			pass: reddit.secret
 		headers:
-			"User-Agent": "Reddit Music Player/0.3.3 by illyism"
+			"User-Agent": "Reddit Music Player/0.3.9 by illyism"
 	req options, (err, resp, body) ->
 		if resp.statusCode is 401 or body.error?
 			console.log request.user, request.session, body, options
