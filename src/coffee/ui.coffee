@@ -8,7 +8,10 @@ UIModel = Backbone.View.extend
 	open: (e) ->
 		item = $ e.currentTarget
 		page = item.data("page")
+
 		@navigate page
+
+		RMP.mobileui.changeText @number, page
 	load: (page, callback, ignoreCache) ->
 		if page of @cache and (ignoreCache is false or not ignoreCache?)
 			return callback @cache[page]
@@ -29,10 +32,15 @@ UIModel = Backbone.View.extend
 		@$el.find(".ui.checkbox").checkbox()
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
-		console.log "UI :: Ready" if FLAG_DEBUG
+		@number = switch
+			when @$el.hasClass("one") then "one"
+			when @$el.hasClass("two") then "two"
+			when @$el.hasClass("three") then "three"
+
 		$(".ui.dropdown").dropdown()
 		$(".ui.checkbox").checkbox()
 		@listenTo RMP.dispatcher, "app:page", @navigate
+		console.log "UI :: Ready" if FLAG_DEBUG
 
 
 RMP.ui = [
@@ -49,10 +57,11 @@ MobileUI = Backbone.View.extend
 	className: "mobilebar"
 	events:
 		"click .item": "click"
+	changeText: (item, text) ->
+		@$(".item.#{item}").text text
 	click: (e) ->
 		item = $ e.currentTarget
 
-		console.log item
 		page = item.data "page"
 		container = $(".ui.container[data-page=#{page}]")
 		

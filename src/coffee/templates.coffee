@@ -18,13 +18,14 @@ Templates =
 				<% } %>
 				<div class='content'>
 					<div class='title'><%= title %></div>
-					<span class='ups'><%= ups %></span> / 
-					<span class='downs'><%= downs %></span> • 
+					<span class='ups'><%= ups %></span> • 
 					<span class='author'><%= author %></span> in
 					<span class='subreddit'><%= subreddit %></span> • 
 					<span class='created'><%= created_ago %></span> • 
-					<span class='origin'><%= domain %></span> • 
-					<span class='comments'><%= num_comments %> comments</span>
+					<span class='origin'><%= domain %></span>
+					<% if (num_comments > 0) { %>
+						• <span class='comments'><%= num_comments %> <i class='icon small chat'></i></span>
+					<% } %>
 				</div>
 			</div>
 		")
@@ -57,11 +58,8 @@ Templates =
 						</tr>
 					<% } %>
 					<tr>
-						<td class='four wide'>Upvotes</td>
+						<td class='four wide'>Karma</td>
 						<td class='thirteen wide'><%= ups %></td>
-					</tr><tr>
-						<td>Downvotes</td>
-						<td><%= downs %></td>
 					</tr><tr>
 						<td>Author</td>
 						<td><%= author %></td>
@@ -80,14 +78,14 @@ Templates =
 					</tr><tr>
 						<td colspan='2'>
 							<div class='ui 2 fluid tiny buttons'>
-								<a target='_blank' class='permalink ui button' href='http://www.reddit.com<%= permalink %>'>
+								<a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'>
 									<i class='url icon'></i>
-									Reddit
+									Permalink
 								</a>
 								<% if (type == 'link') { %>
-									<a target='_blank' class='ui external button' href='<%= url %>'>
+									<a target='_blank' class='ui gold external button' href='<%= url %>'>
 										<i class='external url icon'></i>
-										Link
+										External Link
 									</a>
 								<% } %>
 								<% if (media) { %>
