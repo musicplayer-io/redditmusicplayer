@@ -261,17 +261,6 @@ Reddit = Backbone.Model.extend
 				callback r.data.children
 	getMore: (last, callback) ->
 		@getMusic callback, last
-		# data = {}
-		# data.sort = @get("sortMethod")
-		# data.t = @get("topMethod") if @get("sortMethod") is "top"
-		# data.after = last
-		# $.ajax
-		# 	dataType: "json"
-		# 	url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
-		# 	data: data
-		# 	success: (r) =>
-		# 		return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-		# 		callback r.data.children
 	getComments: (permalink, callback) ->
 		data = {}
 		data.sort = @get("sortMethod")
