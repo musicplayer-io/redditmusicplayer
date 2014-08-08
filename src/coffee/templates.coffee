@@ -30,7 +30,9 @@ Templates =
 		")
 	CurrentSongView: _.template("
 			<% if (media) { %>
-				<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
+				<% if (url.indexOf('youtu') == -1) { %>
+					<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
+				<% } %>
 			<% } %>
 			<% if (url.indexOf('imgur') >= 0) { %>
 				<a class='ui image fluid' href='<%= url %>' target='_blank'>
