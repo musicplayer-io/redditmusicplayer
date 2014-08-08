@@ -45,7 +45,7 @@ class SEOController
 		else
 			seo = Pages.default
 
-		seo.description = seo.description + " - " + Pages.default
+		seo.description = seo.description + " - " + Pages.default.description
 		return seo
 
 controller = new SEOController
