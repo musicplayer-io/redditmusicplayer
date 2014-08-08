@@ -48,13 +48,14 @@ Templates =
 				<% } %>
 				<div class='content'>
 					<div class='title'><%= title %></div>
-					<span class='ups'><%= ups %></span> / 
-					<span class='downs'><%= downs %></span> • 
+					<span class='ups'><%= ups %></span> • 
 					<span class='author'><%= author %></span> in
 					<span class='subreddit'><%= subreddit %></span> • 
 					<span class='created'><%= created_ago %></span> • 
-					<span class='origin'><%= domain %></span> • 
-					<span class='comments'><%= num_comments %> comments</span>
+					<span class='origin'><%= domain %></span>
+					<% if (num_comments > 0) { %>
+						• <span class='comments'><%= num_comments %> <i class='icon small chat'></i></span>
+					<% } %>
 				</div>
 			</div>
 		")
@@ -87,11 +88,8 @@ Templates =
 						</tr>
 					<% } %>
 					<tr>
-						<td class='four wide'>Upvotes</td>
+						<td class='four wide'>Karma</td>
 						<td class='thirteen wide'><%= ups %></td>
-					</tr><tr>
-						<td>Downvotes</td>
-						<td><%= downs %></td>
 					</tr><tr>
 						<td>Author</td>
 						<td><%= author %></td>
@@ -110,14 +108,14 @@ Templates =
 					</tr><tr>
 						<td colspan='2'>
 							<div class='ui 2 fluid tiny buttons'>
-								<a target='_blank' class='permalink ui button' href='http://www.reddit.com<%= permalink %>'>
+								<a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'>
 									<i class='url icon'></i>
-									Reddit
+									Permalink
 								</a>
 								<% if (type == 'link') { %>
-									<a target='_blank' class='ui external button' href='<%= url %>'>
+									<a target='_blank' class='ui gold external button' href='<%= url %>'>
 										<i class='external url icon'></i>
-										Link
+										External Link
 									</a>
 								<% } %>
 								<% if (media) { %>
@@ -513,7 +511,10 @@ UIModel = Backbone.View.extend
 	open: (e) ->
 		item = $ e.currentTarget
 		page = item.data("page")
+
 		@navigate page
+
+		RMP.mobileui.changeText @number, page
 	load: (page, callback, ignoreCache) ->
 		if page of @cache and (ignoreCache is false or not ignoreCache?)
 			return callback @cache[page]
@@ -534,10 +535,15 @@ UIModel = Backbone.View.extend
 		@$el.find(".ui.checkbox").checkbox()
 		RMP.dispatcher.trigger "loaded:#{page}"
 	initialize: () ->
-		console.log "UI :: Ready" if FLAG_DEBUG
+		@number = switch
+			when @$el.hasClass("one") then "one"
+			when @$el.hasClass("two") then "two"
+			when @$el.hasClass("three") then "three"
+
 		$(".ui.dropdown").dropdown()
 		$(".ui.checkbox").checkbox()
 		@listenTo RMP.dispatcher, "app:page", @navigate
+		console.log "UI :: Ready" if FLAG_DEBUG
 
 
 RMP.ui = [
@@ -554,10 +560,11 @@ MobileUI = Backbone.View.extend
 	className: "mobilebar"
 	events:
 		"click .item": "click"
+	changeText: (item, text) ->
+		@$(".item.#{item}").text text
 	click: (e) ->
 		item = $ e.currentTarget
 
-		console.log item
 		page = item.data "page"
 		container = $(".ui.container[data-page=#{page}]")
 		

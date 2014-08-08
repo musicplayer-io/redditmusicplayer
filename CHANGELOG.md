@@ -1,6 +1,14 @@
  
 ## Changelog
 
+### 0.4.0 - 8 August 2014
+
+* Darker colors
+* Button Colors
+* Don't show amount of comments if it's 0
+* Header
+* Tabs on mobile change text if you switch page
+
 ### 0.3.9 - 8 August 2014
 
 * Handling https on reverse proxy with nginx

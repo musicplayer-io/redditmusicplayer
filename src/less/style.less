@@ -64,8 +64,11 @@ a {
   border-color: @col-bg;
   color: @col-fg;
 }
+.ui.inverted.menu {
+	background-color: lighten(@col-bg, 5%);
+}
 .ui.inverted.reddit.menu {
-  background-color: lighten(@col-bg, 10%);
+  background-color: lighten(@col-bg, 3%);
 }
 .ui.inverted.reddit.pointing.menu .active.item:after {
   background-color: lighten(@col-bg, 10%);
@@ -136,13 +139,15 @@ a {
 			background: lighten(@col-bg, 10%);
 		}
 	}
+	&.selection:hover .menu {
+		-webkit-box-shadow: 0 1px 0 1px @col-bg;
+		box-shadow: 0 1px 0 1px @col-bg;
+	}
 }
 
 // Menus
-.top.titlebar {
-	background: #212121 url(../images/header.png) top repeat-x;
-	.item {
-	}
+.ui.inverted.reddit.menu.top.titlebar {
+	background: lighten(@col-bg, 5%) url(../images/header.png) top repeat-x;
 	.redditmusicplayer {
 		text-align: center;
 		font-weight: 400;
@@ -152,6 +157,7 @@ a {
 			font-variant: small-caps;
 			font-weight: 300;
 		}
+		padding: 13px;
 	}
 	.input.reddit {
 		font-weight: 300;
@@ -326,7 +332,7 @@ a {
 		padding: .5em;
 	}
 	margin-bottom: 1em;
-	border-bottom: 1px dashed darken(@col-fg, 40%);
+	border-bottom: 1px dashed darken(@col-fg, 70%);
 	padding-bottom: 1em;
 
 }
@@ -577,7 +583,7 @@ a {
 			> .content {
 				padding: .5em 2em .5em 5.5em;
 			}
-			.icon {
+			.left.floated.icon {
 				height: 1em;
 				float: left;
 				font-size: 3em;

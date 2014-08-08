@@ -10,9 +10,9 @@
 			i.icon.user
 			| Log In
 .ui.mobilebar.menu.reddit.inverted.three.item.wide.top.fixed
-	.link.item.active(data-page="browse") Browse
+	.link.one.item.active(data-page="browse") Browse
 	if page && content
-		.link.item(data-page=page) #{page}
+		.link.two.item(data-page=page) #{page}
 	else
-		.link.item(data-page="playlist") Playlist
-	.link.item(data-page="song") Song
+		.link.two.item(data-page="playlist") Playlist
+	.link.three.item(data-page="song") Song
