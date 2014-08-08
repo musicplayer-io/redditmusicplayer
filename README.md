@@ -9,7 +9,7 @@ All of the music subreddits in one beautiful music player. Right now.
 
 Module | Status
 --- | --- | ---
-**Global Version** | 0.3.8
+**Global Version** | 0.3.9
 **Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
 **Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)
 

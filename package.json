@@ -1,6 +1,6 @@
 {
   "name": "redditmusicplayer-builder",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Builder for Reddit Music Player",
   "devDependencies": {
     "grunt": "^0.4.5",

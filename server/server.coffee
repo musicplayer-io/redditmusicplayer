@@ -21,7 +21,3 @@ io = require('socket.io') http
 require("./sockets") io
 
 module.exports = app
-
-credentials = require("./config/credentials")
-secure_server = require("https").Server credentials, app
-secure_server.listen 4009

@@ -1,6 +1,11 @@
  
 ## Changelog
 
+### 0.3.9 - 8 August 2014
+
+* Handling https on reverse proxy with nginx
+* Fixes for firefox
+
 ### 0.3.8 - 6 August 2014
 
 * Custom Subreddits
