@@ -521,6 +521,7 @@ UIModel = Backbone.View.extend({
     })(this));
   },
   navigate: function(page) {
+    this.page = page;
     return this.load(page, (function(_this) {
       return function(data) {
         return _this.render(data, page);
@@ -535,6 +536,14 @@ UIModel = Backbone.View.extend({
     this.$el.find(".ui.dropdown").dropdown();
     this.$el.find(".ui.checkbox").checkbox();
     return RMP.dispatcher.trigger("loaded:" + page);
+  },
+  setCurrent: function(index, song) {
+    var offset;
+    if (!this.$el.find(".content").hasClass("playlist")) {
+      return;
+    }
+    offset = this.$(".music.playlist .item")[RMP.playlist.current.index].offsetTop;
+    return this.$el.scrollTop(offset);
   },
   initialize: function() {
     this.number = (function() {
@@ -551,8 +560,9 @@ UIModel = Backbone.View.extend({
     $(".ui.checkbox").checkbox();
     this.listenTo(RMP.dispatcher, "app:page", this.navigate);
     if (FLAG_DEBUG) {
-      return console.log("UI :: Ready");
+      console.log("UI :: Ready");
     }
+    return this.listenTo(RMP.dispatcher, "song:change", this.setCurrent);
   }
 });
 

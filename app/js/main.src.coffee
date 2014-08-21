@@ -525,6 +525,7 @@ UIModel = Backbone.View.extend
 			callback data
 		)
 	navigate: (page) ->
+		@page = page
 		@load page, (data) =>
 			@render data, page
 	getElement: (page) ->
@@ -534,6 +535,11 @@ UIModel = Backbone.View.extend
 		@$el.find(".ui.dropdown").dropdown()
 		@$el.find(".ui.checkbox").checkbox()
 		RMP.dispatcher.trigger "loaded:#{page}"
+	setCurrent: (index, song) ->
+		return if not @$el.find(".content").hasClass("playlist")
+
+		offset = @$(".music.playlist .item")[RMP.playlist.current.index].offsetTop
+		@$el.scrollTop  offset
 	initialize: () ->
 		@number = switch
 			when @$el.hasClass("one") then "one"
@@ -544,6 +550,8 @@ UIModel = Backbone.View.extend
 		$(".ui.checkbox").checkbox()
 		@listenTo RMP.dispatcher, "app:page", @navigate
 		console.log "UI :: Ready" if FLAG_DEBUG
+
+		@listenTo RMP.dispatcher, "song:change", @setCurrent
 
 
 RMP.ui = [

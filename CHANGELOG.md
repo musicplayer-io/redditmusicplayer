@@ -4,7 +4,7 @@
 ### 0.4.0 - 8 August 2014
 * Darker colors
 * Button Colors
-* Don't show amount of comments if it's 0
+* Don't show amount of comments if there are none
 * Header
 * Tabs on mobile change text if you switch page
 
