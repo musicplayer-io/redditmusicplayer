@@ -1012,9 +1012,20 @@ Playlist = Backbone.Collection.extend({
         var list;
         list = [];
         _.each(items, function(item) {
-          return list.push(_this.parseSong(item.data));
+          var existingSong;
+          existingSong = _this.find(function(existingItem) {
+            return item.data.id === existingItem.get("id");
+          });
+          if (existingSong != null) {
+            console.log("exists");
+            return list.push(existingSong);
+          } else {
+            console.log("new");
+            return list.push(_this.parseSong(item.data));
+          }
         });
         _this.reset(list);
+        _this.current.index = _this.indexOf(_this.current.song);
         return RMP.dispatcher.trigger("app:loadedMusic");
       };
     })(this));
