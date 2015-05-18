@@ -1,9 +1,12 @@
  
 ## Changelog
 
-### 0.4.1 - 21 August 2014
+### 0.4.1 - 18 May 2015
 
-* Scrolling to next song
+* Scrolling to next song (21 August)
+* Youtube media data not being sent by Reddit -> Workaround
+* Less border around video / soundcloud
+* Updated dependencies and libraries
 
 ### 0.4.0 - 8 August 2014
 * Darker colors

@@ -9,7 +9,7 @@ All of the music subreddits in one beautiful music player. Right now.
 
 Module | Status
 --- | --- | ---
-**Global Version** | 0.4.0
+**Global Version** | 0.4.1
 **Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
 **Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)
 
@@ -28,7 +28,7 @@ You'll also need a redis session running to debug authenticated modes.
 
 # License
 
-Copyright © 2014 Ilias Ismanalijev
+Copyright © 2014-2015 Ilias Ismanalijev
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
