@@ -31,10 +31,14 @@ Reddit = Backbone.Model.extend
 		if RMP.multi?
 			return @getMulti callback, data
 
-		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
+		subs = @subreddits()
+		if subs is null
+			return
+		console.log "Reddit :: GetMusic :: ", subs if FLAG_DEBUG
+
 		$.ajax
 			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+			url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?

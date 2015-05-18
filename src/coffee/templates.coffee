@@ -3,6 +3,11 @@ Templates =
 	SubredditPlayListView: _.template("
 			<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>
 		")
+	SubredditCurrentPlayListView: _.template("
+			<a class='item' data-category='<%= category %>' data-value='<%= name %>'>
+				<%= text %>
+			</a>
+		")
 	PlayListView: _.template("
 			<div class='ui item' data-id='<%= id %>'>
 				<% if (thumbnail) { %>

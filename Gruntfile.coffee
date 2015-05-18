@@ -1,5 +1,5 @@
 
-banner = "// Copyright © 2014 Ilias Ismanalijev \n
+banner = "// Copyright © 2014-2015 Ilias Ismanalijev \n
 // \n
 // This program is free software: you can redistribute it and/or modify \n
 // it under the terms of the GNU Affero General Public License as \n
