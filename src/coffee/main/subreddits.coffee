@@ -141,6 +141,7 @@ CustomSubreddit = Backbone.View.extend
 				text: val
 
 		RMP.subredditplaylist.add sub
+		sub.save()
 
 
 		@$("input").val("")
