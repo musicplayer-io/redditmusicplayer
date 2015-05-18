@@ -45,9 +45,7 @@ YoutubePlayer = MusicPlayer.extend
 		@trigger "destroy"
 	switch: (song) ->
 		@set song.attributes
-		@track = @attributes.media.oembed
-		@track.id = @track.url.substr(31)
-
+		@getTrack()
 		@player.loadVideoById @track.id
 	playPause: () ->
 		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
@@ -56,13 +54,32 @@ YoutubePlayer = MusicPlayer.extend
 		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
 		@player.seekTo percentage * @player.getDuration(), seekAhead
+	findYoutubeId: (url) ->
+		console.log(@attributes)
+		domain = @get("domain")
+		if @get("domain") is "youtu.be"
+			regex = @track.url.match(/\/\/youtu.be\/(.*)$/)
+			if regex and regex[1] then regex[1] else null
+		else
+			regex = @track.url.match(/\/\/.*=([\w+]+)$/)
+			if regex and regex[1] then regex[1] else null
+	getTrack: () ->
+		if @attributes.media is null
+			console.error "YoutubePlayer :: No Media Data" if FLAG_DEBUG
+			@track =
+				url: @attributes.url
+			id = @findYoutubeId @track.url
+			if id
+				@track.id = id 
+			else
+				return RMP.dispatcher.trigger "controls:forward"
+		else
+			@track = @attributes.media.oembed
+			@track.id = @track.url.substr(31)
 	initialize: () ->
 		@$el = $("#player") if not @$el?
-		@track = @attributes.media.oembed
-		@track.id = @track.url.substr(31)
-
+		@getTrack()
 		@init()
-
 		@listenTo RMP.dispatcher, "player:playing", @initProgress
 		
 		console.log "YoutubePlayer :: ", @track if FLAG_DEBUG

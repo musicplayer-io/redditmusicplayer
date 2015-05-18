@@ -1,6 +1,10 @@
  
 ## Changelog
 
+### 0.4.1 - 21 August 2014
+
+* Scrolling to next song
+
 ### 0.4.0 - 8 August 2014
 * Darker colors
 * Button Colors

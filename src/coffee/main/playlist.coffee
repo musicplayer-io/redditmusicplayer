@@ -76,8 +76,14 @@ Playlist = Backbone.Collection.extend
 		RMP.reddit.getMusic (items) =>
 			list = []
 			_.each items, (item) =>
-				list.push @parseSong item.data
+				existingSong = @find (existingItem) -> 
+					item.data.id == existingItem.get("id")
+				if existingSong?
+					list.push existingSong
+				else
+					list.push @parseSong item.data
 			@reset list
+			@current.index = @indexOf(@current.song)
 			RMP.dispatcher.trigger "app:loadedMusic"
 	more: (callback) ->
 		RMP.reddit.getMore @last().get("name"), (items) =>

@@ -33,6 +33,11 @@ Templates =
 	SubredditPlayListView: _.template("
 			<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>
 		")
+	SubredditCurrentPlayListView: _.template("
+			<a class='item' data-category='<%= category %>' data-value='<%= name %>'>
+				<%= text %>
+			</a>
+		")
 	PlayListView: _.template("
 			<div class='ui item' data-id='<%= id %>'>
 				<% if (thumbnail) { %>
@@ -228,10 +233,14 @@ Reddit = Backbone.Model.extend
 		if RMP.multi?
 			return @getMulti callback, data
 
-		console.log "Reddit :: GetMusic :: ", @subreddits() if FLAG_DEBUG
+		subs = @subreddits()
+		if subs is null
+			return
+		console.log "Reddit :: GetMusic :: ", subs if FLAG_DEBUG
+
 		$.ajax
 			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{@subreddits()}/#{@get('sortMethod')}.json?jsonp=?"
+			url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
 			success: (r) =>
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
@@ -612,14 +621,16 @@ Subreddit = Backbone.Model.extend
 	initialize: () ->
 		console.log "Subreddit :: Created" if FLAG_DEBUG
 
+
 SubredditPlaylist = Backbone.Collection.extend
 	model: Subreddit
 	localStorage: new Backbone.LocalStorage("Subreddits")
 	toString: () ->
-		RMP.subredditplaylist.pluck("name").join("+")
+		@toArray().join("+")
+	toArray: () ->
+		@pluck("name").filter((x) -> x)
 	parseFromRemote: (strSubs) ->
 		subs = [] 
-
 		for i in strSubs.split("+")
 			sub = new Subreddit
 				category: "remote"
@@ -630,9 +641,7 @@ SubredditPlaylist = Backbone.Collection.extend
 		@reset subs
 	initialize: () ->
 		console.log "SubredditPlaylist :: Ready" if FLAG_DEBUG
-		@listenTo @, "add", @save
-		@listenTo @, "reset", @save
-		@listenTo @, "remove", @save
+		@listenTo @, "remove", (x) -> x.destroy()
 		@listenTo RMP.dispatcher, "remote:subreddits", @parseFromRemote
 
 SubredditPlayListView = Backbone.View.extend
@@ -642,6 +651,7 @@ SubredditPlayListView = Backbone.View.extend
 		"click .menu.selection .item": "remove"
 	remove: (e) ->
 		currentReddit = e.currentTarget.dataset.value
+		console.log "SubredditPlayListView :: Remove :: ", currentReddit if FLAG_DEBUG
 		if e.currentTarget.dataset.category is "multi"
 			RMP.multi = null
 			RMP.playlist.refresh()
@@ -651,9 +661,8 @@ SubredditPlayListView = Backbone.View.extend
 			RMP.playlist.refresh()
 			@render()
 		else
-			RMP.subredditplaylist.get(currentReddit).destroy()
 			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
-	template: Templates.SubredditPlayListView
+	template: Templates.SubredditCurrentPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
 		if RMP.search?
@@ -756,7 +765,6 @@ RMP.subredditsSelection = []
 RMP.subredditplaylist = new SubredditPlaylist
 RMP.subredditplaylistview = new SubredditPlayListView
 	el: $(".content.browse .my.reddit.menu")
-
 RMP.customsubreddit = new CustomSubreddit
 	el: $(".content.browse .custom-subreddit")
 
@@ -866,8 +874,14 @@ Playlist = Backbone.Collection.extend
 		RMP.reddit.getMusic (items) =>
 			list = []
 			_.each items, (item) =>
-				list.push @parseSong item.data
+				existingSong = @find (existingItem) -> 
+					item.data.id == existingItem.get("id")
+				if existingSong?
+					list.push existingSong
+				else
+					list.push @parseSong item.data
 			@reset list
+			@current.index = @indexOf(@current.song)
 			RMP.dispatcher.trigger "app:loadedMusic"
 	more: (callback) ->
 		RMP.reddit.getMore @last().get("name"), (items) =>
@@ -1004,7 +1018,7 @@ CurrentSongView = Backbone.View.extend
 		dir = switch
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
-			when target.hasClass "docuwnvote" then -1
+			when target.hasClass "downvote" then -1
 		
 		RMP.reddit.vote id, dir
 
@@ -1193,9 +1207,7 @@ YoutubePlayer = MusicPlayer.extend
 		@trigger "destroy"
 	switch: (song) ->
 		@set song.attributes
-		@track = @attributes.media.oembed
-		@track.id = @track.url.substr(31)
-
+		@getTrack()
 		@player.loadVideoById @track.id
 	playPause: () ->
 		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
@@ -1204,13 +1216,32 @@ YoutubePlayer = MusicPlayer.extend
 		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
 		@player.seekTo percentage * @player.getDuration(), seekAhead
+	findYoutubeId: (url) ->
+		console.log(@attributes)
+		domain = @get("domain")
+		if @get("domain") is "youtu.be"
+			regex = @track.url.match(/\/\/youtu.be\/(.*)$/)
+			if regex and regex[1] then regex[1] else null
+		else
+			regex = @track.url.match(/\/\/.*=([\w+]+)$/)
+			if regex and regex[1] then regex[1] else null
+	getTrack: () ->
+		if @attributes.media is null
+			console.error "YoutubePlayer :: No Media Data" if FLAG_DEBUG
+			@track =
+				url: @attributes.url
+			id = @findYoutubeId @track.url
+			if id
+				@track.id = id 
+			else
+				return RMP.dispatcher.trigger "controls:forward"
+		else
+			@track = @attributes.media.oembed
+			@track.id = @track.url.substr(31)
 	initialize: () ->
 		@$el = $("#player") if not @$el?
-		@track = @attributes.media.oembed
-		@track.id = @track.url.substr(31)
-
+		@getTrack()
 		@init()
-
 		@listenTo RMP.dispatcher, "player:playing", @initProgress
 		
 		console.log "YoutubePlayer :: ", @track if FLAG_DEBUG

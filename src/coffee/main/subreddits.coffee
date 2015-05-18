@@ -9,14 +9,16 @@ Subreddit = Backbone.Model.extend
 	initialize: () ->
 		console.log "Subreddit :: Created" if FLAG_DEBUG
 
+
 SubredditPlaylist = Backbone.Collection.extend
 	model: Subreddit
 	localStorage: new Backbone.LocalStorage("Subreddits")
 	toString: () ->
-		RMP.subredditplaylist.pluck("name").join("+")
+		@toArray().join("+")
+	toArray: () ->
+		@pluck("name").filter((x) -> x)
 	parseFromRemote: (strSubs) ->
 		subs = [] 
-
 		for i in strSubs.split("+")
 			sub = new Subreddit
 				category: "remote"
@@ -27,9 +29,7 @@ SubredditPlaylist = Backbone.Collection.extend
 		@reset subs
 	initialize: () ->
 		console.log "SubredditPlaylist :: Ready" if FLAG_DEBUG
-		@listenTo @, "add", @save
-		@listenTo @, "reset", @save
-		@listenTo @, "remove", @save
+		@listenTo @, "remove", (x) -> x.destroy()
 		@listenTo RMP.dispatcher, "remote:subreddits", @parseFromRemote
 
 SubredditPlayListView = Backbone.View.extend
@@ -39,6 +39,7 @@ SubredditPlayListView = Backbone.View.extend
 		"click .menu.selection .item": "remove"
 	remove: (e) ->
 		currentReddit = e.currentTarget.dataset.value
+		console.log "SubredditPlayListView :: Remove :: ", currentReddit if FLAG_DEBUG
 		if e.currentTarget.dataset.category is "multi"
 			RMP.multi = null
 			RMP.playlist.refresh()
@@ -48,9 +49,8 @@ SubredditPlayListView = Backbone.View.extend
 			RMP.playlist.refresh()
 			@render()
 		else
-			RMP.subredditplaylist.get(currentReddit).destroy()
 			RMP.subredditplaylist.remove RMP.subredditplaylist.get currentReddit
-	template: Templates.SubredditPlayListView
+	template: Templates.SubredditCurrentPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
 		if RMP.search?
@@ -153,7 +153,6 @@ RMP.subredditsSelection = []
 RMP.subredditplaylist = new SubredditPlaylist
 RMP.subredditplaylistview = new SubredditPlayListView
 	el: $(".content.browse .my.reddit.menu")
-
 RMP.customsubreddit = new CustomSubreddit
 	el: $(".content.browse .custom-subreddit")
 

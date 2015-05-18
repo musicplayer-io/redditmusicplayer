@@ -14,7 +14,7 @@ CurrentSongView = Backbone.View.extend
 		dir = switch
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
-			when target.hasClass "docuwnvote" then -1
+			when target.hasClass "downvote" then -1
 		
 		RMP.reddit.vote id, dir
 

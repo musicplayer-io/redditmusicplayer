@@ -38,6 +38,7 @@ FLAG_DEBUG = true;
 
 Templates = {
   SubredditPlayListView: _.template("<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>"),
+  SubredditCurrentPlayListView: _.template("<a class='item' data-category='<%= category %>' data-value='<%= name %>'> <%= text %> </a>"),
   PlayListView: _.template("<div class='ui item' data-id='<%= id %>'> <% if (thumbnail) { %> <% if (thumbnail == 'self' || thumbnail == 'default') { %> <% if (type == 'mp3') { %> <i class='left floated icon music large'/> <% } else { %> <i class='left floated icon chat outline large'/> <% } %> <% } else {%> <img src='<%= thumbnail %>' class='ui image rounded left floated'/> <% } %> <% } %> <div class='content'> <div class='title'><%= title %></div> <span class='ups'><%= ups %></span> • <span class='author'><%= author %></span> in <span class='subreddit'><%= subreddit %></span> • <span class='created'><%= created_ago %></span> • <span class='origin'><%= domain %></span> <% if (num_comments > 0) { %> • <span class='comments'><%= num_comments %> <i class='icon small chat'></i></span> <% } %> </div> </div>"),
   CurrentSongView: _.template("<% if (media) { %> <% if (url.indexOf('youtu') == -1) { %> <img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' /> <% } %> <% } %> <% if (url.indexOf('imgur') >= 0) { %> <a class='ui image fluid' href='<%= url %>' target='_blank'> <img src='<%= url %>' /> </a> <% } %> <div class='vote' id='<%= name %>'> <div class='upvote'><i class='icon up arrow'></i></div> <div class='downvote'><i class='icon down arrow'></i></div> </div> <h3 class='ui header title'><%= title %></h3> <table class='ui table inverted'> <tbody> <% if (media) { %> <tr> <td>Title</td> <td><%= media.oembed.title %></td> </tr> <tr> <td>Description</td> <td><%= media.oembed.description %></td> </tr> <% } %> <tr> <td class='four wide'>Karma</td> <td class='thirteen wide'><%= ups %></td> </tr><tr> <td>Author</td> <td><%= author %></td> </tr><tr> <td>Timestamp</td> <td><%= subreddit %></td> </tr><tr> <td>Subreddit</td> <td><%= created_ago %> ago</td> </tr><tr> <td>Origin</td> <td><%= domain %></td> </tr><tr> <td>Comments</td> <td><%= num_comments %> comments</td> </tr><tr> <td colspan='2'> <div class='ui 2 fluid tiny buttons'> <a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'> <i class='url icon'></i> Permalink </a> <% if (type == 'link') { %> <a target='_blank' class='ui gold external button' href='<%= url %>'> <i class='external url icon'></i> External Link </a> <% } %> <% if (media) { %> <% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %> <script src='https://apis.google.com/js/platform.js'></script> <div class='ui youtube tiny button'> <div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div> </div> <% } else if (media.type == 'soundcloud.com') { %> <a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'> <i class='icon male'></i> <%= media.oembed.author_name %> </a> <% } else if (media.type == 'vimeo.com') { %> <a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'> <i class='icon male'></i> <%= media.oembed.author_name %> </a> <% } %> <% } %> </div> </td> </tr> </tbody> </table> <% if (is_self) { %> <div class='ui divider'></div> <div class='self text'> <%= selftext_html %> </div> <% } %>"),
   CommentsView: _.template("<div class='comment' id='<%= name %>' data-ups='<%= ups %>' data-downs='<%= downs %>'> <div class='vote'> <div class='upvote<% if (likes === true) print(' active') %>'><i class='icon up arrow'></i></div> <div class='downvote<% if (likes === false) print(' active') %>'><i class='icon down arrow'></i></div> </div> <div class='content'> <a class='author'><%= author %></a> <div class='metadata'> <span class='ups'><%= ups %></span>/ <span class='downs'><%= downs %></span> <span class='date'><%= created_ago %> ago</span> </div> <div class='text'><% print(_.unescape(body_html)) %></div> <div class='actions'><a class='reply'>Reply</a></div> </div> </div>"),
@@ -78,7 +79,7 @@ Reddit = Backbone.Model.extend({
     }
   },
   getMusic: function(callback, after) {
-    var data;
+    var data, subs;
     data = {};
     data.sort = this.get("sortMethod");
     if (this.get("sortMethod") === "top") {
@@ -93,12 +94,16 @@ Reddit = Backbone.Model.extend({
     if (RMP.multi != null) {
       return this.getMulti(callback, data);
     }
+    subs = this.subreddits();
+    if (subs === null) {
+      return;
+    }
     if (FLAG_DEBUG) {
-      console.log("Reddit :: GetMusic :: ", this.subreddits());
+      console.log("Reddit :: GetMusic :: ", subs);
     }
     return $.ajax({
       dataType: "json",
-      url: "" + API.Reddit.base + "/r/" + (this.subreddits()) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
+      url: API.Reddit.base + "/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
       data: data,
       success: (function(_this) {
         return function(r) {
@@ -117,7 +122,7 @@ Reddit = Backbone.Model.extend({
     }
     return $.ajax({
       dataType: "json",
-      url: "" + API.Reddit.base + "/search.json?q=" + (this.get('search')) + "&jsonp=?",
+      url: API.Reddit.base + "/search.json?q=" + (this.get('search')) + "&jsonp=?",
       data: data,
       success: (function(_this) {
         return function(r) {
@@ -138,7 +143,7 @@ Reddit = Backbone.Model.extend({
     }
     return $.ajax({
       dataType: "json",
-      url: "" + API.Reddit.base + "/user/" + (this.get('multi')) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
+      url: API.Reddit.base + "/user/" + (this.get('multi')) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
       data: data,
       success: (function(_this) {
         return function(r) {
@@ -338,11 +343,11 @@ ProgressBarView = Backbone.View.extend({
     if (hours) {
       mins = Math.floor((secs / 60) - hours * 60);
       secs = Math.floor(secs % 60);
-      return "" + (String('0' + hours).slice(-2)) + ":" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
+      return (String('0' + hours).slice(-2)) + ":" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
     } else {
       mins = Math.floor(secs / 60);
       secs = Math.floor(secs % 60);
-      return "" + (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
+      return (String('0' + mins).slice(-2)) + ":" + (String('0' + secs).slice(-2));
     }
   },
   resize: function() {
@@ -645,14 +650,19 @@ SubredditPlaylist = Backbone.Collection.extend({
   model: Subreddit,
   localStorage: new Backbone.LocalStorage("Subreddits"),
   toString: function() {
-    return RMP.subredditplaylist.pluck("name").join("+");
+    return this.toArray().join("+");
+  },
+  toArray: function() {
+    return this.pluck("name").filter(function(x) {
+      return x;
+    });
   },
   parseFromRemote: function(strSubs) {
-    var i, sub, subs, _i, _len, _ref;
+    var i, j, len, ref, sub, subs;
     subs = [];
-    _ref = strSubs.split("+");
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      i = _ref[_i];
+    ref = strSubs.split("+");
+    for (j = 0, len = ref.length; j < len; j++) {
+      i = ref[j];
       sub = new Subreddit({
         category: "remote",
         name: i,
@@ -666,9 +676,9 @@ SubredditPlaylist = Backbone.Collection.extend({
     if (FLAG_DEBUG) {
       console.log("SubredditPlaylist :: Ready");
     }
-    this.listenTo(this, "add", this.save);
-    this.listenTo(this, "reset", this.save);
-    this.listenTo(this, "remove", this.save);
+    this.listenTo(this, "remove", function(x) {
+      return x.destroy();
+    });
     return this.listenTo(RMP.dispatcher, "remote:subreddits", this.parseFromRemote);
   }
 });
@@ -682,6 +692,9 @@ SubredditPlayListView = Backbone.View.extend({
   remove: function(e) {
     var currentReddit;
     currentReddit = e.currentTarget.dataset.value;
+    if (FLAG_DEBUG) {
+      console.log("SubredditPlayListView :: Remove :: ", currentReddit);
+    }
     if (e.currentTarget.dataset.category === "multi") {
       RMP.multi = null;
       RMP.playlist.refresh();
@@ -691,11 +704,10 @@ SubredditPlayListView = Backbone.View.extend({
       RMP.playlist.refresh();
       return this.render();
     } else {
-      RMP.subredditplaylist.get(currentReddit).destroy();
       return RMP.subredditplaylist.remove(RMP.subredditplaylist.get(currentReddit));
     }
   },
-  template: Templates.SubredditPlayListView,
+  template: Templates.SubredditCurrentPlayListView,
   render: function() {
     var sub;
     this.$(".menu.selection").html("");
@@ -865,12 +877,12 @@ RMP.dispatcher.on("loaded:browse", function(page) {
 });
 
 RMP.dispatcher.on("app:main", function() {
-  var sub, _i, _len, _ref;
+  var j, len, ref, sub;
   if ((RMP.URLsubreddits != null)) {
     RMP.subredditplaylist.reset();
-    _ref = RMP.URLsubreddits;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      sub = _ref[_i];
+    ref = RMP.URLsubreddits;
+    for (j = 0, len = ref.length; j < len; j++) {
+      sub = ref[j];
       RMP.subredditplaylist.add(new Subreddit({
         category: "url",
         name: sub,
@@ -894,25 +906,25 @@ timeSince = function(time) {
   seconds = Math.floor((new Date() - time) / 1000);
   interval = Math.floor(seconds / 31536000);
   if (interval > 1) {
-    return "" + interval + " years";
+    return interval + " years";
   }
   interval = Math.floor(seconds / 2592000);
   if (interval > 1) {
-    return "" + interval + " months";
+    return interval + " months";
   }
   interval = Math.floor(seconds / 86400);
   if (interval > 1) {
-    return "" + interval + " days";
+    return interval + " days";
   }
   interval = Math.floor(seconds / 3600);
   if (interval > 1) {
-    return "" + interval + " hours";
+    return interval + " hours";
   }
   interval = Math.floor(seconds / 60);
   if (interval > 1) {
-    return "" + interval + " minutes";
+    return interval + " minutes";
   }
-  return "" + (Math.floor(seconds)) + " seconds";
+  return (Math.floor(seconds)) + " seconds";
 };
 
 Song = Backbone.Model.extend({
@@ -1012,9 +1024,18 @@ Playlist = Backbone.Collection.extend({
         var list;
         list = [];
         _.each(items, function(item) {
-          return list.push(_this.parseSong(item.data));
+          var existingSong;
+          existingSong = _this.find(function(existingItem) {
+            return item.data.id === existingItem.get("id");
+          });
+          if (existingSong != null) {
+            return list.push(existingSong);
+          } else {
+            return list.push(_this.parseSong(item.data));
+          }
         });
         _this.reset(list);
+        _this.current.index = _this.indexOf(_this.current.song);
         return RMP.dispatcher.trigger("app:loadedMusic");
       };
     })(this));
@@ -1204,7 +1225,7 @@ CurrentSongView = Backbone.View.extend({
           return 0;
         case !target.hasClass("upvote"):
           return 1;
-        case !target.hasClass("docuwnvote"):
+        case !target.hasClass("downvote"):
           return -1;
       }
     })();
@@ -1227,7 +1248,7 @@ CurrentSongView = Backbone.View.extend({
     $('.self.text').html($($('.self.text').text()));
     if (song.playable === true) {
       $(".current-song-sidebar .title").text(songJSON.title);
-      document.title = "" + songJSON.title + " | Reddit Music Player";
+      document.title = songJSON.title + " | Reddit Music Player";
       if (song.get("type") === "bandcamp") {
         return $(".current-song-sidebar .image").attr("src", song.get("media").oembed.thumbnail_url);
       } else {
@@ -1480,8 +1501,7 @@ YoutubePlayer = MusicPlayer.extend({
   },
   "switch": function(song) {
     this.set(song.attributes);
-    this.track = this.attributes.media.oembed;
-    this.track.id = this.track.url.substr(31);
+    this.getTrack();
     return this.player.loadVideoById(this.track.id);
   },
   playPause: function() {
@@ -1499,12 +1519,51 @@ YoutubePlayer = MusicPlayer.extend({
   seekTo: function(percentage, seekAhead) {
     return this.player.seekTo(percentage * this.player.getDuration(), seekAhead);
   },
+  findYoutubeId: function(url) {
+    var domain, regex;
+    console.log(this.attributes);
+    domain = this.get("domain");
+    if (this.get("domain") === "youtu.be") {
+      regex = this.track.url.match(/\/\/youtu.be\/(.*)$/);
+      if (regex && regex[1]) {
+        return regex[1];
+      } else {
+        return null;
+      }
+    } else {
+      regex = this.track.url.match(/\/\/.*=([\w+]+)$/);
+      if (regex && regex[1]) {
+        return regex[1];
+      } else {
+        return null;
+      }
+    }
+  },
+  getTrack: function() {
+    var id;
+    if (this.attributes.media === null) {
+      if (FLAG_DEBUG) {
+        console.error("YoutubePlayer :: No Media Data");
+      }
+      this.track = {
+        url: this.attributes.url
+      };
+      id = this.findYoutubeId(this.track.url);
+      if (id) {
+        return this.track.id = id;
+      } else {
+        return RMP.dispatcher.trigger("controls:forward");
+      }
+    } else {
+      this.track = this.attributes.media.oembed;
+      return this.track.id = this.track.url.substr(31);
+    }
+  },
   initialize: function() {
     if (this.$el == null) {
       this.$el = $("#player");
     }
-    this.track = this.attributes.media.oembed;
-    this.track.id = this.track.url.substr(31);
+    this.getTrack();
     this.init();
     this.listenTo(RMP.dispatcher, "player:playing", this.initProgress);
     if (FLAG_DEBUG) {
@@ -1619,7 +1678,7 @@ SoundcloudPlayer = MusicPlayer.extend({
     }
     console.log(this.track);
     return $.ajax({
-      url: "" + API.Soundcloud.base + "/" + this.track.type + "/" + this.track.id + ".json?callback=?",
+      url: API.Soundcloud.base + "/" + this.track.type + "/" + this.track.id + ".json?callback=?",
       jsonp: "callback",
       dataType: "jsonp",
       data: {
@@ -1752,7 +1811,7 @@ BandcampPlayer = MP3Player.extend({
   type: "bandcamp",
   getID: function(callback) {
     return $.ajax({
-      url: "" + API.Bandcamp.base + "/url/1/info",
+      url: API.Bandcamp.base + "/url/1/info",
       jsonp: "callback",
       dataType: "jsonp",
       data: {
@@ -1769,7 +1828,7 @@ BandcampPlayer = MP3Player.extend({
   },
   getAlbumInfo: function(callback) {
     return $.ajax({
-      url: "" + API.Bandcamp.base + "/album/2/info",
+      url: API.Bandcamp.base + "/album/2/info",
       jsonp: "callback",
       dataType: "jsonp",
       data: {
@@ -1787,7 +1846,7 @@ BandcampPlayer = MP3Player.extend({
   },
   getTrackInfo: function(callback) {
     return $.ajax({
-      url: "" + API.Bandcamp.base + "/track/3/info",
+      url: API.Bandcamp.base + "/track/3/info",
       jsonp: "callback",
       dataType: "jsonp",
       data: {
@@ -2022,8 +2081,8 @@ Search = Backbone.Model.extend({
   toString: function() {
     return this.get("text") + " " + this.get("sites");
   },
-  initialize: function(text) {
-    this.text = text;
+  initialize: function(text1) {
+    this.text = text1;
   }
 });
 
@@ -2098,16 +2157,16 @@ Remote = Backbone.Model.extend({
   initialize: function() {
     return RMP.dispatcher.once("authenticated", (function(_this) {
       return function(authentication) {
-        var ev, simpleEvents, _i, _len, _results;
+        var ev, j, len, results, simpleEvents;
         _this.set("name", authentication.get("name"));
         _this.socket = io();
         simpleEvents = ["controls:forward", "controls:backward", "controls:play", "remote:subreddits"];
-        _results = [];
-        for (_i = 0, _len = simpleEvents.length; _i < _len; _i++) {
-          ev = simpleEvents[_i];
-          _results.push(_this.triggerOnEmit(ev));
+        results = [];
+        for (j = 0, len = simpleEvents.length; j < len; j++) {
+          ev = simpleEvents[j];
+          results.push(_this.triggerOnEmit(ev));
         }
-        return _results;
+        return results;
       };
     })(this));
   }
