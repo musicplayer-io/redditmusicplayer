@@ -7,6 +7,7 @@
 * Youtube media data not being sent by Reddit -> Workaround
 * Less border around video / soundcloud
 * Updated dependencies and libraries
+* Saving custom subreddits for next load
 
 ### 0.4.0 - 8 August 2014
 * Darker colors

@@ -34,7 +34,11 @@ API = {
   }
 };
 
-FLAG_DEBUG = true;
+FLAG_DEBUG = false;
+
+if (localStorage.debug && localStorage.debug === "true") {
+  FLAG_DEBUG = true;
+}
 
 Templates = {
   SubredditPlayListView: _.template("<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>"),
@@ -835,6 +839,7 @@ CustomSubreddit = Backbone.View.extend({
       text: val
     });
     RMP.subredditplaylist.add(sub);
+    sub.save();
     return this.$("input").val("");
   },
   initialize: function() {
@@ -1249,7 +1254,8 @@ CurrentSongView = Backbone.View.extend({
     if (song.playable === true) {
       $(".current-song-sidebar .title").text(songJSON.title);
       document.title = songJSON.title + " | Reddit Music Player";
-      if (song.get("type") === "bandcamp") {
+      if (song.get("type") === "bandcamp" && song.get("media")) {
+        console.log(song.get("media"));
         return $(".current-song-sidebar .image").attr("src", song.get("media").oembed.thumbnail_url);
       } else {
         return $(".current-song-sidebar .image").attr("src", "");

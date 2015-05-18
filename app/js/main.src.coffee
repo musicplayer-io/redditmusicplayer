@@ -27,7 +27,8 @@ API =
 	Reddit:
 		base: "//www.reddit.com"
 
-FLAG_DEBUG = true
+FLAG_DEBUG = false
+FLAG_DEBUG = true if localStorage.debug and localStorage.debug is "true"
 
 Templates = 
 	SubredditPlayListView: _.template("
@@ -753,6 +754,7 @@ CustomSubreddit = Backbone.View.extend
 				text: val
 
 		RMP.subredditplaylist.add sub
+		sub.save()
 
 
 		@$("input").val("")
@@ -1037,7 +1039,8 @@ CurrentSongView = Backbone.View.extend
 		if song.playable is true
 			$(".current-song-sidebar .title").text(songJSON.title)
 			document.title = "#{songJSON.title} | Reddit Music Player"
-			if song.get("type") is "bandcamp"
+			if song.get("type") is "bandcamp" and song.get("media")
+				console.log(song.get("media"))
 				$(".current-song-sidebar .image").attr "src", song.get("media").oembed.thumbnail_url
 			else
 				$(".current-song-sidebar .image").attr "src", ""
