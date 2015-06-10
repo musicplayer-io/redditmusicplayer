@@ -827,7 +827,10 @@ CustomSubreddit = Backbone.View.extend({
       return this.submit();
     } else {
       val = this.$("input").val();
-      if (val == null) {
+      if ((val == null) || val.trim().length === 0) {
+        _.forEach(RMP.subredditsSelection, function(s) {
+          return s.show();
+        });
         return;
       }
       val = val.toLowerCase();
