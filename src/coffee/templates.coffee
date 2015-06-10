@@ -13,12 +13,14 @@ Templates =
 				<% if (thumbnail) { %>
 					<% if (thumbnail == 'self' || thumbnail == 'default') { %>
 						<% if (type == 'mp3') { %>
-							<i class='left floated icon music large'/>
+							<i class='left floated icon music large thumbnail'/>
 						<% } else { %>
-							<i class='left floated icon chat outline large'/>
+							<i class='left floated icon chat outline large thumbnail'/>
 						<% } %>
+					<% } else if (thumbnail == 'nsfw' ){%>
+						<i class='left floated icon spy large thumbnail'/>
 					<% } else {%>
-						<img src='<%= thumbnail %>' class='ui image rounded left floated'/>
+						<img src='<%= thumbnail %>' class='ui image tiny rounded left floated thumbnail'/>
 					<% } %>
 				<% } %>
 				<div class='content'>
@@ -50,7 +52,7 @@ Templates =
 				<div class='downvote'><i class='icon down arrow'></i></div>
 			</div>
 			<h3 class='ui header title'><%= title %></h3>
-			<table class='ui table inverted'>
+			<table class='ui table inverted compact striped'>
 				<tbody>
 					<% if (media) { %>
 						<tr>

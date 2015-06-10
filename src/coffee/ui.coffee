@@ -85,15 +85,6 @@ MobileUI = Backbone.View.extend
 RMP.mobileui = new MobileUI
 	el: $(".ui.mobilebar")
 
-RMP.dispatcher.on "loaded:about", (page) ->
-	$(".start.listening").click (e) ->
-		console.log "About :: Start Listening" if FLAG_DEBUG
-		RMP.dispatcher.trigger "controls:play"
-		# RMP.router.navigate "playlist",
-			# trigger: true
-		RMP.sidebar.open "playlist"
-		# RMP.router.playlist()
-
 RMP.dispatcher.on "app:main", () ->
 	$(".ui.container").each (i, el) ->
 		item = $ el
