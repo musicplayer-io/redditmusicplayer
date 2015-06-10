@@ -100,6 +100,7 @@ SubredditSelectionView = Backbone.View.extend
 	category: "Default"
 	reddits: []
 	render: () ->
+		@show()
 		redditsInThisCategory = RMP.subredditplaylist.where({"category": @category})
 		if redditsInThisCategory is 0 then return
 		redditsInThisCategoryByName = _.pluck(_.pluck(redditsInThisCategory, "attributes"), "name")
@@ -107,6 +108,15 @@ SubredditSelectionView = Backbone.View.extend
 		@$(".menu .item").removeClass "active"
 		_.each @activeReddits, (element) =>
 			@$(".menu .item[data-value='#{element}']").addClass "active"
+	hide: () ->
+		@$el.hide()
+	hideAllExcept: (value) ->
+		subsList = _.filter @reddits, (r) -> !_.startsWith r, value
+		_.each subsList, (element) =>
+			@$(".menu .item[data-value='#{element}']").hide()
+	show: () ->
+		@$el.show()
+		@$(".menu .item").show()
 	initialize: () ->
 		@category = @$el.data "category"
 		@reddits = $.map @$(".selection.menu .item"), (o) -> 
@@ -121,12 +131,26 @@ SubredditSelectionView = Backbone.View.extend
 
 CustomSubreddit = Backbone.View.extend
 	events:
-		"keyup input": "enter"
+		"keyup input": "keypress"
 		"click .button": "submit"
-	enter: (e) ->
-		return if e.keyCode isnt 13
-		@submit()
+	keypress: (e) ->
+		if e.keyCode is 13
+			@submit()
+		else
+			val = @$("input").val()
+			return if not val?
+			val = val.toLowerCase()
+			
+			hiddenList = _.filter RMP.subredditsSelection, (s) ->
+				!_.find s.reddits, (r) -> _.startsWith r, val
+			_.forEach hiddenList, (list) -> list.hide()
+
+			showList = _.filter RMP.subredditsSelection, (s) ->
+				_.find s.reddits, (r) -> _.startsWith r, val
+			_.forEach showList, (list) -> list.hideAllExcept(val)
+
 	submit: () ->
+		_.forEach RMP.subredditsSelection, (s) -> s.show()
 		val = @$("input").val()
 
 		return if not val?
@@ -143,10 +167,13 @@ CustomSubreddit = Backbone.View.extend
 		RMP.subredditplaylist.add sub
 		sub.save()
 
-
+		@render()
+	render: () ->
 		@$("input").val("")
 	initialize: () ->
 		console.log "Custom Subreddit :: Ready" if FLAG_DEBUG
+		@listenTo RMP.subredditplaylist, "add", @render
+		@listenTo RMP.subredditplaylist, "remove", @render
 
 
 RMP.subredditsSelection = []

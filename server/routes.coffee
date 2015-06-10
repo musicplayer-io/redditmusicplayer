@@ -5,7 +5,6 @@ module.exports = ->
     # Homepage / App
     main = require('./controller/main')
     @get '/', main.playlist # default
-    @get '/about', main.about
     @get '/browse', main.browse
     @get '/playlist', main.playlist
     @get '/remote', main.remote

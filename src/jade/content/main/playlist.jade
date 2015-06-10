@@ -6,22 +6,22 @@
 			.downvote
 				i.icon.down.arrow
 	.switcher
-		i.icon.headphones
+		i.icon.sound
 		span.page Playlist
 		include ../switcher
 	.ui.menu.inverted.horizontal.four.item.sortMethod
 		a.sort.item.active(data-value='hot') Hot
 		a.sort.item(data-value='new') New
 		a.top.sort.item(data-value="top") Top
-		.ui.float.dropdown.icon.item.top.selection.inverted.black.topMethod.reddit
+		.ui.dropdown.item.top.inverted.black.topMethod.reddit
 			.text Week
 			i.dropdown.icon
 			.menu
-				a.item(data-value='top:day') Today
-				a.item(data-value='top:week') This Week
-				a.item(data-value='top:month') This Month
-				a.item(data-value='top:year') This Year
-				a.item(data-value='top:all') All Time
+				a.sort.item(data-value='top:day') Today
+				a.sort.item(data-value='top:week') This Week
+				a.sort.item(data-value='top:month') This Month
+				a.sort.item(data-value='top:year') This Year
+				a.sort.item(data-value='top:all') All Time
 
 	.music.playlist.ui.inverted.fluid.vertical.selection.menu
 		a(href="/browse").item.more

@@ -140,6 +140,7 @@ PlaylistView = Backbone.View.extend
 		"click .ui.item": "activate"
 		"click .item.more": "more"
 	more: (e) ->
+		@$(".more").html("<i class='icon notched circle loading'></i>")
 		RMP.playlist.more()
 	activate: (e) ->
 		target = $ e.currentTarget
@@ -150,7 +151,7 @@ PlaylistView = Backbone.View.extend
 	render: () ->
 		@$el.html ""
 		RMP.playlist.each (model) =>
-			# console.log model.toJSON() if FLAG_DEBUG
+			
 			@$el.append @template model.toJSON()
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song
@@ -166,7 +167,7 @@ PlaylistView = Backbone.View.extend
 
 SortMethodView = Backbone.View.extend
 	events:
-		"click .item": "select"
+		"click .sort.item": "select"
 	getCurrent: () ->
 		@$("[data-value='#{RMP.reddit.get('sortMethod')}']")
 	render: () ->

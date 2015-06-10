@@ -15,8 +15,6 @@ render = (request, response, page) ->
 		if request.xhr then response.send data else response.render "app", data
 
 class AppController
-	about: (request, response, callback) =>
-		render(request, response, "about")
 	browse: (request, response, callback) =>
 		render(request, response, "browse")
 	playlist: (request, response, callback) =>

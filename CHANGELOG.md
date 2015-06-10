@@ -1,6 +1,17 @@
  
 ## Changelog
 
+### 0.4.2 - 10 June 2015
+
+* Refreshing the logo
+* Removing the About view
+* Stripping out dated meta-data
+* Update CSS framework
+* Icons for NSFW, proper margin for thumbnails
+* Switching from Underscore to Lodash
+* Custom subreddit search does a filter on existing ones
+* Loading icon on load more
+
 ### 0.4.1 - 18 May 2015
 
 * Scrolling to next song (21 August)

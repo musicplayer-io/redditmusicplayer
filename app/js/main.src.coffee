@@ -44,12 +44,14 @@ Templates =
 				<% if (thumbnail) { %>
 					<% if (thumbnail == 'self' || thumbnail == 'default') { %>
 						<% if (type == 'mp3') { %>
-							<i class='left floated icon music large'/>
+							<i class='left floated icon music large thumbnail'/>
 						<% } else { %>
-							<i class='left floated icon chat outline large'/>
+							<i class='left floated icon chat outline large thumbnail'/>
 						<% } %>
+					<% } else if (thumbnail == 'nsfw' ){%>
+						<i class='left floated icon spy large thumbnail'/>
 					<% } else {%>
-						<img src='<%= thumbnail %>' class='ui image rounded left floated'/>
+						<img src='<%= thumbnail %>' class='ui image tiny rounded left floated thumbnail'/>
 					<% } %>
 				<% } %>
 				<div class='content'>
@@ -81,7 +83,7 @@ Templates =
 				<div class='downvote'><i class='icon down arrow'></i></div>
 			</div>
 			<h3 class='ui header title'><%= title %></h3>
-			<table class='ui table inverted'>
+			<table class='ui table inverted compact striped'>
 				<tbody>
 					<% if (media) { %>
 						<tr>
@@ -598,15 +600,6 @@ MobileUI = Backbone.View.extend
 RMP.mobileui = new MobileUI
 	el: $(".ui.mobilebar")
 
-RMP.dispatcher.on "loaded:about", (page) ->
-	$(".start.listening").click (e) ->
-		console.log "About :: Start Listening" if FLAG_DEBUG
-		RMP.dispatcher.trigger "controls:play"
-		# RMP.router.navigate "playlist",
-			# trigger: true
-		RMP.sidebar.open "playlist"
-		# RMP.router.playlist()
-
 RMP.dispatcher.on "app:main", () ->
 	$(".ui.container").each (i, el) ->
 		item = $ el
@@ -713,6 +706,7 @@ SubredditSelectionView = Backbone.View.extend
 	category: "Default"
 	reddits: []
 	render: () ->
+		@show()
 		redditsInThisCategory = RMP.subredditplaylist.where({"category": @category})
 		if redditsInThisCategory is 0 then return
 		redditsInThisCategoryByName = _.pluck(_.pluck(redditsInThisCategory, "attributes"), "name")
@@ -720,6 +714,15 @@ SubredditSelectionView = Backbone.View.extend
 		@$(".menu .item").removeClass "active"
 		_.each @activeReddits, (element) =>
 			@$(".menu .item[data-value='#{element}']").addClass "active"
+	hide: () ->
+		@$el.hide()
+	hideAllExcept: (value) ->
+		subsList = _.filter @reddits, (r) -> !_.startsWith r, value
+		_.each subsList, (element) =>
+			@$(".menu .item[data-value='#{element}']").hide()
+	show: () ->
+		@$el.show()
+		@$(".menu .item").show()
 	initialize: () ->
 		@category = @$el.data "category"
 		@reddits = $.map @$(".selection.menu .item"), (o) -> 
@@ -734,12 +737,26 @@ SubredditSelectionView = Backbone.View.extend
 
 CustomSubreddit = Backbone.View.extend
 	events:
-		"keyup input": "enter"
+		"keyup input": "keypress"
 		"click .button": "submit"
-	enter: (e) ->
-		return if e.keyCode isnt 13
-		@submit()
+	keypress: (e) ->
+		if e.keyCode is 13
+			@submit()
+		else
+			val = @$("input").val()
+			return if not val?
+			val = val.toLowerCase()
+			
+			hiddenList = _.filter RMP.subredditsSelection, (s) ->
+				!_.find s.reddits, (r) -> _.startsWith r, val
+			_.forEach hiddenList, (list) -> list.hide()
+
+			showList = _.filter RMP.subredditsSelection, (s) ->
+				_.find s.reddits, (r) -> _.startsWith r, val
+			_.forEach showList, (list) -> list.hideAllExcept(val)
+
 	submit: () ->
+		_.forEach RMP.subredditsSelection, (s) -> s.show()
 		val = @$("input").val()
 
 		return if not val?
@@ -756,10 +773,13 @@ CustomSubreddit = Backbone.View.extend
 		RMP.subredditplaylist.add sub
 		sub.save()
 
-
+		@render()
+	render: () ->
 		@$("input").val("")
 	initialize: () ->
 		console.log "Custom Subreddit :: Ready" if FLAG_DEBUG
+		@listenTo RMP.subredditplaylist, "add", @render
+		@listenTo RMP.subredditplaylist, "remove", @render
 
 
 RMP.subredditsSelection = []
@@ -940,6 +960,7 @@ PlaylistView = Backbone.View.extend
 		"click .ui.item": "activate"
 		"click .item.more": "more"
 	more: (e) ->
+		@$(".more").html("<i class='icon notched circle loading'></i>")
 		RMP.playlist.more()
 	activate: (e) ->
 		target = $ e.currentTarget
@@ -950,7 +971,7 @@ PlaylistView = Backbone.View.extend
 	render: () ->
 		@$el.html ""
 		RMP.playlist.each (model) =>
-			# console.log model.toJSON() if FLAG_DEBUG
+			
 			@$el.append @template model.toJSON()
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song
@@ -966,7 +987,7 @@ PlaylistView = Backbone.View.extend
 
 SortMethodView = Backbone.View.extend
 	events:
-		"click .item": "select"
+		"click .sort.item": "select"
 	getCurrent: () ->
 		@$("[data-value='#{RMP.reddit.get('sortMethod')}']")
 	render: () ->

@@ -423,6 +423,18 @@ a {
 		input {
 			background-color: rgba(255, 255, 255, .1);
 			color: rgba(255, 255, 255, .7);
+			&::-webkit-input-placeholder {
+			   color: rgba(255, 255, 255, .7);
+			}
+			&:-moz-placeholder { /* Firefox 18- */
+			   color: rgba(255, 255, 255, .7);
+			}
+			&::-moz-placeholder {  /* Firefox 19+ */
+			   color: rgba(255, 255, 255, .7);
+			}
+			&:-ms-input-placeholder {  
+			   color: rgba(255, 255, 255, .7);
+			}
 			&:hover, &:active {
 				color: rgba(255, 255, 255, .8);
 				&::-webkit-input-placeholder {
@@ -484,10 +496,12 @@ a {
 	}
 	.ui.comments {
 		.comment  {
+			.text, .author {
+				color: white;
+			}
 			.vote {
 				display: block;
 				float: left;
-				width: 2em;
 				.upvote, .downvote {
 					display: block;
 					margin: 0em auto;
@@ -585,17 +599,15 @@ a {
 			clear: both;
 			cursor: pointer;
 			overflow: hidden;
-			.image {
-				margin-bottom: 0px;
+			.thumbnail {
+				margin: auto;
+				width: 80px;
+				margin-right: 20px;
+				float: left;
+				font-size: 3em;
 			}
 			> .content {
 				padding: .5em 2em .5em 5.5em;
-			}
-			.left.floated.icon {
-				height: 1em;
-				float: left;
-				font-size: 3em;
-				margin: 0 20px 0 7px;
 			}
 			.author, .subreddit {
 				color: @col-primary;
@@ -618,39 +630,13 @@ a {
 		}
 		.more {
 			text-align: center;
+			cursor: pointer;
+			i.icon {
+				float: none;
+			}
 		}
 	}
 	
-}
-
-.ui.container > .content.about {
-	.footer {
-		text-align: center;
-		max-width: @maxwidth;
-		margin: 50px auto;
-		.player {
-			margin-top: 100px;
-		}
-		.share {
-			margin-top: 50px;
-		}
-		.copyright {
-			margin-top: 100px;
-		}
-	}
-	.feature {
-		margin: auto;
-		padding: 10px;
-		.ui.image {}
-		.description {
-			a {
-				font-weight: 700;
-			}
-		}
-		.ui.image + .description {
-			// text to the right
-		}
-	}
 }
 
 .ui.container > .content.remote {
