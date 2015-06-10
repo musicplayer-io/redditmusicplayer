@@ -201,11 +201,12 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 RMP.dispatcher.on "app:main", () ->
 	if RMP.URLsubreddits?
 		console.log "URL :: ", RMP.URLsubreddits if FLAG_DEBUG
-		for sub in RMP.URLsubreddits
-			RMP.subredditplaylist.add new Subreddit
+		newList = _.map RMP.URLsubreddits, (sub) ->
+			new Subreddit
 				category: "url"
 				name: sub
 				text: sub
+		RMP.subredditplaylist.add newList
 	else
 		RMP.subredditplaylist.fetch()
 		if (RMP.subredditplaylist.length is 0)

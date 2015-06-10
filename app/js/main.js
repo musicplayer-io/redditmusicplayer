@@ -924,22 +924,19 @@ RMP.dispatcher.on("loaded:browse", function(page) {
 });
 
 RMP.dispatcher.on("app:main", function() {
-  var j, len, ref, results, sub;
+  var newList;
   if (RMP.URLsubreddits != null) {
     if (FLAG_DEBUG) {
       console.log("URL :: ", RMP.URLsubreddits);
     }
-    ref = RMP.URLsubreddits;
-    results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      sub = ref[j];
-      results.push(RMP.subredditplaylist.add(new Subreddit({
+    newList = _.map(RMP.URLsubreddits, function(sub) {
+      return new Subreddit({
         category: "url",
         name: sub,
         text: sub
-      })));
-    }
-    return results;
+      });
+    });
+    return RMP.subredditplaylist.add(newList);
   } else {
     RMP.subredditplaylist.fetch();
     if (RMP.subredditplaylist.length === 0) {

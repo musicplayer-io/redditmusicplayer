@@ -12,6 +12,7 @@ pids
 logs
 results
 build
+scripts
 
 node_modules
 *.sublime-project
