@@ -221,6 +221,7 @@ Reddit = Backbone.Model.extend
 			success: (resp) =>
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
+		console.trace()
 		if RMP.subredditplaylist.length is 0
 			return "listentothis"
 		else
@@ -805,21 +806,20 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.customsubreddit.setElement $(".content.browse .custom-subreddit")
 
 RMP.dispatcher.on "app:main", () ->
-	if (RMP.URLsubreddits?)
-		RMP.subredditplaylist.reset()
+	if RMP.URLsubreddits?
+		console.log "URL :: ", RMP.URLsubreddits if FLAG_DEBUG
 		for sub in RMP.URLsubreddits
 			RMP.subredditplaylist.add new Subreddit
 				category: "url"
 				name: sub
 				text: sub
-		
 	else
 		RMP.subredditplaylist.fetch()
-	if (RMP.subredditplaylist.length is 0)
-		RMP.subredditplaylist.add new Subreddit
-			category: "Other"
-			name: "listentothis"
-			text: "Listen To This"
+		if (RMP.subredditplaylist.length is 0)
+			RMP.subredditplaylist.add new Subreddit
+				category: "Other"
+				name: "listentothis"
+				text: "Listen To This"
 
 timeSince = (time) ->
 	seconds = Math.floor((new Date() - time) / 1000)

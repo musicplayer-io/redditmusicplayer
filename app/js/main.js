@@ -76,6 +76,7 @@ Reddit = Backbone.Model.extend({
     });
   },
   subreddits: function() {
+    console.trace();
     if (RMP.subredditplaylist.length === 0) {
       return "listentothis";
     } else {
@@ -924,27 +925,31 @@ RMP.dispatcher.on("loaded:browse", function(page) {
 });
 
 RMP.dispatcher.on("app:main", function() {
-  var j, len, ref, sub;
-  if ((RMP.URLsubreddits != null)) {
-    RMP.subredditplaylist.reset();
+  var j, len, ref, results, sub;
+  if (RMP.URLsubreddits != null) {
+    if (FLAG_DEBUG) {
+      console.log("URL :: ", RMP.URLsubreddits);
+    }
     ref = RMP.URLsubreddits;
+    results = [];
     for (j = 0, len = ref.length; j < len; j++) {
       sub = ref[j];
-      RMP.subredditplaylist.add(new Subreddit({
+      results.push(RMP.subredditplaylist.add(new Subreddit({
         category: "url",
         name: sub,
         text: sub
-      }));
+      })));
     }
+    return results;
   } else {
     RMP.subredditplaylist.fetch();
-  }
-  if (RMP.subredditplaylist.length === 0) {
-    return RMP.subredditplaylist.add(new Subreddit({
-      category: "Other",
-      name: "listentothis",
-      text: "Listen To This"
-    }));
+    if (RMP.subredditplaylist.length === 0) {
+      return RMP.subredditplaylist.add(new Subreddit({
+        category: "Other",
+        name: "listentothis",
+        text: "Listen To This"
+      }));
+    }
   }
 });
 
