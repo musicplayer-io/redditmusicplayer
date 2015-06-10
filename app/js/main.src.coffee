@@ -221,7 +221,6 @@ Reddit = Backbone.Model.extend
 			success: (resp) =>
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
-		console.trace()
 		if RMP.subredditplaylist.length is 0
 			return "listentothis"
 		else

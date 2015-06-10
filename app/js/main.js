@@ -76,7 +76,6 @@ Reddit = Backbone.Model.extend({
     });
   },
   subreddits: function() {
-    console.trace();
     if (RMP.subredditplaylist.length === 0) {
       return "listentothis";
     } else {

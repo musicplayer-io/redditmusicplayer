@@ -11,6 +11,8 @@
 * Switching from Underscore to Lodash
 * Custom subreddit search does a filter on existing ones
 * Loading icon on load more
+* Fix /r/sub urls
+* Fix soundcloud waveform colors
 
 ### 0.4.1 - 18 May 2015
 
