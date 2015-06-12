@@ -2,17 +2,18 @@ passportSocketIo = require("passport.socketio")
 session = require 'express-session'
 RedisStore = require('connect-redis')(session)
 cookieParser = require 'cookie-parser'
+crypto = require 'crypto'
 
 onAuthorizeSuccess = (data, accept) ->
 	accept()
 
 onAuthorizeFail = (data, message, error, accept) ->
-	if error?
-		accept(new Error(message))
+	accept()
 
 sendToRoomOnTrigger = (socket, type) ->
 	socket.on type, (data) ->
-		socket.to(socket.request.user.name).emit type, data
+		socket.rooms.forEach (room) -> 
+			socket.to(room).emit type, data
 
 module.exports = (io) ->
 	simpleEvents = ["controls:play", "controls:forward", "controls:backward", "remote:subreddits"]
@@ -29,9 +30,12 @@ module.exports = (io) ->
 		fail: onAuthorizeFail
 
 	io.on "connection", (socket) ->
-		return if not socket.request.user
-		
-		socket.join socket.request.user.name
+		socket.on "join:hash", (hash) ->
+			socket.join hash
+			console.log "Socket Join ", socket.request.user.name, hash
+
+		if socket.request.user?
+			socket.join socket.request.user.name
 
 		for ev in simpleEvents
 			sendToRoomOnTrigger socket, ev
