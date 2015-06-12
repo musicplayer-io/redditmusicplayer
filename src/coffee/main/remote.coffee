@@ -28,7 +28,6 @@ Remote = Backbone.Model.extend
 			cb hash
 	setHash: (hash) ->
 		@set("hash", hash)
-		console.log @has("name")
 		if @has("name") is false
 			@socket = io()
 			@socket.emit "join:hash", hash
@@ -45,9 +44,6 @@ Remote = Backbone.Model.extend
 
 			for ev in simpleEvents
 				@triggerOnEmit ev
-
-			@socket.on "response:hash", (hash) =>
-				console.log hash
 
 			@listenTo RMP.dispatcher, "controls:forward", @forward
 			@listenTo RMP.dispatcher, "controls:backward", @backward
