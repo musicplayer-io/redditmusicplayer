@@ -57,10 +57,10 @@ RemoteView = Backbone.View.extend
 	generateLink: () ->
 		@model.requestHash (hash) =>
 			@model.socket.emit "join:hash", hash
-			@$(".hashlink").attr("href", "http://reddit.music.player.il.lyremote/#{hash}").html hash
+			url = "#{API.MusicPlayer.base}/remote/#{hash}"
+			@$(".hashlink").attr("href", url).html hash
 			@$(".qrcode").html("")
-			@$(".qrcode").qrcode
-				text: "http://reddit.music.player.il.ly/remote/#{hash}"
+			@$(".qrcode").qrcode text: url
 	copySubreddits: () ->
 		@model.send "remote:subreddits", RMP.subredditplaylist.toString()
 	button: (e) ->

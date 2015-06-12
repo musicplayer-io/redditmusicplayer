@@ -7,5 +7,7 @@ API =
 		key: "YOUR_SOUNDCLOUD_KEY"
 	Reddit:
 		base: "//www.reddit.com"
+	MusicPlayer:
+		base: "https://reddit.music.player.il.ly"
 
 FLAG_DEBUG = true
