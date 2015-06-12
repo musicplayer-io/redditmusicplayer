@@ -39,6 +39,9 @@ API = {
   },
   Reddit: {
     base: "//www.reddit.com"
+  },
+  MusicPlayer: {
+    base: "https://reddit.music.player.il.ly"
   }
 };
 
@@ -2270,7 +2273,6 @@ Remote = Backbone.Model.extend({
   },
   setHash: function(hash) {
     this.set("hash", hash);
-    console.log(this.has("name"));
     if (this.has("name") === false) {
       this.socket = io();
       this.socket.emit("join:hash", hash);
@@ -2290,9 +2292,6 @@ Remote = Backbone.Model.extend({
           ev = simpleEvents[j];
           _this.triggerOnEmit(ev);
         }
-        _this.socket.on("response:hash", function(hash) {
-          return console.log(hash);
-        });
         _this.listenTo(RMP.dispatcher, "controls:forward", _this.forward);
         _this.listenTo(RMP.dispatcher, "controls:backward", _this.backward);
         return _this.listenTo(RMP.dispatcher, "controls:play", _this.playPause);
@@ -2310,11 +2309,13 @@ RemoteView = Backbone.View.extend({
   generateLink: function() {
     return this.model.requestHash((function(_this) {
       return function(hash) {
+        var url;
         _this.model.socket.emit("join:hash", hash);
-        _this.$(".hashlink").attr("href", "http://reddit.music.player.il.lyremote/" + hash).html(hash);
+        url = API.MusicPlayer.base + "/remote/" + hash;
+        _this.$(".hashlink").attr("href", url).html(hash);
         _this.$(".qrcode").html("");
         return _this.$(".qrcode").qrcode({
-          text: "http://reddit.music.player.il.ly/remote/" + hash
+          text: url
         });
       };
     })(this));

@@ -39,6 +39,8 @@ API =
 		key: "5441b373256bae7895d803c7c23e59d9"
 	Reddit:
 		base: "//www.reddit.com"
+	MusicPlayer:
+		base: "https://reddit.music.player.il.ly"
 
 FLAG_DEBUG = false
 FLAG_DEBUG = true if localStorage.debug and localStorage.debug is "true"
@@ -1681,7 +1683,6 @@ Remote = Backbone.Model.extend
 			cb hash
 	setHash: (hash) ->
 		@set("hash", hash)
-		console.log @has("name")
 		if @has("name") is false
 			@socket = io()
 			@socket.emit "join:hash", hash
@@ -1699,9 +1700,6 @@ Remote = Backbone.Model.extend
 			for ev in simpleEvents
 				@triggerOnEmit ev
 
-			@socket.on "response:hash", (hash) =>
-				console.log hash
-
 			@listenTo RMP.dispatcher, "controls:forward", @forward
 			@listenTo RMP.dispatcher, "controls:backward", @backward
 			@listenTo RMP.dispatcher, "controls:play", @playPause
@@ -1714,10 +1712,10 @@ RemoteView = Backbone.View.extend
 	generateLink: () ->
 		@model.requestHash (hash) =>
 			@model.socket.emit "join:hash", hash
-			@$(".hashlink").attr("href", "http://reddit.music.player.il.lyremote/#{hash}").html hash
+			url = "#{API.MusicPlayer.base}/remote/#{hash}"
+			@$(".hashlink").attr("href", url).html hash
 			@$(".qrcode").html("")
-			@$(".qrcode").qrcode
-				text: "http://reddit.music.player.il.ly/remote/#{hash}"
+			@$(".qrcode").qrcode text: url
 	copySubreddits: () ->
 		@model.send "remote:subreddits", RMP.subredditplaylist.toString()
 	button: (e) ->
