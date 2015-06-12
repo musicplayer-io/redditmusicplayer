@@ -2312,7 +2312,8 @@ RemoteView = Backbone.View.extend({
         var url;
         _this.model.socket.emit("join:hash", hash);
         url = API.MusicPlayer.base + "/remote/" + hash;
-        _this.$(".hashlink").attr("href", url).html(hash);
+        _this.$(".hashlink").attr("href", url);
+        _this.$(".hashlink .text").text(hash);
         _this.$(".qrcode").html("");
         return _this.$(".qrcode").qrcode({
           text: url

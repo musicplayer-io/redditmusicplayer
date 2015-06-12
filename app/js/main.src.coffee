@@ -1713,7 +1713,8 @@ RemoteView = Backbone.View.extend
 		@model.requestHash (hash) =>
 			@model.socket.emit "join:hash", hash
 			url = "#{API.MusicPlayer.base}/remote/#{hash}"
-			@$(".hashlink").attr("href", url).html hash
+			@$(".hashlink").attr("href", url)
+			@$(".hashlink .text").text hash
 			@$(".qrcode").html("")
 			@$(".qrcode").qrcode text: url
 	copySubreddits: () ->
