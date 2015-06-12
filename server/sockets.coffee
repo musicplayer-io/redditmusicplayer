@@ -4,11 +4,9 @@ RedisStore = require('connect-redis')(session)
 cookieParser = require 'cookie-parser'
 
 onAuthorizeSuccess = (data, accept) ->
-	# console.log('successful connection to socket.io')
 	accept()
 
 onAuthorizeFail = (data, message, error, accept) ->
-	# console.log('failed connection to socket.io:', message)
 	if error?
 		accept(new Error(message))
 
@@ -33,10 +31,6 @@ module.exports = (io) ->
 	io.on "connection", (socket) ->
 		return if not socket.request.user
 		
-		# # console.log "Socket :: User Connected :: #{socket.request.user.name}"
-		# socket.on "disconnect", () ->
-		# 	# console.log "Socket :: User Disconnected :: #{socket.request.user.name}"
-
 		socket.join socket.request.user.name
 
 		for ev in simpleEvents

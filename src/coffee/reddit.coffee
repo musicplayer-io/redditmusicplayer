@@ -1,4 +1,4 @@
-
+firstRequest = true
 
 Reddit = Backbone.Model.extend
 	defaults:
@@ -36,13 +36,23 @@ Reddit = Backbone.Model.extend
 			return
 		console.log "Reddit :: GetMusic :: ", subs if FLAG_DEBUG
 
-		$.ajax
-			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
-			data: data
-			success: (r) =>
-				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+		if firstRequest
+			$.ajax
+				dataType: "json"
+				url: "/api/get/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
+				data: data
+				success: (r) =>
+					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+					callback r.data.children
+			firstRequest = false
+		else
+			$.ajax
+				dataType: "json"
+				url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
+				data: data
+				success: (r) =>
+					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+					callback r.data.children
 
 	getSearch: (callback, data) ->
 		@set "search", RMP.search

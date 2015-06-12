@@ -1,6 +1,6 @@
 {
   "name": "redditmusicplayer-server",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Reddit Music Player Server",
   "main": "server.coffee",
   "author": "Ilias Ismanalijev",

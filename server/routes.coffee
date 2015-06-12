@@ -22,6 +22,7 @@ module.exports = ->
     @post '/api/vote', api.isAuthenticated, api.vote
     @get '/api/comments', api.comments
     @post '/api/add_comment', api.isAuthenticated, api.add_comment
+    @get("/api/get/*", api.get);
 
     # Reddit
     reddit = require("./controller/reddit")
