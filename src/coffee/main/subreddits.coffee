@@ -127,7 +127,7 @@ SubredditSelectionView = Backbone.View.extend
 		@listenTo RMP.subredditplaylist, "remove", @render
 		@listenTo RMP.subredditplaylist, "reset", @render
 
-		console.log "Subreddit :: View Made" if FLAG_DEBUG
+		console.log "SubredditSelectionView :: View Made", @category if FLAG_DEBUG
 
 CustomSubreddit = Backbone.View.extend
 	events:
@@ -208,7 +208,7 @@ RMP.dispatcher.on "app:main", () ->
 				text: sub
 		RMP.subredditplaylist.add newList
 	else
-		RMP.subredditplaylist.fetch()
+		RMP.subredditplaylist.fetch reset: true
 		if (RMP.subredditplaylist.length is 0)
 			RMP.subredditplaylist.add new Subreddit
 				category: "Other"

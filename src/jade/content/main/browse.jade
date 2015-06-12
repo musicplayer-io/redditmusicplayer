@@ -1,6 +1,7 @@
 .content.browse
 	mixin subreddit(sub)
-		a.item(data-value=sub.toLowerCase()) #{sub}
+		a.subreddit.item(data-value=sub.toLowerCase()) #{sub}
+		|  
 	.switcher
 		i.icon.list
 		span.page Browse Subreddits

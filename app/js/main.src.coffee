@@ -6,17 +6,30 @@ $(document).ready ->
 	RMP.dispatcher.trigger "app:main"
 	RMP.dispatcher.trigger "app:resize"
 
+	wht = `'\033[1;37m'`
+	blu = `'\033[1;34m'`
+	ylw = `'\033[1;33m'`
+	grn = `'\033[1;32m'`
+	red = `'\033[1;31m'`
+	rst = `'\033[0m'`
+	console.log """
+	   __                 #               #                  
+	  |--|   ### # #  ##     ###     ###  #   ## # # ### ### 
+	  |  |   ### # #  #   #  #       # #  #  # # ### ##  #   
+	 () ()   # # ### ##   ## ###     ###  ## ###   # ### #   
+	                                 #           ###         
+	"""
+
 $( window ).resize ->
 	RMP.dispatcher.trigger "app:resize"
 
 # Dragging
 RMP.dragging = false
-# $( window ).mousedown ->
-#	RMP.dragging = true
 
 $( window ).mouseup ->
 	RMP.dragging = false
 	RMP.dispatcher.trigger "events:stopDragging"
+
 API = 
 	Bandcamp:
 		base: "//api.bandcamp.com/api"
@@ -203,7 +216,7 @@ Templates =
 				</div>
 			</div>
 		")
-
+firstRequest = true
 
 Reddit = Backbone.Model.extend
 	defaults:
@@ -241,13 +254,23 @@ Reddit = Backbone.Model.extend
 			return
 		console.log "Reddit :: GetMusic :: ", subs if FLAG_DEBUG
 
-		$.ajax
-			dataType: "json"
-			url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
-			data: data
-			success: (r) =>
-				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+		if firstRequest
+			$.ajax
+				dataType: "json"
+				url: "/api/get/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
+				data: data
+				success: (r) =>
+					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+					callback r.data.children
+			firstRequest = false
+		else
+			$.ajax
+				dataType: "json"
+				url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
+				data: data
+				success: (r) =>
+					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+					callback r.data.children
 
 	getSearch: (callback, data) ->
 		@set "search", RMP.search
@@ -733,7 +756,7 @@ SubredditSelectionView = Backbone.View.extend
 		@listenTo RMP.subredditplaylist, "remove", @render
 		@listenTo RMP.subredditplaylist, "reset", @render
 
-		console.log "Subreddit :: View Made" if FLAG_DEBUG
+		console.log "SubredditSelectionView :: View Made", @category if FLAG_DEBUG
 
 CustomSubreddit = Backbone.View.extend
 	events:
@@ -814,7 +837,7 @@ RMP.dispatcher.on "app:main", () ->
 				text: sub
 		RMP.subredditplaylist.add newList
 	else
-		RMP.subredditplaylist.fetch()
+		RMP.subredditplaylist.fetch reset: true
 		if (RMP.subredditplaylist.length is 0)
 			RMP.subredditplaylist.add new Subreddit
 				category: "Other"

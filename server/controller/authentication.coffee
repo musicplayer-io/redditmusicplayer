@@ -34,7 +34,6 @@ class AuthController
 			scope: reddit.scope
 		auth(request, response, callback)
 	callback: (request, response, callback) =>
-		# callback new Error 403 if request.query.state isnt request.session.state
 		console.log "callback", request.query
 		redirectBack = '/'
 		redirectBack = request.session.redirectBack if request.session? and request.session.redirectBack?
@@ -45,8 +44,6 @@ class AuthController
 				return callback(err) if err?
 				request.session.refreshToken = refreshToken
 				return response.redirect(redirectBack)
-			# successRedirect: redirectBack
-			# failureRedirect: '/login'
 		auth(request, response, callback)
 	isAuthenticated: (request, response, callback) ->
 		return callback() if request.isAuthenticated()

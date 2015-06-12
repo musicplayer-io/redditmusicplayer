@@ -2,6 +2,7 @@
 seo = require './seo'
 req = require 'request'
 reddit = require '../config/reddit'
+pkg = require '../../package.json'
 
 # Auth controller
 # Provider Reddit Interaction
@@ -13,8 +14,7 @@ postToReddit = (url, token, data, callback) ->
 		form: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
-	console.log options
+			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
 	req(options, callback)
 
 getFromReddit = (url, token, data, callback) ->
@@ -24,8 +24,7 @@ getFromReddit = (url, token, data, callback) ->
 		json: data
 		headers:
 			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
-	console.log options
+			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
 	req(options, callback)
 
 refreshTokenReddit = (request, response, callback) ->
@@ -47,10 +46,9 @@ refreshTokenReddit = (request, response, callback) ->
 			user: reddit.client_id
 			pass: reddit.secret
 		headers:
-			"User-Agent": "Reddit Music Player/0.4.0 by illyism"
+			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
 	req options, (err, resp, body) ->
 		if resp.statusCode is 401 or body.error?
-			console.log request.user, request.session, body, options
 			return response.send
 				error:
 					type: "APIError"
@@ -144,7 +142,9 @@ class APIController
 							status: resp.statusCode
 							data: body
 
-
+	get: (request, response, callback) ->
+		url = "http://www.reddit.com" + request.url.replace "/api/get", ""
+		req.get(url).pipe(response)
 
 	isAuthenticated: (request, response, callback) ->
 		return callback() if request.isAuthenticated()

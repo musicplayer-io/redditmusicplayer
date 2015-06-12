@@ -1,12 +1,20 @@
-var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, CustomSubreddit, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Remote, RemoteView, Search, SearchView, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, onYouTubeIframeAPIReady, timeSince;
+var API, Authentication, BandcampPlayer, Button, Buttons, CommentsView, CurrentSongView, CustomSubreddit, FLAG_DEBUG, KeyboardController, MP3Player, MobileUI, MusicPlayer, NotALink, NotASong, PlayerController, Playlist, PlaylistView, ProgressBar, ProgressBarView, Reddit, Remote, RemoteView, Search, SearchView, Song, SongBandcamp, SongMP3, SongSoundcloud, SongVimeo, SongYoutube, SortMethodView, SoundcloudPlayer, Subreddit, SubredditPlayListView, SubredditPlaylist, SubredditSelectionView, Templates, UIModel, VimeoPlayer, VolumeControl, VolumeControlView, YoutubePlayer, firstRequest, onYouTubeIframeAPIReady, timeSince;
 
 window.RMP = {};
 
 RMP.dispatcher = _.clone(Backbone.Events);
 
 $(document).ready(function() {
+  var blu, grn, red, rst, wht, ylw;
   RMP.dispatcher.trigger("app:main");
-  return RMP.dispatcher.trigger("app:resize");
+  RMP.dispatcher.trigger("app:resize");
+  wht = '\033[1;37m';
+  blu = '\033[1;34m';
+  ylw = '\033[1;33m';
+  grn = '\033[1;32m';
+  red = '\033[1;31m';
+  rst = '\033[0m';
+  return console.log("  __                 #               #                  \n |--|   ### # #  ##     ###     ###  #   ## # # ### ### \n |  |   ### # #  #   #  #       # #  #  # # ### ##  #   \n() ()   # # ### ##   ## ###     ###  ## ###   # ### #   \n                                #           ###         ");
 });
 
 $(window).resize(function() {
@@ -49,6 +57,8 @@ Templates = {
   ReplyTo: _.template("<span class='ui reply_to label inverted black fluid' id='<%= id %>'> Replying to <%= author %> <i class='icon close'></i> </span>"),
   AuthenticationView: _.template("<div class='item ui dropdown reddit account' id='<%= id %>'> <i class='icon user'></i> <%= name %> <i class='icon dropdown'></i> <div class='menu'> <div class='item'> <%= link_karma %> Link Karma </div> <div class='item'> <%= comment_karma %> Comment Karma </div> <% if (is_gold == true) { %> <div class='item'> Gold Member </div> <% } %> <a class='item sign-out' href='/logout'> <i class='icon off'></i> Log Out </a> </div> </div>")
 };
+
+firstRequest = true;
 
 Reddit = Backbone.Model.extend({
   defaults: {
@@ -105,19 +115,36 @@ Reddit = Backbone.Model.extend({
     if (FLAG_DEBUG) {
       console.log("Reddit :: GetMusic :: ", subs);
     }
-    return $.ajax({
-      dataType: "json",
-      url: API.Reddit.base + "/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
-      data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return callback(r.data.children);
-        };
-      })(this)
-    });
+    if (firstRequest) {
+      $.ajax({
+        dataType: "json",
+        url: "/api/get/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
+        data: data,
+        success: (function(_this) {
+          return function(r) {
+            if (r.error != null) {
+              return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+            }
+            return callback(r.data.children);
+          };
+        })(this)
+      });
+      return firstRequest = false;
+    } else {
+      return $.ajax({
+        dataType: "json",
+        url: API.Reddit.base + "/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
+        data: data,
+        success: (function(_this) {
+          return function(r) {
+            if (r.error != null) {
+              return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+            }
+            return callback(r.data.children);
+          };
+        })(this)
+      });
+    }
   },
   getSearch: function(callback, data) {
     this.set("search", RMP.search);
@@ -811,7 +838,7 @@ SubredditSelectionView = Backbone.View.extend({
     this.listenTo(RMP.subredditplaylist, "remove", this.render);
     this.listenTo(RMP.subredditplaylist, "reset", this.render);
     if (FLAG_DEBUG) {
-      return console.log("Subreddit :: View Made");
+      return console.log("SubredditSelectionView :: View Made", this.category);
     }
   }
 });
@@ -938,7 +965,9 @@ RMP.dispatcher.on("app:main", function() {
     });
     return RMP.subredditplaylist.add(newList);
   } else {
-    RMP.subredditplaylist.fetch();
+    RMP.subredditplaylist.fetch({
+      reset: true
+    });
     if (RMP.subredditplaylist.length === 0) {
       return RMP.subredditplaylist.add(new Subreddit({
         category: "Other",

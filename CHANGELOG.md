@@ -1,6 +1,13 @@
  
 ## Changelog
 
+### 0.5.0 - 12 June 2015
+
+* Change some names to **Music Player for Reddit**
+* Performance tweaks to reduce amount of API requests
+* GA to GTM
+* Sync versions throughout the file
+
 ### 0.4.2 - 10 June 2015
 
 * Refreshing the logo
