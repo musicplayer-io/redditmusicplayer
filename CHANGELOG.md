@@ -7,6 +7,9 @@
 * Performance tweaks to reduce amount of API requests
 * GA to GTM
 * Sync versions throughout the file
+* Remote Control checkbox is more clear
+* Loaded Progress bar has better contrast
+* Anonymous remote control
 
 ### 0.4.2 - 10 June 2015
 

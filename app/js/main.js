@@ -1133,6 +1133,9 @@ Playlist = Backbone.Collection.extend({
     })(this));
   },
   forward: function() {
+    if (RMP.remote.get("receiver") === false) {
+      return;
+    }
     if (this.current.index >= this.length - 1) {
       return this.more((function(_this) {
         return function() {
@@ -1150,6 +1153,9 @@ Playlist = Backbone.Collection.extend({
     }
   },
   backward: function() {
+    if (RMP.remote.get("receiver") === false) {
+      return;
+    }
     if (this.current.index - 1 <= 0) {
       this.current.song = this.at(this.current.index - 1);
       if (this.current.song.get("playable") === true) {
@@ -1177,8 +1183,8 @@ Playlist = Backbone.Collection.extend({
     this.listenTo(RMP.subredditplaylist, "reset", this.refresh);
     this.listenTo(RMP.dispatcher, "controls:forward", this.forward);
     this.listenTo(RMP.dispatcher, "controls:backward", this.backward);
-    this.listenTo(RMP.dispatcher, "controls:sortMethod", this.refresh);
     this.listenTo(RMP.dispatcher, "controls:play", this.playFirstSongIfEmpty);
+    this.listenTo(RMP.dispatcher, "controls:sortMethod", this.refresh);
     this.listenTo(RMP.dispatcher, "player:ended", this.forward);
     if (FLAG_DEBUG) {
       return console.log("Playlist :: Ready");
@@ -2108,6 +2114,9 @@ PlayerController = Backbone.Model.extend({
     }
   },
   playPause: function(e) {
+    if (RMP.remote.get("receiver") === false) {
+      return;
+    }
     if (this.controller == null) {
       return;
     }
@@ -2233,19 +2242,60 @@ Remote = Backbone.Model.extend({
   setReceiver: function(bool) {
     return this.set("receiver", bool);
   },
+  forward: function() {
+    if (this.get("receiver") === true) {
+      return;
+    }
+    return this.send("controls:forward");
+  },
+  backward: function() {
+    if (this.get("receiver") === true) {
+      return;
+    }
+    return this.send("controls:backward");
+  },
+  playPause: function() {
+    if (this.get("receiver") === true) {
+      return;
+    }
+    return this.send("controls:play");
+  },
+  requestHash: function(cb) {
+    if (this.get("receiver") === false) {
+      return;
+    }
+    return $.get("/remote/generate", function(hash) {
+      return cb(hash);
+    });
+  },
+  setHash: function(hash) {
+    this.set("hash", hash);
+    console.log(this.has("name"));
+    if (this.has("name") === false) {
+      this.socket = io();
+      this.socket.emit("join:hash", hash);
+      this.listenTo(RMP.dispatcher, "controls:forward", this.forward);
+      this.listenTo(RMP.dispatcher, "controls:backward", this.backward);
+      return this.listenTo(RMP.dispatcher, "controls:play", this.playPause);
+    }
+  },
   initialize: function() {
     return RMP.dispatcher.once("authenticated", (function(_this) {
       return function(authentication) {
-        var ev, j, len, results, simpleEvents;
+        var ev, j, len, simpleEvents;
         _this.set("name", authentication.get("name"));
         _this.socket = io();
         simpleEvents = ["controls:forward", "controls:backward", "controls:play", "remote:subreddits"];
-        results = [];
         for (j = 0, len = simpleEvents.length; j < len; j++) {
           ev = simpleEvents[j];
-          results.push(_this.triggerOnEmit(ev));
+          _this.triggerOnEmit(ev);
         }
-        return results;
+        _this.socket.on("response:hash", function(hash) {
+          return console.log(hash);
+        });
+        _this.listenTo(RMP.dispatcher, "controls:forward", _this.forward);
+        _this.listenTo(RMP.dispatcher, "controls:backward", _this.backward);
+        return _this.listenTo(RMP.dispatcher, "controls:play", _this.playPause);
       };
     })(this));
   }
@@ -2253,8 +2303,21 @@ Remote = Backbone.Model.extend({
 
 RemoteView = Backbone.View.extend({
   events: {
-    "click .remote-controls .button": "button",
-    "click .subreddits-copy": "copySubreddits"
+    "click .remote-controls .remote-btn": "button",
+    "click .subreddits-copy": "copySubreddits",
+    "click .generate-link": "generateLink"
+  },
+  generateLink: function() {
+    return this.model.requestHash((function(_this) {
+      return function(hash) {
+        _this.model.socket.emit("join:hash", hash);
+        _this.$(".hashlink").attr("href", "http://reddit.music.player.il.lyremote/" + hash).html(hash);
+        _this.$(".qrcode").html("");
+        return _this.$(".qrcode").qrcode({
+          text: "http://reddit.music.player.il.ly/remote/" + hash
+        });
+      };
+    })(this));
   },
   copySubreddits: function() {
     return this.model.send("remote:subreddits", RMP.subredditplaylist.toString());
@@ -2269,10 +2332,17 @@ RemoteView = Backbone.View.extend({
     return this.model.send(type);
   },
   render: function() {
+    if (this.model.has("hash") === true) {
+      this.$(".dimmer").removeClass("active");
+    }
     if (this.model.get("receiver") === true) {
-      return this.$(".ui.button").addClass("disabled");
+      this.$(".checkbox.receiver input").prop("checked", true);
+      this.$(".remote-controls").hide();
+      return this.$(".remote-receiver").show();
     } else {
-      return this.$(".ui.button").removeClass("disabled");
+      this.$(".checkbox.commander input").prop("checked", true);
+      this.$(".remote-controls").show();
+      return this.$(".remote-receiver").hide();
     }
   },
   setReceiver: function() {
@@ -2282,13 +2352,20 @@ RemoteView = Backbone.View.extend({
     return RMP.remoteview.model.set("receiver", false);
   },
   changeElement: function() {
-    this.$(".checkbox.receiver").checkbox({
-      onEnable: this.setReceiver,
-      onDisable: this.setCommander
+    this.$(".checkbox.radio").checkbox({
+      onChange: (function(_this) {
+        return function(value) {
+          if (_this.$(".checkbox.receiver input").is(":checked")) {
+            return _this.setReceiver();
+          } else {
+            return _this.setCommander();
+          }
+        };
+      })(this)
     });
     this.render();
     if (this.model.has("name")) {
-      return this.$(".dimmer").dimmer("hide");
+      return this.$(".dimmer").removeClass("active");
     }
   },
   initialize: function() {
@@ -2296,7 +2373,7 @@ RemoteView = Backbone.View.extend({
     this.listenTo(this.model, "change", this.render);
     return RMP.dispatcher.once("authenticated", (function(_this) {
       return function(authentication) {
-        return _this.$(".dimmer").dimmer("hide");
+        return _this.$(".dimmer").removeClass("active");
       };
     })(this));
   }

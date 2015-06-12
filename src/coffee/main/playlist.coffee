@@ -92,6 +92,7 @@ Playlist = Backbone.Collection.extend
 				@add @parseSong item.data
 			callback() if callback?
 	forward: () ->
+		return if RMP.remote.get("receiver") is false
 		if @current.index >= @length  - 1
 			@more () =>
 				@forward()
@@ -103,6 +104,7 @@ Playlist = Backbone.Collection.extend
 			else
 				@activate(@current.song)
 	backward: () ->
+		return if RMP.remote.get("receiver") is false
 		if (@current.index - 1 <= 0)
 			@current.song = @at(@current.index - 1)
 			if @current.song.get("playable") is true
@@ -125,8 +127,8 @@ Playlist = Backbone.Collection.extend
 
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward
-		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
 		@listenTo RMP.dispatcher, "controls:play", @playFirstSongIfEmpty
+		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
 
 		@listenTo RMP.dispatcher, "player:ended", @forward
 

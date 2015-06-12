@@ -937,6 +937,7 @@ Playlist = Backbone.Collection.extend
 				@add @parseSong item.data
 			callback() if callback?
 	forward: () ->
+		return if RMP.remote.get("receiver") is false
 		if @current.index >= @length  - 1
 			@more () =>
 				@forward()
@@ -948,6 +949,7 @@ Playlist = Backbone.Collection.extend
 			else
 				@activate(@current.song)
 	backward: () ->
+		return if RMP.remote.get("receiver") is false
 		if (@current.index - 1 <= 0)
 			@current.song = @at(@current.index - 1)
 			if @current.song.get("playable") is true
@@ -970,8 +972,8 @@ Playlist = Backbone.Collection.extend
 
 		@listenTo RMP.dispatcher, "controls:forward", @forward
 		@listenTo RMP.dispatcher, "controls:backward", @backward
-		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
 		@listenTo RMP.dispatcher, "controls:play", @playFirstSongIfEmpty
+		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
 
 		@listenTo RMP.dispatcher, "player:ended", @forward
 
@@ -1584,6 +1586,7 @@ PlayerController = Backbone.Model.extend
 					@controller = null
 					@change(index, song)
 	playPause: (e) ->
+		return if RMP.remote.get("receiver") is false
 		return if not @controller?
 		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
@@ -1663,7 +1666,30 @@ Remote = Backbone.Model.extend
 		@socket.emit type, data
 	setReceiver: (bool) ->
 		@set "receiver", bool
+	forward: () ->
+		return if @get("receiver") is true
+		@send "controls:forward"
+	backward: () ->
+		return if @get("receiver") is true
+		@send "controls:backward"
+	playPause: () ->
+		return if @get("receiver") is true
+		@send "controls:play"
+	requestHash: (cb) ->
+		return if @get("receiver") is false
+		$.get "/remote/generate", (hash) ->
+			cb hash
+	setHash: (hash) ->
+		@set("hash", hash)
+		console.log @has("name")
+		if @has("name") is false
+			@socket = io()
+			@socket.emit "join:hash", hash
+			@listenTo RMP.dispatcher, "controls:forward", @forward
+			@listenTo RMP.dispatcher, "controls:backward", @backward
+			@listenTo RMP.dispatcher, "controls:play", @playPause
 	initialize: () ->
+		
 		RMP.dispatcher.once "authenticated", (authentication) =>
 			@set "name", authentication.get("name")
 			@socket = io()
@@ -1673,10 +1699,25 @@ Remote = Backbone.Model.extend
 			for ev in simpleEvents
 				@triggerOnEmit ev
 
+			@socket.on "response:hash", (hash) =>
+				console.log hash
+
+			@listenTo RMP.dispatcher, "controls:forward", @forward
+			@listenTo RMP.dispatcher, "controls:backward", @backward
+			@listenTo RMP.dispatcher, "controls:play", @playPause
+
 RemoteView = Backbone.View.extend
 	events:
-		"click .remote-controls .button": "button"
+		"click .remote-controls .remote-btn": "button"
 		"click .subreddits-copy": "copySubreddits"
+		"click .generate-link": "generateLink"
+	generateLink: () ->
+		@model.requestHash (hash) =>
+			@model.socket.emit "join:hash", hash
+			@$(".hashlink").attr("href", "http://reddit.music.player.il.lyremote/#{hash}").html hash
+			@$(".qrcode").html("")
+			@$(".qrcode").qrcode
+				text: "http://reddit.music.player.il.ly/remote/#{hash}"
 	copySubreddits: () ->
 		@model.send "remote:subreddits", RMP.subredditplaylist.toString()
 	button: (e) ->
@@ -1685,26 +1726,37 @@ RemoteView = Backbone.View.extend
 		type = item.data "type"
 		@model.send type
 	render: () ->
+		if @model.has("hash") is true
+			@$(".dimmer").removeClass("active")
 		if @model.get("receiver") is true
-			@$(".ui.button").addClass "disabled"
+			@$(".checkbox.receiver input").prop("checked", true)
+			@$(".remote-controls").hide()
+			@$(".remote-receiver").show()
 		else
-			@$(".ui.button").removeClass "disabled"
+			@$(".checkbox.commander input").prop("checked", true)
+			@$(".remote-controls").show()
+			@$(".remote-receiver").hide()
+		
 	setReceiver: () ->
 		RMP.remoteview.model.set("receiver", true)
 	setCommander: () ->
 		RMP.remoteview.model.set("receiver", false)
 	changeElement: () ->
-		@$(".checkbox.receiver").checkbox
-			onEnable: @setReceiver
-			onDisable: @setCommander
+		@$(".checkbox.radio").checkbox
+			onChange: (value) =>
+				if @$(".checkbox.receiver input").is(":checked")
+					@setReceiver()
+				else
+					@setCommander()
 		@render()
 		if @model.has("name")
-			@$(".dimmer").dimmer("hide")
+			@$(".dimmer").removeClass("active")
+
 	initialize: () ->
 		@render()
 		@listenTo @model, "change", @render
 		RMP.dispatcher.once "authenticated", (authentication) =>
-			@$(".dimmer").dimmer("hide")
+			@$(".dimmer").removeClass("active")
 
 
 RMP.remote = new Remote

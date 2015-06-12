@@ -21,3 +21,9 @@ if (multi != null)
 		(function() {
 			RMP.multi = "!{multi}";
 		})();
+if (remote != null)
+	script(type="text/javascript").
+		(function() {
+			RMP.remote.setHash("#{remote}")
+			RMP.remote.setReceiver(false);
+		})();

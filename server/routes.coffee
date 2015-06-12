@@ -9,6 +9,10 @@ module.exports = ->
     @get '/playlist', main.playlist
     @get '/remote', main.remote
 
+    # Sockets
+    @get '/remote/generate', main.remoteGenerate
+    @get '/remote/:hash', main.remoteHash
+
     # Authentication
     authentication = require('./controller/authentication')
     @get '/login', authentication.login

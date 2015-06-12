@@ -373,6 +373,7 @@ PlayerController = Backbone.Model.extend
 					@controller = null
 					@change(index, song)
 	playPause: (e) ->
+		return if RMP.remote.get("receiver") is false
 		return if not @controller?
 		console.log "PlayerController : PlayPause" if FLAG_DEBUG
 		@controller.playPause()
