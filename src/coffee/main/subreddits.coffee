@@ -18,7 +18,7 @@ SubredditPlaylist = Backbone.Collection.extend
 	toArray: () ->
 		@pluck("name").filter((x) -> x)
 	parseFromRemote: (strSubs) ->
-		subs = [] 
+		subs = []
 		for i in strSubs.split("+")
 			sub = new Subreddit
 				category: "remote"
@@ -111,7 +111,7 @@ SubredditSelectionView = Backbone.View.extend
 	hide: () ->
 		@$el.hide()
 	hideAllExcept: (value) ->
-		subsList = _.filter @reddits, (r) -> !_.startsWith r, value
+		subsList = _.filter @reddits, (r) -> not _.startsWith r, value
 		_.each subsList, (element) =>
 			@$(".menu .item[data-value='#{element}']").hide()
 	show: () ->
@@ -119,7 +119,7 @@ SubredditSelectionView = Backbone.View.extend
 		@$(".menu .item").show()
 	initialize: () ->
 		@category = @$el.data "category"
-		@reddits = $.map @$(".selection.menu .item"), (o) -> 
+		@reddits = $.map @$(".selection.menu .item"), (o) ->
 			return $(o).data "value"
 		@render()
 
@@ -144,7 +144,7 @@ CustomSubreddit = Backbone.View.extend
 			val = val.toLowerCase()
 			
 			hiddenList = _.filter RMP.subredditsSelection, (s) ->
-				!_.find s.reddits, (r) -> _.startsWith r, val
+				not _.find s.reddits, (r) -> _.startsWith r, val
 			_.forEach hiddenList, (list) -> list.hide()
 
 			showList = _.filter RMP.subredditsSelection, (s) ->
@@ -162,9 +162,9 @@ CustomSubreddit = Backbone.View.extend
 		return if RMP.subredditplaylist.where({name: val}).length isnt 0
 
 		sub = new Subreddit
-				category: "custom"
-				name: val
-				text: val
+			category: "custom"
+			name: val
+			text: val
 
 		RMP.subredditplaylist.add sub
 		sub.save()

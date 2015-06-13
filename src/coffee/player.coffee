@@ -24,7 +24,7 @@ YoutubePlayer = MusicPlayer.extend
 		"onError": @onError
 	init: () ->
 		isReady = YT?
-		if not isReady then throw "Youtube not Ready!"
+		if not isReady then throw new Error "Youtube not Ready!"
 		@player = new YT.Player "player",
 			videoId: @track.id
 			events: @events()
@@ -48,8 +48,8 @@ YoutubePlayer = MusicPlayer.extend
 		@getTrack()
 		@player.loadVideoById @track.id
 	playPause: () ->
-		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
-			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+		if @player and @player.getPlayerState? and @player.pauseVideo? and @player.playVideo?
+			if @player.getPlayerState() is 1 then @player.pauseVideo() else @player.playVideo()
 	volume: (value) ->
 		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
@@ -70,7 +70,7 @@ YoutubePlayer = MusicPlayer.extend
 				url: @attributes.url
 			id = @findYoutubeId @track.url
 			if id
-				@track.id = id 
+				@track.id = id
 			else
 				return RMP.dispatcher.trigger "controls:forward"
 		else
@@ -99,7 +99,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	event_trigger: (ev) ->
 		return (data) =>
 			@player.setVolume(RMP.volumecontrol.model.get("volume") * 100) # didn't work on ready event
-			@player.getDuration (duration) =>
+			@player.getDuration (duration) ->
 				RMP.dispatcher.trigger "progress:duration", duration / 1000 # secs
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
@@ -118,7 +118,9 @@ SoundcloudPlayer = MusicPlayer.extend
 	setUp: (callback) ->
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
-			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
+			if $("#soundcloud").length is 0
+				iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>")
+					.appendTo($("#player"))
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
 				@player.bind ev, listener
@@ -153,7 +155,7 @@ SoundcloudPlayer = MusicPlayer.extend
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
 				console.log sctrack if FLAG_DEBUG
-				if not sctrack.streamable then throw "not streamable"
+				if not sctrack.streamable then throw new Error("Not Streamable")
 				@track.sc = sctrack
 
 				RMP.progressbar.enableSoundcloud @track.sc.waveform_url
@@ -178,7 +180,7 @@ MP3Player = MusicPlayer.extend
 			RMP.dispatcher.trigger "progress:duration", @player.duration # secs
 	progress_play: (data) ->
 		return () =>
-			RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0)/@player.duration # secs
+			RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0) / @player.duration # secs
 			RMP.dispatcher.trigger "progress:current", @player.currentTime # secs
 	playerState: "ended"
 	event_trigger: (ev) ->
@@ -276,13 +278,13 @@ BandcampPlayer = MP3Player.extend
 		@clean(true)
 		@getInfo () =>
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
-			@init()			
+			@init()
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@$el.html ""
 		@getInfo () =>
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
-			@init()			
+			@init()
 
 VimeoPlayer = MusicPlayer.extend
 	type: "vimeo"
@@ -334,7 +336,7 @@ VimeoPlayer = MusicPlayer.extend
 		@clean(true)
 		@init()
 	playPause: () ->
-		if @playerState is "playing" 
+		if @playerState is "playing"
 			@player.postMessage({method: "pause"}, "*")
 		else
 			@player.postMessage({method: "play"}, "*")
@@ -362,7 +364,7 @@ PlayerController = Backbone.Model.extend
 				when song.type is "bandcamp" then new BandcampPlayer song.attributes
 				when song.type is "vimeo" then new VimeoPlayer song.attributes
 				when song.type is "mp3" then new MP3Player song.attributes
-				else throw "Not A Song Sent to Player Controller"
+				else throw new Error "Not A Song Sent to Player Controller"
 		else
 			if song.playable is true
 				if @controller.type is song.type

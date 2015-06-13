@@ -1,5 +1,5 @@
 
-seo = require './seo'
+seo = require "./seo"
 
 # Reddit controller
 # Serves subreddits, comment threads, multireddits

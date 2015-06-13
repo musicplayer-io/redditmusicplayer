@@ -30,11 +30,11 @@ $( window ).mouseup ->
 	RMP.dragging = false
 	RMP.dispatcher.trigger "events:stopDragging"
 
-API = 
+API =
 	Bandcamp:
 		base: "//api.bandcamp.com/api"
 		key: "vatnajokull"
-	Soundcloud: 
+	Soundcloud:
 		base: "//api.soundcloud.com"
 		key: "5441b373256bae7895d803c7c23e59d9"
 	Reddit:
@@ -44,8 +44,7 @@ API =
 
 FLAG_DEBUG = false
 FLAG_DEBUG = true if localStorage.debug and localStorage.debug is "true"
-
-Templates = 
+Templates =
 	SubredditPlayListView: _.template("
 			<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>
 		")
@@ -225,7 +224,7 @@ Reddit = Backbone.Model.extend
 		sortMethod: "hot"
 		topMethod: "month"
 	vote: (id, dir) ->
-		data = 
+		data =
 			id: id
 			dir: dir
 		$.ajax
@@ -233,7 +232,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "/api/vote"
 			data: data
-			success: (resp) =>
+			success: (resp) ->
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
 		if RMP.subredditplaylist.length is 0
@@ -262,7 +261,7 @@ Reddit = Backbone.Model.extend
 				dataType: "json"
 				url: "/api/get/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 				data: data
-				success: (r) =>
+				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
 			firstRequest = false
@@ -271,7 +270,7 @@ Reddit = Backbone.Model.extend
 				dataType: "json"
 				url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 				data: data
-				success: (r) =>
+				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
 
@@ -282,7 +281,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "#{API.Reddit.base}/search.json?q=#{@get('search')}&jsonp=?"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 
@@ -294,7 +293,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "#{API.Reddit.base}/user/#{@get('multi')}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
@@ -310,11 +309,11 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: url
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r[1].data.children
 	addComment: (params) ->
-		data = 
+		data =
 			text: params.text
 			thing_id: params.thing_id
 		$.ajax
@@ -322,7 +321,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "/api/add_comment"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				params.callback(r)
 	changeSortMethod: (sortMethod, topMethod) ->
@@ -357,7 +356,7 @@ Authentication = Backbone.Model.extend
 		RMP.dispatcher.trigger "authenticated", @
 
 
-RMP.dispatcher.on "app:page", (category, page) -> 
+RMP.dispatcher.on "app:page", (category, page) ->
 	if RMP.authentication?
 		$(".titlebar .authentication .sign-out").attr("href", "/logout?redirect=/#{page}")
 	else
@@ -400,24 +399,24 @@ ProgressBarView = Backbone.View.extend
 	justSeeked: false
 	startSeeking: (e) ->
 		RMP.dragging = true
-		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		offset = e.offsetX or e.layerX or e.originalEvent.layerX or 0 # firefox
 		@percentage = offset / @$(".progress").outerWidth()
 		@justSeeked = true
 	seeking: (e) ->
 		return if not @justSeeked # mousedown didn't start on progressbar, return
 
-		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		offset = e.offsetX or e.layerX or e.originalEvent.layerX or 0 # firefox
 		@percentage = offset / @$(".progress").outerWidth()
 
 		if (RMP.dragging) # mouse is down, seek without playing
-			RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
+			RMP.dispatcher.trigger "progress:set", @percentage, not RMP.dragging
 
 		@$(".progress .current").css("width", @percentage * 100 + "%")
 	stopSeeking: () ->
 		return if not @justSeeked
 		
-		RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
-		console.log "ProgressBarView :: Seek :: #{@percentage*100}%" if FLAG_DEBUG and RMP.dragging is false
+		RMP.dispatcher.trigger "progress:set", @percentage, not RMP.dragging
+		console.log "ProgressBarView :: Seek :: #{@percentage * 100}%" if FLAG_DEBUG and RMP.dragging is false
 
 		@justSeeked = false
 	toMinSecs: (secs) ->
@@ -426,13 +425,13 @@ ProgressBarView = Backbone.View.extend
 			mins = Math.floor((secs / 60) - hours * 60)
 			secs = Math.floor(secs % 60)
 			"#{String('0'+hours).slice(-2)}:#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
-		else 
+		else
 			mins = Math.floor(secs / 60)
 			secs = Math.floor(secs % 60)
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7.5)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth * 7.5)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -483,9 +482,9 @@ Buttons = Backbone.Model.extend
 				clickEvent: "controls:play"
 				listenEvent: "player:playing player:paused player:ended"
 				checkState: (player) ->
-					player = RMP.player.controller if (player is window) 
+					player = RMP.player.controller if player is window
 					if player.type is "youtube"
-						return player.player.getPlayerState() == 1
+						return player.player.getPlayerState() is 1
 					else
 						return player.playerState is "playing"
 
@@ -513,7 +512,7 @@ VolumeControlView = Backbone.View.extend
 	click: (e) ->
 		max = @model.get("size")
 		
-		offset = e.offsetY || e.layerY || e.originalEvent.layerY || 0 # firefox
+		offset = e.offsetY or e.layerY or e.originalEvent.layerY or 0 # firefox
 		current = (offset - max) * -1
 
 		console.log offset, current
@@ -650,7 +649,7 @@ SubredditPlaylist = Backbone.Collection.extend
 	toArray: () ->
 		@pluck("name").filter((x) -> x)
 	parseFromRemote: (strSubs) ->
-		subs = [] 
+		subs = []
 		for i in strSubs.split("+")
 			sub = new Subreddit
 				category: "remote"
@@ -743,7 +742,7 @@ SubredditSelectionView = Backbone.View.extend
 	hide: () ->
 		@$el.hide()
 	hideAllExcept: (value) ->
-		subsList = _.filter @reddits, (r) -> !_.startsWith r, value
+		subsList = _.filter @reddits, (r) -> not _.startsWith r, value
 		_.each subsList, (element) =>
 			@$(".menu .item[data-value='#{element}']").hide()
 	show: () ->
@@ -751,7 +750,7 @@ SubredditSelectionView = Backbone.View.extend
 		@$(".menu .item").show()
 	initialize: () ->
 		@category = @$el.data "category"
-		@reddits = $.map @$(".selection.menu .item"), (o) -> 
+		@reddits = $.map @$(".selection.menu .item"), (o) ->
 			return $(o).data "value"
 		@render()
 
@@ -776,7 +775,7 @@ CustomSubreddit = Backbone.View.extend
 			val = val.toLowerCase()
 			
 			hiddenList = _.filter RMP.subredditsSelection, (s) ->
-				!_.find s.reddits, (r) -> _.startsWith r, val
+				not _.find s.reddits, (r) -> _.startsWith r, val
 			_.forEach hiddenList, (list) -> list.hide()
 
 			showList = _.filter RMP.subredditsSelection, (s) ->
@@ -794,9 +793,9 @@ CustomSubreddit = Backbone.View.extend
 		return if RMP.subredditplaylist.where({name: val}).length isnt 0
 
 		sub = new Subreddit
-				category: "custom"
-				name: val
-				text: val
+			category: "custom"
+			name: val
+			text: val
 
 		RMP.subredditplaylist.add sub
 		sub.save()
@@ -849,7 +848,7 @@ RMP.dispatcher.on "app:main", () ->
 
 timeSince = (time) ->
 	seconds = Math.floor((new Date() - time) / 1000)
-	interval = Math.floor(seconds / 31536000);
+	interval = Math.floor(seconds / 31536000)
 	return "#{interval} years" if interval > 1
 	interval = Math.floor(seconds / 2592000)
 	return "#{interval} months" if interval > 1
@@ -906,7 +905,9 @@ Playlist = Backbone.Collection.extend
 		index: -1
 	parseSong: (item) ->
 		song = switch
-			when item.domain is "youtube.com" or item.domain is "youtu.be" or item.domain is "m.youtube.com" then new SongYoutube item
+			when item.domain is "youtube.com" or
+				item.domain is "youtu.be" or
+				item.domain is "m.youtube.com" then new SongYoutube item
 			when item.domain is "soundcloud.com" then new SongSoundcloud item
 			when item.domain.substr(-12) is "bandcamp.com" then new SongBandcamp item
 			when item.url.substr(-4) is ".mp3" then new SongMP3 item
@@ -924,8 +925,8 @@ Playlist = Backbone.Collection.extend
 		RMP.reddit.getMusic (items) =>
 			list = []
 			_.each items, (item) =>
-				existingSong = @find (existingItem) -> 
-					item.data.id == existingItem.get("id")
+				existingSong = @find (existingItem) ->
+					item.data.id is existingItem.get("id")
 				if existingSong?
 					list.push existingSong
 				else
@@ -1031,7 +1032,7 @@ SortMethodView = Backbone.View.extend
 		return if not method?
 		sortMethod = method
 		topMethod = RMP.reddit.get "topMethod"
-		if method.substr(0,3) is "top"
+		if method.substr(0, 3) is "top"
 			sortMethod = "top"
 			topMethod = method.substr(4)
 
@@ -1177,7 +1178,7 @@ CommentsView = Backbone.View.extend
 
 		# recurse into nodes
 		console.log comment if FLAG_DEBUG
-		if (typeof comment.replies == 'object')
+		if (typeof comment.replies is 'object')
 			html.append @parse(comment.replies.data.children)
 			
 		return html
@@ -1240,7 +1241,7 @@ YoutubePlayer = MusicPlayer.extend
 		"onError": @onError
 	init: () ->
 		isReady = YT?
-		if not isReady then throw "Youtube not Ready!"
+		if not isReady then throw new Error "Youtube not Ready!"
 		@player = new YT.Player "player",
 			videoId: @track.id
 			events: @events()
@@ -1264,8 +1265,8 @@ YoutubePlayer = MusicPlayer.extend
 		@getTrack()
 		@player.loadVideoById @track.id
 	playPause: () ->
-		if @player && @player.getPlayerState? && @player.pauseVideo? && @player.playVideo?
-			if @player.getPlayerState() == 1 then @player.pauseVideo() else @player.playVideo()
+		if @player and @player.getPlayerState? and @player.pauseVideo? and @player.playVideo?
+			if @player.getPlayerState() is 1 then @player.pauseVideo() else @player.playVideo()
 	volume: (value) ->
 		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
@@ -1286,7 +1287,7 @@ YoutubePlayer = MusicPlayer.extend
 				url: @attributes.url
 			id = @findYoutubeId @track.url
 			if id
-				@track.id = id 
+				@track.id = id
 			else
 				return RMP.dispatcher.trigger "controls:forward"
 		else
@@ -1315,7 +1316,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	event_trigger: (ev) ->
 		return (data) =>
 			@player.setVolume(RMP.volumecontrol.model.get("volume") * 100) # didn't work on ready event
-			@player.getDuration (duration) =>
+			@player.getDuration (duration) ->
 				RMP.dispatcher.trigger "progress:duration", duration / 1000 # secs
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
@@ -1334,7 +1335,9 @@ SoundcloudPlayer = MusicPlayer.extend
 	setUp: (callback) ->
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
-			iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>").appendTo($("#player")) if $("#soundcloud").length is 0
+			if $("#soundcloud").length is 0
+				iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>")
+					.appendTo($("#player"))
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
 				@player.bind ev, listener
@@ -1369,7 +1372,7 @@ SoundcloudPlayer = MusicPlayer.extend
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
 				console.log sctrack if FLAG_DEBUG
-				if not sctrack.streamable then throw "not streamable"
+				if not sctrack.streamable then throw new Error("Not Streamable")
 				@track.sc = sctrack
 
 				RMP.progressbar.enableSoundcloud @track.sc.waveform_url
@@ -1394,7 +1397,7 @@ MP3Player = MusicPlayer.extend
 			RMP.dispatcher.trigger "progress:duration", @player.duration # secs
 	progress_play: (data) ->
 		return () =>
-			RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0)/@player.duration # secs
+			RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0) / @player.duration # secs
 			RMP.dispatcher.trigger "progress:current", @player.currentTime # secs
 	playerState: "ended"
 	event_trigger: (ev) ->
@@ -1492,13 +1495,13 @@ BandcampPlayer = MP3Player.extend
 		@clean(true)
 		@getInfo () =>
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
-			@init()			
+			@init()
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@$el.html ""
 		@getInfo () =>
 			RMP.dispatcher.trigger "progress:duration", @get "duration" # secs
-			@init()			
+			@init()
 
 VimeoPlayer = MusicPlayer.extend
 	type: "vimeo"
@@ -1550,7 +1553,7 @@ VimeoPlayer = MusicPlayer.extend
 		@clean(true)
 		@init()
 	playPause: () ->
-		if @playerState is "playing" 
+		if @playerState is "playing"
 			@player.postMessage({method: "pause"}, "*")
 		else
 			@player.postMessage({method: "play"}, "*")
@@ -1578,7 +1581,7 @@ PlayerController = Backbone.Model.extend
 				when song.type is "bandcamp" then new BandcampPlayer song.attributes
 				when song.type is "vimeo" then new VimeoPlayer song.attributes
 				when song.type is "mp3" then new MP3Player song.attributes
-				else throw "Not A Song Sent to Player Controller"
+				else throw new Error "Not A Song Sent to Player Controller"
 		else
 			if song.playable is true
 				if @controller.type is song.type

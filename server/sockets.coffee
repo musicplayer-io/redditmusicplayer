@@ -1,8 +1,8 @@
 passportSocketIo = require("passport.socketio")
-session = require 'express-session'
-RedisStore = require('connect-redis')(session)
-cookieParser = require 'cookie-parser'
-crypto = require 'crypto'
+session = require "express-session"
+RedisStore = require("connect-redis")(session)
+cookieParser = require "cookie-parser"
+crypto = require "crypto"
 
 onAuthorizeSuccess = (data, accept) ->
 	accept()
@@ -12,7 +12,7 @@ onAuthorizeFail = (data, message, error, accept) ->
 
 sendToRoomOnTrigger = (socket, type) ->
 	socket.on type, (data) ->
-		socket.rooms.forEach (room) -> 
+		socket.rooms.forEach (room) ->
 			socket.to(room).emit type, data
 
 module.exports = (io) ->

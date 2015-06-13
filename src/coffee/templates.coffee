@@ -1,5 +1,4 @@
-
-Templates = 
+Templates =
 	SubredditPlayListView: _.template("
 			<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>
 		")

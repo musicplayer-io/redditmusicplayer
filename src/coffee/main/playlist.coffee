@@ -1,7 +1,7 @@
 
 timeSince = (time) ->
 	seconds = Math.floor((new Date() - time) / 1000)
-	interval = Math.floor(seconds / 31536000);
+	interval = Math.floor(seconds / 31536000)
 	return "#{interval} years" if interval > 1
 	interval = Math.floor(seconds / 2592000)
 	return "#{interval} months" if interval > 1
@@ -58,7 +58,9 @@ Playlist = Backbone.Collection.extend
 		index: -1
 	parseSong: (item) ->
 		song = switch
-			when item.domain is "youtube.com" or item.domain is "youtu.be" or item.domain is "m.youtube.com" then new SongYoutube item
+			when item.domain is "youtube.com" or
+				item.domain is "youtu.be" or
+				item.domain is "m.youtube.com" then new SongYoutube item
 			when item.domain is "soundcloud.com" then new SongSoundcloud item
 			when item.domain.substr(-12) is "bandcamp.com" then new SongBandcamp item
 			when item.url.substr(-4) is ".mp3" then new SongMP3 item
@@ -76,8 +78,8 @@ Playlist = Backbone.Collection.extend
 		RMP.reddit.getMusic (items) =>
 			list = []
 			_.each items, (item) =>
-				existingSong = @find (existingItem) -> 
-					item.data.id == existingItem.get("id")
+				existingSong = @find (existingItem) ->
+					item.data.id is existingItem.get("id")
 				if existingSong?
 					list.push existingSong
 				else
@@ -183,7 +185,7 @@ SortMethodView = Backbone.View.extend
 		return if not method?
 		sortMethod = method
 		topMethod = RMP.reddit.get "topMethod"
-		if method.substr(0,3) is "top"
+		if method.substr(0, 3) is "top"
 			sortMethod = "top"
 			topMethod = method.substr(4)
 

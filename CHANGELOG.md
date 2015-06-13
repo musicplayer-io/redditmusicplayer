@@ -1,6 +1,11 @@
  
 ## Changelog
 
+### 0.5.1 - 13 June 2015
+
+* Playlist limit to 100
+* Linting
+
 ### 0.5.0 - 12 June 2015
 
 * Change some names to **Music Player for Reddit**

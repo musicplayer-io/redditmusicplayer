@@ -1,5 +1,5 @@
-crypto = require 'crypto'
-seo = require './seo'
+crypto = require "crypto"
+seo = require "./seo"
 
 # App controller
 # Serves the application - Main Category
@@ -16,20 +16,20 @@ render = (request, response, page, obj) ->
 		if request.xhr then response.send data else response.render "app", data
 
 class AppController
-	browse: (request, response, callback) =>
+	browse: (request, response, callback) ->
 		render(request, response, "browse")
-	playlist: (request, response, callback) =>
+	playlist: (request, response, callback) ->
 		render(request, response, "playlist")
-	remote: (request, response, callback) =>
+	remote: (request, response, callback) ->
 		render(request, response, "remote")
-	remoteGenerate: (request, response, callback) =>
-		hash = crypto.randomBytes(8).toString('hex')
+	remoteGenerate: (request, response, callback) ->
+		hash = crypto.randomBytes(8).toString("hex")
 		request.user.hash = hash
 		response.send hash
-	remoteHash: (request, response, callback) =>
-		render(request, response, "remote", {hash: request.params.hash})
-	search: (request, response, callback) =>
-		render(request, response, "search")	
+	remoteHash: (request, response, callback) ->
+		render request, response, "remote", hash: request.params.hash
+	search: (request, response, callback) ->
+		render request, response, "search"
 
 controller = new AppController
 module.exports = controller

@@ -120,7 +120,7 @@ CommentsView = Backbone.View.extend
 
 		# recurse into nodes
 		console.log comment if FLAG_DEBUG
-		if (typeof comment.replies == 'object')
+		if (typeof comment.replies is 'object')
 			html.append @parse(comment.replies.data.children)
 			
 		return html

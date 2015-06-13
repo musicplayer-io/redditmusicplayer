@@ -11,7 +11,7 @@ Authentication = Backbone.Model.extend
 		RMP.dispatcher.trigger "authenticated", @
 
 
-RMP.dispatcher.on "app:page", (category, page) -> 
+RMP.dispatcher.on "app:page", (category, page) ->
 	if RMP.authentication?
 		$(".titlebar .authentication .sign-out").attr("href", "/logout?redirect=/#{page}")
 	else

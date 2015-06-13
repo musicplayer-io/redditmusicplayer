@@ -1,12 +1,10 @@
 
 # Dependencies
-express = require 'express'
+express = require "express"
 
 # Server development configuration
 module.exports = ->
-    
-  # Output sensible errors with the full stack trace
-  @use express.errorHandler(
-    dumpExceptions: true
-    showStack: true
-  )
+	# Output sensible errors with the full stack trace
+	@use express.errorHandler
+		dumpExceptions: true
+		showStack: true

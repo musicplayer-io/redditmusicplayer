@@ -36,24 +36,24 @@ ProgressBarView = Backbone.View.extend
 	justSeeked: false
 	startSeeking: (e) ->
 		RMP.dragging = true
-		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		offset = e.offsetX or e.layerX or e.originalEvent.layerX or 0 # firefox
 		@percentage = offset / @$(".progress").outerWidth()
 		@justSeeked = true
 	seeking: (e) ->
 		return if not @justSeeked # mousedown didn't start on progressbar, return
 
-		offset = e.offsetX || e.layerX || e.originalEvent.layerX || 0 # firefox
+		offset = e.offsetX or e.layerX or e.originalEvent.layerX or 0 # firefox
 		@percentage = offset / @$(".progress").outerWidth()
 
 		if (RMP.dragging) # mouse is down, seek without playing
-			RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
+			RMP.dispatcher.trigger "progress:set", @percentage, not RMP.dragging
 
 		@$(".progress .current").css("width", @percentage * 100 + "%")
 	stopSeeking: () ->
 		return if not @justSeeked
 		
-		RMP.dispatcher.trigger "progress:set", @percentage, !RMP.dragging
-		console.log "ProgressBarView :: Seek :: #{@percentage*100}%" if FLAG_DEBUG and RMP.dragging is false
+		RMP.dispatcher.trigger "progress:set", @percentage, not RMP.dragging
+		console.log "ProgressBarView :: Seek :: #{@percentage * 100}%" if FLAG_DEBUG and RMP.dragging is false
 
 		@justSeeked = false
 	toMinSecs: (secs) ->
@@ -62,13 +62,13 @@ ProgressBarView = Backbone.View.extend
 			mins = Math.floor((secs / 60) - hours * 60)
 			secs = Math.floor(secs % 60)
 			"#{String('0'+hours).slice(-2)}:#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
-		else 
+		else
 			mins = Math.floor(secs / 60)
 			secs = Math.floor(secs % 60)
 			"#{String('0'+mins).slice(-2)}:#{String('0'+secs).slice(-2)}"
 	resize: () ->
 		itemWidth = $(".controls .left .item").outerWidth()
-		@$(".progress").css("width", $("body").innerWidth() - itemWidth*7.5)
+		@$(".progress").css("width", $("body").innerWidth() - itemWidth * 7.5)
 	render: () ->
 		# set end time
 		@$(".end.time").text @toMinSecs @model.get("duration")
@@ -119,9 +119,9 @@ Buttons = Backbone.Model.extend
 				clickEvent: "controls:play"
 				listenEvent: "player:playing player:paused player:ended"
 				checkState: (player) ->
-					player = RMP.player.controller if (player is window) 
+					player = RMP.player.controller if player is window
 					if player.type is "youtube"
-						return player.player.getPlayerState() == 1
+						return player.player.getPlayerState() is 1
 					else
 						return player.playerState is "playing"
 
@@ -149,7 +149,7 @@ VolumeControlView = Backbone.View.extend
 	click: (e) ->
 		max = @model.get("size")
 		
-		offset = e.offsetY || e.layerY || e.originalEvent.layerY || 0 # firefox
+		offset = e.offsetY or e.layerY or e.originalEvent.layerY or 0 # firefox
 		current = (offset - max) * -1
 
 		console.log offset, current

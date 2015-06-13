@@ -1,8 +1,8 @@
 
-seo = require './seo'
-req = require 'request'
-reddit = require '../config/reddit'
-pkg = require '../../package.json'
+seo = require "./seo"
+req = require "request"
+reddit = require "../config/reddit"
+pkg = require "../../package.json"
 
 # Auth controller
 # Provider Reddit Interaction
@@ -60,7 +60,7 @@ refreshTokenReddit = (request, response, callback) ->
 			try
 				p = JSON.parse body
 			catch e
-				console.error e			
+				console.error e
 			console.log "Refresh Token :: ", p
 			request.user.accessToken = request.session.accessToken = request.user._json.token = p.access_token if p.access_token?
 			callback(request, response) if callback?
@@ -96,7 +96,7 @@ class APIController
 				type: "InvalidPermalink"
 				message: "Wrong or no permalink supplied."
 
-		data = 
+		data =
 			sort: request.query.sort
 		data.t = request.query.t if request.query.sort is "top"
 
@@ -120,7 +120,7 @@ class APIController
 				type: "InvalidID"
 				message: "Wrong or no ID supplied."
 
-		data = 
+		data =
 			dir: parseInt request.body.dir
 			id: request.body.id
 

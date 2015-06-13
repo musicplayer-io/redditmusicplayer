@@ -79,13 +79,11 @@ Reddit = Backbone.Model.extend({
       dataType: "json",
       url: "/api/vote",
       data: data,
-      success: (function(_this) {
-        return function(resp) {
-          if (FLAG_DEBUG) {
-            return console.log(resp);
-          }
-        };
-      })(this)
+      success: function(resp) {
+        if (FLAG_DEBUG) {
+          return console.log(resp);
+        }
+      }
     });
   },
   subreddits: function() {
@@ -124,14 +122,12 @@ Reddit = Backbone.Model.extend({
         dataType: "json",
         url: "/api/get/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
         data: data,
-        success: (function(_this) {
-          return function(r) {
-            if (r.error != null) {
-              return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-            }
-            return callback(r.data.children);
-          };
-        })(this)
+        success: function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
+          return callback(r.data.children);
+        }
       });
       return firstRequest = false;
     } else {
@@ -139,14 +135,12 @@ Reddit = Backbone.Model.extend({
         dataType: "json",
         url: API.Reddit.base + "/r/" + subs + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
         data: data,
-        success: (function(_this) {
-          return function(r) {
-            if (r.error != null) {
-              return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-            }
-            return callback(r.data.children);
-          };
-        })(this)
+        success: function(r) {
+          if (r.error != null) {
+            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+          }
+          return callback(r.data.children);
+        }
       });
     }
   },
@@ -159,14 +153,12 @@ Reddit = Backbone.Model.extend({
       dataType: "json",
       url: API.Reddit.base + "/search.json?q=" + (this.get('search')) + "&jsonp=?",
       data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return callback(r.data.children);
-        };
-      })(this)
+      success: function(r) {
+        if (r.error != null) {
+          return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+        }
+        return callback(r.data.children);
+      }
     });
   },
   getMulti: function(callback, data) {
@@ -180,14 +172,12 @@ Reddit = Backbone.Model.extend({
       dataType: "json",
       url: API.Reddit.base + "/user/" + (this.get('multi')) + "/" + (this.get('sortMethod')) + ".json?jsonp=?",
       data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return callback(r.data.children);
-        };
-      })(this)
+      success: function(r) {
+        if (r.error != null) {
+          return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+        }
+        return callback(r.data.children);
+      }
     });
   },
   getMore: function(last, callback) {
@@ -211,14 +201,12 @@ Reddit = Backbone.Model.extend({
       dataType: "json",
       url: url,
       data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return callback(r[1].data.children);
-        };
-      })(this)
+      success: function(r) {
+        if (r.error != null) {
+          return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+        }
+        return callback(r[1].data.children);
+      }
     });
   },
   addComment: function(params) {
@@ -232,14 +220,12 @@ Reddit = Backbone.Model.extend({
       dataType: "json",
       url: "/api/add_comment",
       data: data,
-      success: (function(_this) {
-        return function(r) {
-          if (r.error != null) {
-            return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
-          }
-          return params.callback(r);
-        };
-      })(this)
+      success: function(r) {
+        if (r.error != null) {
+          return console.error("Reddit :: " + r.error.type + " :: " + r.error.message);
+        }
+        return params.callback(r);
+      }
     });
   },
   changeSortMethod: function(sortMethod, topMethod) {
@@ -1556,7 +1542,7 @@ YoutubePlayer = MusicPlayer.extend({
     var isReady;
     isReady = typeof YT !== "undefined" && YT !== null;
     if (!isReady) {
-      throw "Youtube not Ready!";
+      throw new Error("Youtube not Ready!");
     }
     return this.player = new YT.Player("player", {
       videoId: this.track.id,
@@ -1779,7 +1765,7 @@ SoundcloudPlayer = MusicPlayer.extend({
             console.log(sctrack);
           }
           if (!sctrack.streamable) {
-            throw "not streamable";
+            throw new Error("Not Streamable");
           }
           _this.track.sc = sctrack;
           RMP.progressbar.enableSoundcloud(_this.track.sc.waveform_url);
@@ -2100,7 +2086,7 @@ PlayerController = Backbone.Model.extend({
           case song.type !== "mp3":
             return new MP3Player(song.attributes);
           default:
-            throw "Not A Song Sent to Player Controller";
+            throw new Error("Not A Song Sent to Player Controller");
         }
       })();
     } else {
