@@ -25,6 +25,7 @@ Reddit = Backbone.Model.extend
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
 		data.after = after if after?
+		data.limit = 100
 
 		if RMP.search?
 			return @getSearch callback, data
