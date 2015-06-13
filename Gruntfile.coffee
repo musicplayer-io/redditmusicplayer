@@ -9,7 +9,7 @@ banner = "// Copyright © 2014-2015 Ilias Ismanalijev \n
 // This program is distributed in the hope that it will be useful, \n
 // but WITHOUT ANY WARRANTY; without even the implied warranty of \n
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n
-// GNU Affero General Public License for more details."
+// GNU Affero General Public License for more details.\n"
 
 
 module.exports = (grunt) =>
@@ -40,14 +40,18 @@ module.exports = (grunt) =>
 				configFile: "./coffeelint.json"
 
 		uglify:
-			target:
+			production:
 				options:
 					mangle: false
-					sourceMap: true
-					sourceMapIn: "app/js/main.js.map"
+					sourceMap: false
 					banner: banner
 				files:
 					"app/js/main.min.js": ["app/js/main.js"]
+
+		clean:
+			all: ["app/css/style.css", "app/js/main.*"]
+			production: ["app/js/*.map", "app/js/main.js", "app/js/*.coffee"]
+
 		watch:
 			less:
 				files: ["src/less/*"]
@@ -65,9 +69,10 @@ module.exports = (grunt) =>
 	grunt.loadNpmTasks "grunt-contrib-less"
 	grunt.loadNpmTasks "grunt-contrib-uglify"
 	grunt.loadNpmTasks "grunt-coffeelint"
+	grunt.loadNpmTasks "grunt-contrib-clean"
 
 	grunt.registerTask "c", ["coffee"]
 	grunt.registerTask "l", ["less"]
-	grunt.registerTask "default", ["coffee", "uglify", "less", "watch"]
-	grunt.registerTask "build", ["coffee", "uglify", "less"]
-	grunt.registerTask "test", ["coffeelint"]
+	grunt.registerTask "default", ["coffee", "less", "watch"]
+	grunt.registerTask "build", ["coffee", "uglify", "less", "clean:production"]
+	grunt.registerTask "test", ["coffeelint", "clean:all"]

@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "coffeelint": "^1.10.1",
-    "grunt-coffeelint": "0.0.13"
+    "grunt-coffeelint": "0.0.13",
+    "grunt-contrib-clean": "^0.6.0"
   }
 }
