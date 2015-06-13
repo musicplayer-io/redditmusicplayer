@@ -105,6 +105,7 @@ Reddit = Backbone.Model.extend({
     if (after != null) {
       data.after = after;
     }
+    data.limit = 100;
     if (RMP.search != null) {
       return this.getSearch(callback, data);
     }
