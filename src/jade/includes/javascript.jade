@@ -6,5 +6,8 @@
 	script(src="/js/lib/semantic.min.js")
 	script(src="/socket.io/socket.io.js")
 	script(src="/js/lib/jquery.qrcode.js")
-	script(src="/js/main.min.js")
+	if "production" == process.env.NODE_ENV
+		script(src="/js/main.min.js")
+	else
+		script(src="/js/main.js")
 	include gtm
