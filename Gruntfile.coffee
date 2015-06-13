@@ -13,6 +13,8 @@ banner = "// Copyright © 2014-2015 Ilias Ismanalijev \n
 
 
 module.exports = (grunt) =>
+	coffeeFiles = ["src/coffee/main.coffee", "src/coffee/config.coffee", "src/coffee/templates.coffee", "src/coffee/reddit.coffee", "src/coffee/authentication.coffee",  "src/coffee/controls.coffee", "src/coffee/ui.coffee", "src/coffee/main/subreddits.coffee", "src/coffee/main/playlist.coffee", "src/coffee/main/song.coffee", "src/coffee/player.coffee", "src/coffee/options.coffee", "src/coffee/main/search.coffee", "src/coffee/main/remote.coffee", "src/coffee/keyboard.coffee"]
+
 	grunt.initConfig
 		less:
 			app:
@@ -29,7 +31,14 @@ module.exports = (grunt) =>
 					sourceMap: true
 					bare: true
 				files: 
-					"app/js/main.js": ["src/coffee/main.coffee", "src/coffee/config.coffee", "src/coffee/templates.coffee", "src/coffee/reddit.coffee", "src/coffee/authentication.coffee",  "src/coffee/controls.coffee", "src/coffee/ui.coffee", "src/coffee/main/subreddits.coffee", "src/coffee/main/playlist.coffee", "src/coffee/main/song.coffee", "src/coffee/player.coffee", "src/coffee/options.coffee", "src/coffee/main/search.coffee", "src/coffee/main/remote.coffee", "src/coffee/keyboard.coffee"]
+					"app/js/main.js": coffeeFiles
+
+		coffeelint:
+			app: coffeeFiles
+			server: ["server/*.coffee", "server/controller/*.coffee", "server/config/*.coffee"]
+			options:
+				configFile: "./coffeelint.json"
+
 		uglify:
 			target:
 				options:
@@ -55,8 +64,10 @@ module.exports = (grunt) =>
 	grunt.loadNpmTasks "grunt-contrib-watch"
 	grunt.loadNpmTasks "grunt-contrib-less"
 	grunt.loadNpmTasks "grunt-contrib-uglify"
+	grunt.loadNpmTasks "grunt-coffeelint"
 
 	grunt.registerTask "c", ["coffee"]
 	grunt.registerTask "l", ["less"]
 	grunt.registerTask "default", ["coffee", "uglify", "less", "watch"]
 	grunt.registerTask "build", ["coffee", "uglify", "less"]
+	grunt.registerTask "test", ["coffeelint"]

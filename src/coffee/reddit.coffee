@@ -5,7 +5,7 @@ Reddit = Backbone.Model.extend
 		sortMethod: "hot"
 		topMethod: "month"
 	vote: (id, dir) ->
-		data = 
+		data =
 			id: id
 			dir: dir
 		$.ajax
@@ -13,7 +13,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "/api/vote"
 			data: data
-			success: (resp) =>
+			success: (resp) ->
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
 		if RMP.subredditplaylist.length is 0
@@ -42,7 +42,7 @@ Reddit = Backbone.Model.extend
 				dataType: "json"
 				url: "/api/get/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 				data: data
-				success: (r) =>
+				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
 			firstRequest = false
@@ -51,7 +51,7 @@ Reddit = Backbone.Model.extend
 				dataType: "json"
 				url: "#{API.Reddit.base}/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
 				data: data
-				success: (r) =>
+				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
 
@@ -62,7 +62,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "#{API.Reddit.base}/search.json?q=#{@get('search')}&jsonp=?"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 
@@ -74,7 +74,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "#{API.Reddit.base}/user/#{@get('multi')}/#{@get('sortMethod')}.json?jsonp=?"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
@@ -90,11 +90,11 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: url
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r[1].data.children
 	addComment: (params) ->
-		data = 
+		data =
 			text: params.text
 			thing_id: params.thing_id
 		$.ajax
@@ -102,7 +102,7 @@ Reddit = Backbone.Model.extend
 			dataType: "json"
 			url: "/api/add_comment"
 			data: data
-			success: (r) =>
+			success: (r) ->
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				params.callback(r)
 	changeSortMethod: (sortMethod, topMethod) ->

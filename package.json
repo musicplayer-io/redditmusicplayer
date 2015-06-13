@@ -17,5 +17,9 @@
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1"
+  },
+  "devDependencies": {
+    "coffeelint": "^1.10.1",
+    "grunt-coffeelint": "0.0.13"
   }
 }

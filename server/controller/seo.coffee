@@ -41,7 +41,7 @@ Pages =
 class SEOController
 	generate: (page) ->
 		if page of Pages
-			seo = Pages[page] 
+			seo = Pages[page]
 		else
 			seo = Pages.default
 		return seo
