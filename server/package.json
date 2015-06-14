@@ -4,7 +4,7 @@
   "description": "Music Player for Reddit Server",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Illyism/redditmusicplayer.git"
+    "url": "git@github.com:musicplayer-io/redditmusicplayer.git"
   },
   "scripts": {
     "start": "coffee server.coffee"
@@ -24,7 +24,7 @@
     "lodash": "^3.9.3",
     "morgan": "^1.5.3",
     "passport": "^0.2.1",
-    "passport-reddit": "git+https://github.com/Illyism/passport-reddit.git",
+    "passport-reddit": "git+https://github.com/musicplayer-io/passport-reddit.git",
     "passport.socketio": "^3.5.1",
     "redis": "^0.12.1",
     "request": "^2.55.0",
