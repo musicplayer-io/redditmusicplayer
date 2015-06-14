@@ -8,6 +8,6 @@
 	script(src="/js/lib/jquery.qrcode.js")
 	if "production" == process.env.NODE_ENV
 		script(src="/js/main.min.js")
+		include gtm
 	else
 		script(src="/js/main.js")
-	include gtm

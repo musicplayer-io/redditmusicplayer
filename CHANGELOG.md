@@ -1,6 +1,10 @@
  
 ## Changelog
 
+### 0.5.2
+
+* Moved to musicplayer-io
+
 ### 0.5.1 - 14 June 2015
 
 * Playlist limit to 100
