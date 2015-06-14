@@ -1,43 +1,56 @@
 
-# Reddit Music Player
+# Music Player for Reddit
 
-All of the music subreddits in one beautiful music player. Right now.
+A free and open-source streaming music web player using data from Reddit.
 
-[Reddit Music Player is available here!](http://reddit.music.player.il.ly/)
-
----
-
-Module | Status
---- | --- | ---
-**Global Version** | 0.5.0
-**Website** |  [reddit.music.player.il.ly](http://reddit.music.player.il.ly)
-**Github** | [illyism/redditmusicplayer](https://github.com/illyism/redditmusicplayer)
-
----
+[Music Player for Reddit Website](http://reddit.music.player.il.ly/)
 
 # Contributing
 
-You need node installed and running.
-Run **npm install** in the main directory and in the *server* directory.
+## Installation from source
 
-Build less and coffee using **grunt**.
+```
+$ git clone https://github.com/Illyism/redditmusicplayer.git
+$ cd redditmusicplayer
+$ npm install
+$ cd server
+$ npm install
 
-You can run the server by **npm start**.
+$ cp config/reddit.coffee.sample config/reddit.coffee
+$ cd ..
 
-You'll also need a redis session running to debug authenticated modes.
+$ cp src/coffee/config.coffee.sample src/coffee/config.coffee
+# edit src/coffee/config.coffee
+
+// In development
+$ grunt
+$ npm start
+
+// In production
+$ grunt build
+$ NODE_ENV=production npm start
+
+```
+
+## Authentication
+
+You'll need a [Reddit](#reddit) API key for this to work.
+As well as a running [redis-server](http://redis.io/topics/quickstart) on port 6379.
+
+
+## Getting API keys
+
+#### SoundCloud
+
+[SoundCloud API key](http://soundcloud.com/you/apps/new).
+Then edit it in `src/coffee/config.coffee`.
+
+#### Reddit
+
+[Get the API key](https://www.reddit.com/prefs/apps/) - Only required for authentication.
+You can set an API key for development and production seperately in `server/config.reddit.coffee`.
+
 
 # License
 
-Copyright © 2014-2015 Ilias Ismanalijev
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-[tl;dr](http://www.tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)
+[GPLv3](LICENSE.txt) © 2014-2015 Ilias Ismanalijev

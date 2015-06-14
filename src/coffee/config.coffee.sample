@@ -10,4 +10,5 @@ API =
 	MusicPlayer:
 		base: "https://reddit.music.player.il.ly"
 
-FLAG_DEBUG = true
+FLAG_DEBUG = false
+FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is "true"
