@@ -1,9 +1,10 @@
 crypto = require "crypto"
 fs = require "fs"
 yaml = require "js-yaml"
+path = require "path"
 
 seo = require "./seo"
-subs = yaml.safeLoad fs.readFileSync("../subreddits.yaml", "utf8")
+subs = yaml.safeLoad fs.readFileSync(path.join(__dirname, "../../", "/subreddits.yaml"), "utf8")
 
 # App controller
 # Serves the application - Main Category

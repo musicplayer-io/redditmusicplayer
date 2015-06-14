@@ -6,10 +6,13 @@
 			span  for 
 			| Reddit
 			sup  #{pkg.version}
-	.right.menu.authentication
-		a.item.log-in(href="/login")
-			i.icon.user
-			| Log In
+	.right.menu
+		a.item(href="https://github.com/illyism/redditmusicplayer", title="Fork Me")
+			i.icon.github
+		span.authentication
+			a.item.log-in(href="/login")
+				i.icon.user
+				| Log In
 .ui.mobilebar.menu.reddit.inverted.three.item.wide.top.fixed
 	.link.one.item.active(data-page="browse") Browse
 	if page && content
