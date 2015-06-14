@@ -1,9 +1,15 @@
 
-# Music Player for Reddit
+<h1 align="center">
+  <br>
+  <a href="http://reddit.music.player.il.ly" title="reddit.music.player.il.ly">
+  <img width="650" src="https://cloud.githubusercontent.com/assets/304283/8148060/19b85c3c-1279-11e5-9004-7dda6ee8f7d7.png" alt="music player for reddit">
+  </a>
+  <br>
+  <br>
+</h1>
 
-A free and open-source streaming music web player using data from Reddit.
+> A free and open-source streaming music web player using data from Reddit.
 
-[Music Player for Reddit Website](http://reddit.music.player.il.ly/)
 
 # Contributing
 
