@@ -53,4 +53,4 @@ You can set an API key for development and production seperately in `server/conf
 
 # License
 
-[GPLv3](LICENSE.txt) © 2014-2015 Ilias Ismanalijev
+[GPLv3](LICENSE.md) © 2014-2015 Ilias Ismanalijev
