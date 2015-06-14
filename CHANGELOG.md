@@ -6,6 +6,7 @@
 * Playlist limit to 100
 * Linting
 * Shuffling subreddit selections
+* Easier, navigation
 
 ### 0.5.0 - 12 June 2015
 
