@@ -1,12 +1,13 @@
  
 ## Changelog
 
-### 0.5.1 - 13 June 2015
+### 0.5.1 - 14 June 2015
 
 * Playlist limit to 100
 * Linting
 * Shuffling subreddit selections
 * Easier, navigation
+* Subs added: 1960s, whitelabels, rocksteady
 
 ### 0.5.0 - 12 June 2015
 
