@@ -82,6 +82,22 @@ MobileUI = Backbone.View.extend
 		console.log "MobileUI :: Ready" if FLAG_DEBUG
 
 
+TitleBar = Backbone.View.extend
+	events:
+		"click .page.link": "pageClick"
+	pageClick: (e) ->
+		item = $ e.currentTarget
+		page = item.data "page"
+		RMP.ui[1].navigate page
+		@$(".page.link").removeClass "active"
+		item.addClass "active"
+	initialize: () ->
+		@$('.fork').popup()
+
+
+RMP.titlebar = new TitleBar
+	el: $(".ui.titlebar")
+
 RMP.mobileui = new MobileUI
 	el: $(".ui.mobilebar")
 

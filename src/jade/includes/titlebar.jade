@@ -7,8 +7,12 @@
 			| Reddit
 			sup  #{pkg.version}
 	.right.menu
-		a.item(href="https://github.com/illyism/redditmusicplayer", title="Fork Me")
-			i.icon.github
+		.page.link.item(data-page="playlist", class={active: page == "playlist"})
+			i.icon.sound
+		.page.link.item(data-page="remote", class={active: page == "remote"})
+			i.icon.wifi
+		a.fork.item(href="https://github.com/illyism/redditmusicplayer", data-content="Fork Me", target="_blank", data-variation="inverted")
+			i.icon.github.alternative
 		span.authentication
 			a.item.log-in(href="/login")
 				i.icon.user
