@@ -3,7 +3,9 @@
 app = require("express")()
 pkg = require "../package.json"
 app.set "baseDir", __dirname + "/.."
+
 app.locals.pkg = pkg
+app.locals._ = require "lodash"
 
 require("./config/default").call app
 require("./config/development").call app if app.get "env" is "development"

@@ -22,66 +22,11 @@
 		input(type="text", placeholder="Custom Subreddit")
 		.ui.button.icon.small.gold: i.icon.add
 
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="electronic")
-		.item
-			i.music.icon
-			| Electronic
-			.menu.selection
-				each sub in ["Actual_Glitch", "Afrobeat", "ambient", "astateoftrance", "atmosphericdnb", "bassheavy", "breakbeat", "breakcore", "brostep", "chillstep", "Chipbreak", "chiptunes", "classic_beats", "ClassicTrance", "complextro", "danceparty", "darkstep", "deephouse", "disco", "dnb", "downtempo", "dreampop", "drumstep", "dubstep", "EBM", "EDM", "electro", "electrohouse", "Electronica", "ElectronicJazz", "electronicmagic", "electronicmusic", "electropop", "electroswing", "fidget", "footwork", "frenchhouse", "funkhouse", "futurebeats", "futurefunkairlines", "futuregarage", "futurepopmusic", "futuresynth", "glitch", "Glitchhop", "Glitchop", "grime", "happyhardcore", "hardstyle", "hardtek", "house", "idm", "juke", "jumpup", "latinhouse", "liquiddnb", "minimaltech", "moombahton", "NeuroFunk", "nudisco", "proghouse", "progressivetrance", "progtrance", "psytrance", "purplemusic", "raggajungle", "RealDubstep", "RealProgHouse", "skweee", "swinghouse", "synthwave", "synthpop", "tech_house", "techno", "techstep", "trance", "tranceandbass", "trap", "triphop", "vaporwave", "witchhouse", "80sElectro"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="core")
-		.item
-			i.music.icon
-			| *-Core
-			.menu.selection
-				each sub in ["allcore", "Christcore", "Deathcore", "gabber", "grindcore", "Hardcore", "melodichardcore", "Metalcore", "PostHardcore"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="alternative")
-		.item
-			i.music.icon
-			| Alternative
-			.menu.selection
-				each sub in ["90sPunk", "crustpunk", "EmoScreamo", "GaragePunk", "grunge", "LocalPunkMusic", "poppunkers", "postpunk", "punk", "Punkskahardcore", "ska"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="rock")
-		.item
-			i.music.icon
-			| Rock
-			.menu.selection
-				each sub in ["Alternativerock", "BluesRock", "ClassicRock", "HardRock", "indie_rock", "krautrock", "mathrock", "noiserock", "postrock", "progrockmusic", "psychedelicrock", "Punk_Rock", "rock", "stonerrock", "womenrock"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="bluesfunkjazzcountry")
-		.item
-			i.music.icon
-			| Blues / Funk / Jazz / Country
-			.menu.selection
-				each sub in ["altcountry", "blues", "country", "countrymusic", "darkjazz", "deepfunk", "esoterofunk", "folk", "folkpunk", "funk", "FunkSouMusic", "indiefolk", "jazz", "jazzhop", "outlaWcountry", "soul", "soulies", "texascountry"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="rap")
-		.item
-			i.music.icon
-			| Rap / Hip Hop
-			.menu.selection
-				each sub in ["90sHipHop", "altrap", "Asianrap", "dystopianhiphop", "GermanRap", "HipHopInstrumentals", "hiphop", "hiphop101", "hiphopheads", "JazzyHiphop", "makinghiphop", "nerdcore", "rap", "rapbattles", "rnb"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="metal")
-		.item
-			i.music.icon
-			| Metal
-			.menu.selection
-				each sub in ["BlackMetal", "ClassicMetal", "Deathmetal", "doommetal", "electronicmetal", "epicmetal", "folkmetal", "HeadBangToThis", "MelodicDeathMetal", "melodicmetal", "Metal", "Metalcore", "postmetal", "PowerMetal", "progmetal", "TechnicalDeathMetal", "symphonicmetal", "TrueBlackMetal"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="asian")
-		.item
-			i.music.icon
-			| Asian
-			.menu.selection
-				each sub in ["Asianrap", "cpop", "japanesemusic", "jpop", "kpop"]
-					+subreddit(sub)
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="other")
-		.item
-			i.music.icon
-			| Other
-			.menu.selection
-				each sub in ["80sMusic", "90sAlternative", "90smusic", "AbletonProductions", "AcousticOriginals", "ambientmusic", "asmr", "AvantGardeMusic", "BigRoom", "Bluegrass", "Boneyard", "BoogieMusic", "calireggae", "CanadianMusic", "chillmusic", "chillout", "chillwave", "choralmusic", "ChristianMusic", "CircleMusic", "classicalmusic", "coversongs", "cratedigging", "Cyberpunk_Music", "danktunes", "Djent", "djmixes", "dub", "DystopianMusic", "early2000sjams", "EcouteCa", "ElitistClassical", "experimentalmusic", "freemusic", "frisson", "gamemusic", "germusic", "gunk", "heythatwasin", "icm", "ICoveredASong", "indie", "Indiewok", "industrialmusic", "illbient", "ipm", "Jambands", "jazznoir", "koreanmusic", "liftingmusic", "listentoconcerts", "listentomusic", "listentothis", "listentous", "mashups", "minimal", "mixes", "mlptunes", "monsterfuzz", "motivatedmusic", "music", "musiccritics", "musicforconcentration", "MusicforProgramming", "musicnews", "MusicVideosOnYouTube", "mymusic", "neopsychedelia,", "newgrass", "NewWave", "noisemusic", "NOLAMusic", "obscuremusic", "oldiemusic", "opera", "orchestra", "outrun", "partymusic", "partymusicstation", "Psybient", "queercore", "redditmusicclub", "reggae", "reggaeton", "RepublicOfMusic", "rhythmicnoise", "rootsreggae", "shoegaze", "sludge", "soulof", "SoundsVintage", "soundtracks", "SpaceMusic", "ThisIsOurMusic", "touhoumusic", "trapmuzik", "treemusic", "trueMusic", "tunejerk", "Twee", "under10k", "vintageobscura", "WoahTunes", "WorldMusic", "WWCC"]
-					+subreddit(sub)
+	for category in _.shuffle(_.keys(subs))
+		.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category=_.kebabCase(category))
+			.item
+				i.music.icon
+				| #{category}
+				.menu.selection
+					each sub in _.shuffle(subs[category])
+						+subreddit(sub)

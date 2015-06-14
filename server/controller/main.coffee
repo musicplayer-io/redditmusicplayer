@@ -1,5 +1,9 @@
 crypto = require "crypto"
+fs = require "fs"
+yaml = require "js-yaml"
+
 seo = require "./seo"
+subs = yaml.safeLoad fs.readFileSync("../subreddits.yaml", "utf8")
 
 # App controller
 # Serves the application - Main Category
@@ -13,6 +17,7 @@ render = (request, response, page, obj) ->
 			seo: seo.generate page
 			page: page
 			remote: obj.hash if obj? and obj.hash?
+			subs: subs
 		if request.xhr then response.send data else response.render "app", data
 
 class AppController

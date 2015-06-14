@@ -1,7 +1,14 @@
 {
   "name": "redditmusicplayer-server",
-  "version": "0.5.0",
-  "description": "Reddit Music Player Server",
+  "version": "0.5.1",
+  "description": "Music Player for Reddit Server",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Illyism/redditmusicplayer.git"
+  },
+  "scripts": {
+    "start": "coffee server.coffee"
+  },
   "main": "server.coffee",
   "author": "Ilias Ismanalijev",
   "license": "GPLv3",
@@ -13,6 +20,8 @@
     "express": "^4.8.8",
     "express-session": "^1.11.2",
     "jade": "^1.9.2",
+    "js-yaml": "^3.3.1",
+    "lodash": "^3.9.3",
     "morgan": "^1.5.3",
     "passport": "^0.2.1",
     "passport-reddit": "git+https://github.com/Illyism/passport-reddit.git",
