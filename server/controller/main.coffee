@@ -13,7 +13,6 @@ render = (request, response, page, obj) ->
 			seo: seo.generate page
 			page: page
 			remote: obj.hash if obj? and obj.hash?
-			subs: subs
 		if request.xhr then response.send data else response.render "app", data
 
 class AppController
