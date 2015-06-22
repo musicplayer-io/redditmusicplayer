@@ -98,7 +98,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	playerState: "ended"
 	event_trigger: (ev) ->
 		return (data) =>
-			@player.setVolume(RMP.volumecontrol.model.get("volume") * 100) # didn't work on ready event
+			@player.setVolume(RMP.volumecontrol.model.get("volume")) # didn't work on ready event
 			@player.getDuration (duration) ->
 				RMP.dispatcher.trigger "progress:duration", duration / 1000 # secs
 			@playerState = ev
@@ -106,7 +106,7 @@ SoundcloudPlayer = MusicPlayer.extend
 	playPause: () ->
 		@player.toggle()
 	volume: (value) ->
-		@player.setVolume(value * 100)
+		@player.setVolume(value)
 	seekTo: (percentage, seekAhead) ->
 		@player.getDuration (duration) =>
 			@player.seekTo percentage * duration
