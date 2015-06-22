@@ -254,25 +254,23 @@ a {
 			}
 		}
 	}
-	.volume.button {
-		.volume-control, .volume-bar {
-			display: none;
-		}
-		&:hover {
-			.volume-control, .volume-bar {
-				display: block;
-				position: fixed;
-				bottom: 43px;
-				right: 0px;
-				height: 100px;
-				width: 54px;
-
-				background: fade(@col-gold_dark, 50%);
-				z-index: 10;
+	.volume.control {
+		.volume.popup {
+			background: fade(@col-gold_dark, 50%);
+			height: 100px;
+			width: 54px;
+			margin-right: 20px;
+			border: 1px solid fade(@col-primary, 20%);
+			&:before {
+				display: none;
 			}
 			.volume-bar {
+				pointer-events: none;
 				background: @col-primary;
-				z-index: 5;
+				width: 54px;
+				position: absolute;
+				bottom: 0;
+     			left: 0;
 			}
 		}
 	}

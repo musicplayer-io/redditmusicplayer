@@ -145,14 +145,12 @@ VolumeControl = Backbone.Model.extend
 
 VolumeControlView = Backbone.View.extend
 	events:
-		"click .volume-control": "click"
+		"click .volume.popup": "click"
 	click: (e) ->
 		max = @model.get("size")
 		
 		offset = e.offsetY or e.layerY or e.originalEvent.layerY or 0 # firefox
 		current = (offset - max) * -1
-
-		console.log offset, current
 
 		ratio = current / max
 		@model.set "volume", ratio
@@ -168,10 +166,15 @@ VolumeControlView = Backbone.View.extend
 		
 	initialize: () ->
 		@listenTo @model, "change:volume", @render
+		@$(".volume.button").popup
+			popup: $(".volume.popup")
+			on: "click"
+			position: "top center"
+			distanceAway: 0
 		@render()
 
 RMP.volumecontrol = new VolumeControlView
 	model: new VolumeControl
-	el: $(".controls .volume.button")
+	el: $(".controls .volume.control")
 
 RMP.buttons = new Buttons
