@@ -71,10 +71,10 @@ Templates =
 						<td><%= author %></td>
 					</tr><tr>
 						<td>Timestamp</td>
-						<td><%= subreddit %></td>
+						<td><%= created_ago %></td>
 					</tr><tr>
 						<td>Subreddit</td>
-						<td><%= created_ago %> ago</td>
+						<td><%= subreddit %> ago</td>
 					</tr><tr>
 						<td>Origin</td>
 						<td><%= domain %></td>
