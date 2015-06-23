@@ -1,5 +1,6 @@
 
 Electronic:
+  - 80sElectro
   - Actual_Glitch
   - Afrobeat
   - ambient
@@ -71,8 +72,8 @@ Electronic:
   - RealProgHouse
   - skweee
   - swinghouse
-  - synthwave
   - synthpop
+  - synthwave
   - tech_house
   - techno
   - techstep
@@ -82,7 +83,6 @@ Electronic:
   - triphop
   - vaporwave
   - witchhouse
-  - 80sElectro
 
 Core:
   - allcore
@@ -150,10 +150,10 @@ Rap / Hip Hop:
   - Asianrap
   - dystopianhiphop
   - GermanRap
-  - HipHopInstrumentals
   - hiphop
   - hiphop101
   - hiphopheads
+  - HipHopInstrumentals
   - JazzyHiphop
   - makinghiphop
   - nerdcore
@@ -177,8 +177,8 @@ Metal:
   - postmetal
   - PowerMetal
   - progmetal
-  - TechnicalDeathMetal
   - symphonicmetal
+  - TechnicalDeathMetal
   - TrueBlackMetal
 
 Asian:
@@ -237,6 +237,7 @@ Other:
   - Indiewok
   - industrialmusic
   - ipm
+  - ItalianMusic
   - Jambands
   - jazznoir
   - koreanmusic
