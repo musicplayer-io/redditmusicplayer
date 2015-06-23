@@ -131,6 +131,7 @@ Playlist = Backbone.Collection.extend
 		@listenTo RMP.dispatcher, "controls:backward", @backward
 		@listenTo RMP.dispatcher, "controls:play", @playFirstSongIfEmpty
 		@listenTo RMP.dispatcher, "controls:sortMethod", @refresh
+		@listenTo RMP.dispatcher, "app:refresh", @refresh
 
 		@listenTo RMP.dispatcher, "player:ended", @forward
 

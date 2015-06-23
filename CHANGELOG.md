@@ -1,9 +1,16 @@
  
 ## Changelog
 
-### 0.5.2
+### 0.5.3 - 23 June 2015
 
-* Moved to musicplayer-io
+* Add ItalianMusic, BrazilianMusic
+* Move Gabber to Electronic
+* Volume Control fixes
+* Fix timestamp in current song
+* Loader for first load
+* Moving to musicplayer-io
+* Donation drive
+* Messages shown when there is an error
 
 ### 0.5.1 - 14 June 2015
 

@@ -1,10 +1,9 @@
 Templates =
-	SubredditPlayListView: _.template("
-			<a class='item' data-category='<%= category %>' data-value='<%= name %>'><%= text %></a>
-		")
 	SubredditCurrentPlayListView: _.template("
-			<a class='item' data-category='<%= category %>' data-value='<%= name %>'>
+			<a class='active subreddit item' data-category='<%= category %>' data-value='<%= name %>'>
 				<%= text %>
+				<i class='icon add'></i>
+				<i class='icon remove'></i>
 			</a>
 		")
 	PlayListView: _.template("
@@ -169,5 +168,12 @@ Templates =
 						Log Out
 					</a>
 				</div>
+			</div>
+		")
+	MessageView: _.template("
+			<div data-id='<%= cid %>' class='ui message inverted <%= type %>' data-type='<%= type %>' data-status='<%= status %>'>
+				<i class='close icon'></i>
+				<%= text %> 
+				<a class='button'><%= button %></a>
 			</div>
 		")

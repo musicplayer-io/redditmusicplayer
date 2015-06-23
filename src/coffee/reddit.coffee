@@ -54,6 +54,9 @@ Reddit = Backbone.Model.extend
 				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
+				error: (xhr, status, err) ->
+					console.error "Reddit :: #{status} :: #{err}", arguments
+					RMP.dispatcher.trigger "message", new MessageFailedToGetMusic()
 
 	getSearch: (callback, data) ->
 		@set "search", RMP.search

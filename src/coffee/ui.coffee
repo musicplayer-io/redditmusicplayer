@@ -92,7 +92,7 @@ TitleBar = Backbone.View.extend
 		@$(".page.link").removeClass "active"
 		item.addClass "active"
 	initialize: () ->
-		@$('.fork').popup()
+		@$('.pop').popup()
 
 
 RMP.titlebar = new TitleBar

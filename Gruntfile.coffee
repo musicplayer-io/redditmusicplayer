@@ -13,7 +13,7 @@ banner = "// Copyright © 2014-2015 Ilias Ismanalijev \n
 
 
 module.exports = (grunt) =>
-	coffeeFiles = ["src/coffee/main.coffee", "src/coffee/config.coffee", "src/coffee/templates.coffee", "src/coffee/reddit.coffee", "src/coffee/authentication.coffee",  "src/coffee/controls.coffee", "src/coffee/ui.coffee", "src/coffee/main/subreddits.coffee", "src/coffee/main/playlist.coffee", "src/coffee/main/song.coffee", "src/coffee/player.coffee", "src/coffee/options.coffee", "src/coffee/main/search.coffee", "src/coffee/main/remote.coffee", "src/coffee/keyboard.coffee"]
+	coffeeFiles = ["src/coffee/main.coffee", "src/coffee/config.coffee", "src/coffee/templates.coffee", "src/coffee/reddit.coffee", "src/coffee/authentication.coffee",  "src/coffee/controls.coffee", "src/coffee/ui.coffee", "src/coffee/main/subreddits.coffee", "src/coffee/main/playlist.coffee", "src/coffee/main/song.coffee", "src/coffee/player.coffee", "src/coffee/options.coffee", "src/coffee/main/search.coffee", "src/coffee/main/remote.coffee", "src/coffee/keyboard.coffee", "src/coffee/message.coffee"]
 
 	grunt.initConfig
 		less:

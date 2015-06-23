@@ -405,9 +405,6 @@ a {
 	p.description {
 		line-height: 1.5;
 	}
-	.subreddits.menu .item .menu .active.item {
-		border-left: 2px solid @col-primary;
-	}
 	i.icon.star:hover {
 		color: gold;
 		cursor: pointer;
@@ -415,6 +412,27 @@ a {
 	i.icon.remove:hover {
 		color: red;
 		cursor: pointer;
+	}
+	.subreddit.item {
+		.transition(100ms);
+		&.active {
+			border-left: 2px solid @col-primary;
+		}
+		.icon {
+			display: none;
+		}
+		&:hover, &:focus {
+			&:not(.active) {
+				.icon.add {
+					display: inline-block;
+				}
+			}
+			&.active {
+				.icon.remove {
+					display: inline-block;
+				}
+			}
+		}
 	}
 	.custom-subreddit, .search-reddit {
 		margin: 8px auto;
@@ -646,5 +664,20 @@ a {
 	.ui.dimmer.active {
 		height: 92%;
 		top: 8% !important;
+	}
+}
+
+.ui.messages {
+	position: fixed;
+	bottom: 70px;
+	width: 100%;
+	padding: 20px;
+	.button {
+		cursor: pointer;
+		color: @col-primary;
+		font-weight: bold;
+		&:hover, &:active {
+			color: lighten(@col-primary, 20%);
+		}
 	}
 }

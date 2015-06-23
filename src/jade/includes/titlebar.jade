@@ -7,12 +7,14 @@
 			| Reddit
 			sup  #{pkg.version}
 	.right.menu
-		.page.link.item(data-page="playlist", class={active: page == "playlist"})
+		.page.icon.pop.link.item(data-page="playlist", class={active: page == "playlist"}, , data-content="Playlist", data-variation="inverted")
 			i.icon.sound
-		.page.link.item(data-page="remote", class={active: page == "remote"})
+		.page.icon.pop.link.item(data-page="remote", class={active: page == "remote"}, , data-content="Remote", data-variation="inverted")
 			i.icon.wifi
-		a.fork.item(href="https://github.com/musicplayer-io/redditmusicplayer", data-content="Fork Me", target="_blank", data-variation="inverted")
+		a.icon.pop.item(href="https://github.com/musicplayer-io/redditmusicplayer", data-content="Fork Me", target="_blank", data-variation="inverted")
 			i.icon.github.alternative
+		a.icon.pop.item(href="http://www.musicplayer.io/donate.html", data-content="Donate", target="_blank", data-variation="inverted")
+			i.icon.gift
 		span.authentication
 			a.item.log-in(href="/login")
 				i.icon.user
