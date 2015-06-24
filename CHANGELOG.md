@@ -1,6 +1,8 @@
  
 ## Changelog
 
+### 0.5.4 - 24 June 2015
+
 ### 0.5.3 - 23 June 2015
 
 * Add ItalianMusic, BrazilianMusic
