@@ -3,6 +3,11 @@
 
 ### 0.5.4 - 24 June 2015
 
+* Moved to musicplayer.io completely
+* Fixes for long comment threads
+* Only show imgur images, not albums
+* Use HTTPS for images and thumbs if on HTTPS
+
 ### 0.5.3 - 23 June 2015
 
 * Add ItalianMusic, BrazilianMusic
