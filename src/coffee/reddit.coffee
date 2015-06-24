@@ -20,12 +20,12 @@ Reddit = Backbone.Model.extend
 			return "listentothis"
 		else
 			return RMP.subredditplaylist.toString()
-	getMusic: (callback, after) ->
+	getMusic: (callback, after, limit) ->
 		data = {}
 		data.sort = @get("sortMethod")
 		data.t = @get("topMethod") if @get("sortMethod") is "top"
 		data.after = after if after?
-		data.limit = 100
+		data.limit = limit or 100
 
 		if RMP.search?
 			return @getSearch callback, data
@@ -81,7 +81,7 @@ Reddit = Backbone.Model.extend
 				return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
 	getMore: (last, callback) ->
-		@getMusic callback, last
+		@getMusic callback, last, 20
 	getComments: (permalink, callback) ->
 		data = {}
 		data.sort = @get("sortMethod")

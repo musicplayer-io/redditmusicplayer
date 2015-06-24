@@ -8,7 +8,7 @@ API =
 	Reddit:
 		base: "//www.reddit.com"
 	MusicPlayer:
-		base: "https://reddit.music.player.il.ly"
+		base: "https://reddit.musicplayer.io"
 
 FLAG_DEBUG = false
 FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is "true"
