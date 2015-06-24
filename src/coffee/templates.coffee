@@ -40,7 +40,7 @@ Templates =
 					<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
 				<% } %>
 			<% } %>
-			<% if (url.indexOf('imgur') >= 0) { %>
+			<% if (url.indexOf('i.imgur') >= 0) { %>
 				<a class='ui image fluid' href='<%= url %>' target='_blank'>
 					<img src='<%= url %>' />
 				</a>

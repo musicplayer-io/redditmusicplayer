@@ -48,6 +48,8 @@ NotASong = Backbone.Model.extend
 		@set "created_ago", timeSince time
 		@set "type", @type
 		@set "playable", @playable
+		if @get("domain").indexOf "imgur.com" > -1
+			@set "url", @get("url").replace("http:", "")
 NotALink = NotASong.extend
 	type: "self"
 
@@ -57,6 +59,7 @@ Playlist = Backbone.Collection.extend
 		song: null
 		index: -1
 	parseSong: (item) ->
+		item.thumbnail = item.thumbnail.replace("http:", "")
 		song = switch
 			when item.domain is "youtube.com" or
 				item.domain is "youtu.be" or
@@ -89,7 +92,6 @@ Playlist = Backbone.Collection.extend
 			RMP.dispatcher.trigger "app:loadedMusic"
 	more: (callback) ->
 		RMP.reddit.getMore @last().get("name"), (items) =>
-			console.log items if FLAG_DEBUG
 			_.each items, (item) =>
 				@add @parseSong item.data
 			callback() if callback?
@@ -156,7 +158,6 @@ PlaylistView = Backbone.View.extend
 	render: () ->
 		@$el.html ""
 		RMP.playlist.each (model) =>
-			
 			@$el.append @template model.toJSON()
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song

@@ -34,7 +34,7 @@ CurrentSongView = Backbone.View.extend
 			$(".current-song-sidebar .title").text(songJSON.title)
 			document.title = "#{songJSON.title} | Reddit Music Player"
 			if song.get("type") is "bandcamp" and song.get("media")
-				console.log(song.get("media"))
+				console.log(song.get("media")) if FLAG_DEBUG
 				$(".current-song-sidebar .image").attr "src", song.get("media").oembed.thumbnail_url
 			else
 				$(".current-song-sidebar .image").attr "src", ""
@@ -112,6 +112,7 @@ CommentsView = Backbone.View.extend
 			target.addClass "active"
 
 	renderComment: (comment) ->
+		return if not comment.body?
 		time = new Date()
 		time.setTime parseInt(comment.created_utc) * 1000
 		comment.created_ago = timeSince time
