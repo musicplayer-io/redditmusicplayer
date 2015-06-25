@@ -1,6 +1,10 @@
  
 ## Changelog
 
+### 0.5.5 - 25 June 2015
+
+* Fix message overlap with comment
+
 ### 0.5.4 - 24 June 2015
 
 * Moved to musicplayer.io completely
