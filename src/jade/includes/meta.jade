@@ -1,6 +1,6 @@
 block title
-	if subreddits
-		title #{subreddits.join(", ")} | Music Player for Reddit | A Free and Open-Source Music Player
+	if title
+		title #{title} | Music Player for Reddit | A Free and Open-Source Music Player
 	else
 		title Music Player for Reddit | A Free and Open-Source Music Player
 meta(property="og:type", content="website")
@@ -9,8 +9,9 @@ meta(property="og:image", content="//reddit.musicplayer.io/images/icon/favicon-2
 meta(itemprop="image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
 meta(itemprop="name", content="Music Player for Reddit")
 if subreddits
-	meta(property="og:title", content=subreddits.join(", ")+" - Music Player for Reddit")
-	meta(name="description", content=subreddits.join(", ")+" on the Music Player for Reddit. Play music from subreddits on reddit. Listen to the best user-curated music on the web. All of the music subreddits in one beautiful music player.")
+	meta(property="og:title", content=title + " - Music Player for Reddit")
+	if description
+		meta(name="description", content=description)
 	meta(name="keywords", content=subreddits.join(", ")+", reddit, music, player, subreddits, playlist, tunes, playlister, playlist")
 else
 	meta(property="og:title", content="Music Player for Reddit")

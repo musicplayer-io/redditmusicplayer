@@ -1,5 +1,6 @@
 
 seo = require "./seo"
+request = require "request"
 
 # Reddit controller
 # Serves subreddits, comment threads, multireddits
@@ -9,8 +10,10 @@ class RedditController
 		subreddits = request.params.subreddit.split("+")
 		data = {subreddits: subreddits}
 		data.autoplay = true if request.query.autoplay?
-
-		@render request, response, data, "subreddits"
+		data.user = request.user._json if request.user?
+		data.title = subreddits.join(", ")# if subreddits.length > 1
+		data.page = "subreddits"
+		response.render "app", data
 	commentThread: (request, response, callback) =>
 		comment = "r/" + request.params.subreddit + "/comments/" + request.params.commentid
 		data = {comment: comment}

@@ -38,6 +38,7 @@ MessageView = Backbone.View.extend
 	repeat: (msg) ->
 		@$(".message[data-id=#{msg.cid}]").transition "shake"
 	add: (msg) ->
+		@$el.addClass "active"
 		$msg = $ @template msg
 		@$el.append $msg
 		if msg.type is "error"
@@ -45,7 +46,8 @@ MessageView = Backbone.View.extend
 		else
 			$msg.transition "fly up in"
 	remove: (msg) ->
-		@$(".message[data-id=#{msg.cid}]").transition "fly up out"
+		@$(".message[data-id=#{msg.cid}]").remove()
+		@$el.removeClass "active"
 	initialize: () ->
 		@listenTo RMP.messages, "add", @add
 		@listenTo RMP.messages, "remove", @remove

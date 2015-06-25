@@ -669,9 +669,17 @@ a {
 
 .ui.messages {
 	position: fixed;
-	bottom: 70px;
+	bottom: 50px;
 	width: 100%;
 	padding: 20px;
+	pointer-events: none;
+	display: none;
+	&.active {
+		display: block;
+	}
+	.message {
+		pointer-events: all;
+	}
 	.button {
 		cursor: pointer;
 		color: @col-primary;
