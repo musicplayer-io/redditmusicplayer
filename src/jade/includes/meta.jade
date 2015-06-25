@@ -5,15 +5,18 @@ block title
 		title Music Player for Reddit | A Free and Open-Source Music Player
 meta(property="og:type", content="website")
 meta(property="og:url", content="//reddit.musicplayer.io")
-meta(property="og:image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
-meta(itemprop="image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
 meta(itemprop="name", content="Music Player for Reddit")
 if subreddits
+	if image
+		meta(itemprop="image", content=image)
+		meta(property="og:image", content=image)
 	meta(property="og:title", content=title + " - Music Player for Reddit")
 	if description
 		meta(name="description", content=description)
 	meta(name="keywords", content=subreddits.join(", ")+", reddit, music, player, subreddits, playlist, tunes, playlister, playlist")
 else
+	meta(itemprop="image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
+	meta(property="og:image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
 	meta(property="og:title", content="Music Player for Reddit")
 	meta(name="description", content="Play music from subreddits on Reddit. Listen to the user-curated music on the web. Music subreddits in one open-source and free music player.")
 	meta(name="keywords", content="reddit, music, player, subreddits, playlist, tunes, playlister, playlist")

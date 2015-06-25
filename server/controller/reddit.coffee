@@ -1,19 +1,37 @@
-
+req = require "request"
 seo = require "./seo"
-request = require "request"
+_ = require "lodash"
 
 # Reddit controller
 # Serves subreddits, comment threads, multireddits
 
 class RedditController
-	withSubreddits: (request, response, callback) =>
+	withSubreddits: (request, response, callback) ->
 		subreddits = request.params.subreddit.split("+")
 		data = {subreddits: subreddits}
 		data.autoplay = true if request.query.autoplay?
 		data.user = request.user._json if request.user?
-		data.title = subreddits.join(", ")# if subreddits.length > 1
 		data.page = "subreddits"
-		response.render "app", data
+		if subreddits.length > 1
+			data.title = subreddits.join(", ")
+			response.render "app", data
+		else
+			sub = subreddits[0].toLowerCase()
+			req "https://www.reddit.com/r/#{sub}/about.json", (err, resp, body) ->
+				if err?
+					data.title = sub
+					return response.render "app", data
+				try
+					json = JSON.parse(body).data 
+					data.title = json.title
+					data.description = json.title
+					data.description += " - " + json.public_description if json.public_description?
+					data.description += " - " + json.header_title if json.header_title?
+					data.image = json.header_img if json.header_img?
+					response.render "app", data
+				catch e
+					data.title = sub
+					response.render "app", data
 	commentThread: (request, response, callback) =>
 		comment = "r/" + request.params.subreddit + "/comments/" + request.params.commentid
 		data = {comment: comment}
