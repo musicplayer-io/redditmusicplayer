@@ -1,4 +1,4 @@
-firstRequest = false
+firstRequest = true
 
 Reddit = Backbone.Model.extend
 	defaults:

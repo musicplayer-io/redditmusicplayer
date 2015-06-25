@@ -10,6 +10,9 @@ if subreddits
 	if image
 		meta(itemprop="image", content=image)
 		meta(property="og:image", content=image)
+	else
+		meta(itemprop="image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
+		meta(property="og:image", content="//reddit.musicplayer.io/images/icon/favicon-256.png")
 	meta(property="og:title", content=title + " - Music Player for Reddit")
 	if description
 		meta(name="description", content=description)
