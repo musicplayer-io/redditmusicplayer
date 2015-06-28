@@ -48,13 +48,17 @@ CommentsView = Backbone.View.extend
 		"click .upvote": "vote"
 		"click .downvote": "vote"
 		"click .actions .reply": "reply"
+		"click .actions .collapse": "collapse"
+		"click .expand": "expand"
 		"click .form .add_comment": "add_comment"
 		"click .reply_to .close": "reply_close"
 	reply: (e) ->
-		return if not RMP.authentication?
+		if not RMP.authentication?
+			RMP.dispatcher.trigger "message", new MessageNotAuthenticated()
+			return
 
 		target = $(e.currentTarget)
-		parent = target.parents(".comment")
+		parent = target.closest(".comment")
 		id = parent.attr('id')
 		@reply_id = id
 		@reply_author = $(parent.find(".author")).text()
@@ -64,15 +68,29 @@ CommentsView = Backbone.View.extend
 			author: @reply_author
 			id: @reply_id
 		@$el.append temp
+	
+	collapse: (e) ->
+		target = $(e.currentTarget)
+		parent = target.closest(".comment")
+		parent.addClass("collapse")
+
+	expand: (e) ->
+		target = $(e.currentTarget)
+		parent = target.closest(".comment")
+		parent.removeClass("collapse")
+
+
 	reply_close: (e) ->
 		target = $(e.currentTarget.parentElement)
 		@reply_id = @reply_author = null
 		target.remove()
 	add_comment: (e) ->
-		return if not RMP.authentication?
+		if not RMP.authentication?
+			RMP.dispatcher.trigger "message", new MessageNotAuthenticated()
+			return
 		
 		target = $(e.currentTarget)
-		parent = target.parents(".comment")
+		parent = target.closest(".comment")
 		id = parent.attr('id')
 
 		if not @reply_id? then @reply_id = RMP.playlist.current.song.get("name")
@@ -87,10 +105,12 @@ CommentsView = Backbone.View.extend
 				@render()
 
 	vote: (e) ->
-		return if not RMP.authentication?
+		if not RMP.authentication?
+			RMP.dispatcher.trigger "message", new MessageNotAuthenticated()
+			return
 
 		target = $(e.currentTarget)
-		parent = target.parents(".comment")
+		parent = target.closest(".comment")
 		id = parent.attr('id')
 
 		dir = switch
@@ -117,10 +137,12 @@ CommentsView = Backbone.View.extend
 		time.setTime parseInt(comment.created_utc) * 1000
 		comment.created_ago = timeSince time
 
+		songId = RMP.playlist.current.song.get("id")
+		comment.permalink = "#{API.Reddit.base}/r/#{comment.subreddit}/comments/#{songId}/link/#{comment.id}"
+
 		html = $(@template comment)
 
 		# recurse into nodes
-		console.log comment if FLAG_DEBUG
 		if (typeof comment.replies is 'object')
 			html.append @parse(comment.replies.data.children)
 			

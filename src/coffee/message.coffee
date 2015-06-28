@@ -1,6 +1,7 @@
 Message = Backbone.Model.extend
 	type: "none"
 
+
 MessageFailedToGetMusic = Message.extend
 	type: "error"
 	status: "MessageFailedToGetMusic"
@@ -9,6 +10,13 @@ MessageFailedToGetMusic = Message.extend
 	callback: () ->
 		RMP.dispatcher.trigger "app:refresh"
 
+MessageNotAuthenticated = Message.extend
+	type: "error"
+	status: "MessageNotAuthenticated"
+	text: "You need to be logged in for this"
+	button: "Log In"
+	callback: () ->
+		location.href = "/login"
 
 Messages = Backbone.Collection.extend
 	removeByStatus: (status) ->

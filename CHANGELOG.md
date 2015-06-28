@@ -1,6 +1,14 @@
  
 ## Changelog
 
+### 0.5.6
+
+* Deeper comments are darker to show hierarchy
+* You can collapse comments
+* Show a message when trying to vote or comment and not logged in
+* Remove downvote count
+* Permalink to comment
+
 ### 0.5.5 - 25 June 2015
 
 * Fix message overlap with comment

@@ -147,7 +147,7 @@ a {
 
 // Menus
 .ui.inverted.reddit.menu.top.titlebar {
-	background: lighten(@col-bg, 5%) url(../images/header.png) top repeat-x;
+	 background: lighten(@col-bg, 5%) url(../images/header.png) top repeat-x;
 	.redditmusicplayer {
 		text-align: center;
 		font-weight: 400;
@@ -512,13 +512,16 @@ a {
 	}
 	.ui.comments {
 		.comment  {
-			.text, .author {
+			background: rgba(0,0,0,.1);
+
+			.text {
 				color: white;
 			}
 			.vote {
 				display: block;
 				float: left;
 				.upvote, .downvote {
+					cursor: pointer;
 					display: block;
 					margin: 0em auto;
 					width: 1em;
@@ -543,7 +546,7 @@ a {
 			}
 			.content {
 				padding: 0.2em 1em;
-				padding-left: 2em;
+				padding-left: 1.5em;
 				.text {
 					@import "markdown.less";
 				}
@@ -557,6 +560,25 @@ a {
 					color: rgba(255,255,255,.6);
 				}
 			}
+
+			.content.expand {
+				display: none;
+				color: white;
+				.expand {
+					font-weight: bold;
+					cursor: pointer;
+					color: rgba(255, 255, 255, 0.8);
+					&:hover {
+						color: rgba(255, 255, 255, 1);
+					}
+				}
+			}
+			&.collapse {
+				.vote {display: none;}
+				.content {display: none;}
+				.comments {display: none;}
+				.content.expand {display: block;}
+			}
 			
 		}
 	}
@@ -564,6 +586,13 @@ a {
 
 .ui.container > .content.playlist,
 .ui.container > .content.song {
+	.author {
+		color: @col-primary;
+		font-weight: bold;
+		&:hover {
+			color: lighten(@col-primary, 10%);
+		}
+	}
 	.ups {
 		color: orangered;
 	}

@@ -129,14 +129,24 @@ Templates =
 					<div class='upvote<% if (likes === true) print(' active') %>'><i class='icon up arrow'></i></div>
 					<div class='downvote<% if (likes === false) print(' active') %>'><i class='icon down arrow'></i></div>
 				</div>
-				<div class='content'>
+				<div class='content expand'>
 					<a class='author'><%= author %></a>
 					<div class='metadata'>
-						<span class='ups'><%= ups %></span>/ <span class='downs'><%= downs %></span>
+						<a class='expand'>Expand <i class='icon plus'></i></a>
+					</div>
+				</div>
+				<div class='content'>
+					<a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
+					<div class='metadata'>
+						<span class='ups'><%= score %></span>
 						<span class='date'><%= created_ago %> ago</span>
 					</div>
 					<div class='text'><% print(_.unescape(body_html)) %></div>
-					<div class='actions'><a class='reply'>Reply</a></div>
+					<div class='actions'>
+						<a class='collapse'>Collapse <i class='icon minus'></i></a>
+						<a class='permalink' target='_blank' href='<%=permalink%>'>Permalink</a>
+						<a class='reply'>Reply</a>
+					</div>
 				</div>
 			</div>
 		")
