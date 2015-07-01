@@ -22,7 +22,7 @@ class RedditController
 					data.title = sub
 					return response.render "app", data
 				try
-					json = JSON.parse(body).data 
+					json = JSON.parse(body).data
 					data.title = json.title
 					data.description = json.title
 					data.description += " - " + json.public_description if json.public_description?

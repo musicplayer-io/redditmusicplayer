@@ -1,7 +1,11 @@
  
 ## Changelog
 
-### 0.5.6
+### 0.5.7 - 1 July 2015
+
+* Custom Subreddit search fix
+
+### 0.5.6 - 28 June 2015
 
 * Deeper comments are darker to show hierarchy
 * You can collapse comments

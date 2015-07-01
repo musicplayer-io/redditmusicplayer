@@ -138,15 +138,18 @@ CustomSubreddit = Backbone.View.extend
 			@submit()
 		else
 			val = @$("input").val()
-			if not val? or val.trim().length is 0
-				_.forEach RMP.subredditsSelection, (s) -> s.show()
-				return
+
+			_.forEach RMP.subredditsSelection, (s) -> s.show()
+			return if not val? or val.trim().length is 0
+
 			val = val.toLowerCase()
-			
+
+			# Hide empty categories
 			hiddenList = _.filter RMP.subredditsSelection, (s) ->
 				not _.find s.reddits, (r) -> _.startsWith r, val
 			_.forEach hiddenList, (list) -> list.hide()
 
+			# Hide empty subs
 			showList = _.filter RMP.subredditsSelection, (s) ->
 				_.find s.reddits, (r) -> _.startsWith r, val
 			_.forEach showList, (list) -> list.hideAllExcept(val)
