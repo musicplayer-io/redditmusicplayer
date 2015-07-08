@@ -1,5 +1,8 @@
- 
 ## Changelog
+
+### 0.5.8 - 8 July 2015
+
+* Hooks for API
 
 ### 0.5.7 - 1 July 2015
 
