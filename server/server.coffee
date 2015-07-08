@@ -43,6 +43,7 @@ http.listen app.get("port"), () ->
 # Socket IO
 io = require("socket.io") http
 require("./sockets") io
+require("./sockets").routes.call app
 
 
 module.exports = app

@@ -47,9 +47,13 @@ YoutubePlayer = MusicPlayer.extend
 		@set song.attributes
 		@getTrack()
 		@player.loadVideoById @track.id
-	playPause: () ->
+	isPlaying: ->
 		if @player and @player.getPlayerState? and @player.pauseVideo? and @player.playVideo?
-			if @player.getPlayerState() is 1 then @player.pauseVideo() else @player.playVideo()
+			return @player.getPlayerState() is 1
+		else
+			return false
+	playPause: () ->
+		if @isPlaying() then @player.pauseVideo() else @player.playVideo()
 	volume: (value) ->
 		@player.setVolume(value * 100)
 	seekTo: (percentage, seekAhead) ->
@@ -103,6 +107,7 @@ SoundcloudPlayer = MusicPlayer.extend
 				RMP.dispatcher.trigger "progress:duration", duration / 1000 # secs
 			@playerState = ev
 			RMP.dispatcher.trigger "player:#{ev}", @
+	isPlaying: -> @playerState is "playing"
 	playPause: () ->
 		@player.toggle()
 	volume: (value) ->
@@ -206,8 +211,9 @@ MP3Player = MusicPlayer.extend
 		@set "streaming_url", @get "url"
 		@clean(true)
 		@init()
+	isPlaying: -> @playerState is "playing"
 	playPause: () ->
-		if @playerState is "playing" then @player.pause() else @player.play()
+		if @isPlaying() then @player.pause() else @player.play()
 	volume: (value) ->
 		@player.volume = value
 	seekTo: (percentage, seekAhead) ->
@@ -335,8 +341,9 @@ VimeoPlayer = MusicPlayer.extend
 
 		@clean(true)
 		@init()
+	isPlaying: -> @playerState is "playing"
 	playPause: () ->
-		if @playerState is "playing"
+		if @isPlaying()
 			@player.postMessage({method: "pause"}, "*")
 		else
 			@player.postMessage({method: "play"}, "*")

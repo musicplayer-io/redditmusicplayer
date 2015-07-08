@@ -35,7 +35,7 @@ Remote = Backbone.Model.extend
 			@listenTo RMP.dispatcher, "controls:backward", @backward
 			@listenTo RMP.dispatcher, "controls:play", @playPause
 	initialize: () ->
-		
+
 		RMP.dispatcher.once "authenticated", (authentication) =>
 			@set "name", authentication.get("name")
 			@socket = io()
@@ -44,6 +44,28 @@ Remote = Backbone.Model.extend
 
 			for ev in simpleEvents
 				@triggerOnEmit ev
+
+			@socket.on "get:user", =>
+				console.log "Socket :: Query :: User" if FLAG_DEBUG
+				@socket.emit "answer:user", _.omit(RMP.authentication.attributes, "token")
+
+			@socket.on "get:play", =>
+				console.log "Socket :: Query :: Play" if FLAG_DEBUG
+				if RMP.player.controller? and RMP.player.controller.isPlaying()
+					@socket.emit "answer:play", true
+				else
+					@socket.emit "answer:play", false
+
+			@socket.on "get:subreddits", =>
+				console.log "Socket :: Query :: Subreddits" if FLAG_DEBUG
+				@socket.emit "answer:subreddits", RMP.subredditplaylist.pluck("name")
+
+			@socket.on "get:song", =>
+				console.log "Socket :: Query :: Song" if FLAG_DEBUG
+				if RMP.playlist.current.song?
+					@socket.emit "answer:song", RMP.playlist.current.song.attributes
+				else
+					@socket.emit "answer:song", false
 
 			@listenTo RMP.dispatcher, "controls:forward", @forward
 			@listenTo RMP.dispatcher, "controls:backward", @backward
@@ -58,7 +80,7 @@ RemoteView = Backbone.View.extend
 		@model.requestHash (hash) =>
 			@model.socket.emit "join:hash", hash
 			url = "#{API.MusicPlayer.base}/remote/#{hash}"
-			@$(".hashlink").attr("href", url)
+			@$(".hashlink a").attr("href", url)
 			@$(".hashlink .text").text hash
 			@$(".qrcode").html("")
 			@$(".qrcode").qrcode text: url
@@ -80,7 +102,7 @@ RemoteView = Backbone.View.extend
 			@$(".checkbox.commander input").prop("checked", true)
 			@$(".remote-controls").show()
 			@$(".remote-receiver").hide()
-		
+
 	setReceiver: () ->
 		RMP.remoteview.model.set("receiver", true)
 	setCommander: () ->

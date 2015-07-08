@@ -1,8 +1,9 @@
-passportSocketIo = require("passport.socketio")
+passportSocketIo = require "passport.socketio"
 session = require "express-session"
-RedisStore = require("connect-redis")(session)
+RedisStore = require("connect-redis") session
 cookieParser = require "cookie-parser"
 crypto = require "crypto"
+_ = require "lodash"
 
 onAuthorizeSuccess = (data, accept) ->
 	accept()
@@ -15,7 +16,10 @@ sendToRoomOnTrigger = (socket, type) ->
 		socket.rooms.forEach (room) ->
 			socket.to(room).emit type, data
 
-module.exports = (io) ->
+io = null
+
+module.exports = (socketio) ->
+	io = socketio
 	simpleEvents = ["controls:play", "controls:forward", "controls:backward", "remote:subreddits"]
 
 	io.use passportSocketIo.authorize
@@ -39,3 +43,96 @@ module.exports = (io) ->
 
 		for ev in simpleEvents
 			sendToRoomOnTrigger socket, ev
+
+module.exports.routes = ->
+	@post "/remote/:token/:action", (req, res, next) ->
+		token = req.params.token
+		action = req.params.action
+
+		socket = _.find io.sockets.sockets, (s) ->
+			_.find s.rooms, (r) -> token is r
+
+		if not socket?
+			return res.send
+				control: action
+				success: false
+				message: "Bad token or disconnecsted"
+
+		switch action
+			when "play"
+				socket.emit "controls:play"
+				res.send
+					control: "play"
+					success: true
+
+			when "forward"
+				socket.emit "controls:forward"
+				res.send
+					control: "forward"
+					success: true
+
+			when "backward"
+				socket.emit "controls:forward"
+				res.send
+					success: "backward"
+					success: true
+
+			when "subreddits"
+				subreddits = req.body["subreddits[]"]?.join("+")
+				subreddits = req.body.subreddits if not subreddits?
+				console.log subreddits, req.body
+				socket.emit "remote:subreddits", subreddits
+				res.send
+					control: "subreddits"
+					subreddits: subreddits
+					success: true
+
+	@get "/remote/:token/:action", (req, res, next) ->
+		token = req.params.token
+		action = req.params.action
+
+		socket = _.find io.sockets.sockets, (s) ->
+			_.find s.rooms, (r) -> token is r
+
+		if not socket?
+			return res.send
+				control: action
+				success: false
+				message: "Bad token"
+
+		switch action
+			when "user"
+				socket.once "answer:user", (data) ->
+					res.send
+						control: "user"
+						success: true
+						data: data
+				socket.emit "get:user"
+			when "play"
+				socket.once "answer:play", (data) ->
+					res.send
+						control: "play"
+						success: true
+						data: data
+				socket.emit "get:play"
+			when "subreddits"
+				socket.once "answer:subreddits", (data) ->
+					res.send
+						control: "subreddits"
+						success: true
+						data: data
+				socket.emit "get:subreddits"
+			when "song"
+				socket.once "answer:song", (data) ->
+					if data
+						res.send
+							control: "song"
+							success: true
+							data: data
+					else
+						res.send
+							control: "song"
+							success: false
+							data: {}
+							message: "No song selected"
+				socket.emit "get:song"
