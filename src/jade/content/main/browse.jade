@@ -4,7 +4,7 @@
 			| #{sub}
 			i.icon.add
 			i.icon.remove
-		|  
+		| 
 	.switcher
 		i.icon.list
 		span.page Browse Subreddits
@@ -15,11 +15,11 @@
 
 	.ui.fluid.secondary.inverted.vertical.menu.reddit.my
 		.item
-			i.list.icon
+			i.share.alternate.icon.pop(data-content="Share Subreddit Playlist", data-variation="inverted")
 			| My Subreddit Playlist
 			.menu.selection
 				p.item.description Select subreddits to add them to your subreddit playlist.
-	
+				
 	.ui.input.action.fluid.inverted.custom-subreddit
 		input(type="text", placeholder="Custom Subreddit")
 		.ui.button.icon.small.gold: i.icon.add
@@ -27,7 +27,6 @@
 	for category in _.shuffle(_.keys(subs))
 		.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category=_.kebabCase(category))
 			.item
-				i.music.icon
 				| #{category}
 				.menu.selection
 					each sub in _.shuffle(subs[category])

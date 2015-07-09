@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.5.10 - 9 July 2015
+
+* Sharing subreddit playlists via url or to Twitter, Facebook, Gplus, /r/musicplayer
+
 ### 0.5.9 - 9 July 2015
 
 * Colors per type: youtube, soundcloud, vimeo, bandcamp, self/link

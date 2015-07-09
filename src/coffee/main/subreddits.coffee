@@ -36,7 +36,44 @@ SubredditPlayListView = Backbone.View.extend
 	tagName: "div"
 	className: "selection"
 	events:
+		"click .share": "share"
 		"click .menu.selection .item": "remove"
+	share: (e) ->
+		subs = RMP.subredditplaylist.pluck("name")
+		link = "#{API.MusicPlayer.base}/r/#{subs.join('+')}?autoplay"
+		shortLink = "#{API.MusicPlayer.short}/r/#{subs.join('+')}?autoplay"
+
+		modal = $("#modalSubredditShare")
+		modal.modal('setting', 'transition', "vertical flip")
+
+		$("#subredditsLink").val(link).focus().select()
+		$("#subredditsShort").val(shortLink)
+
+		$("#subredditsShort,#subredditsLink").click -> @select()
+
+		$("#modalSubredditShare .twitter").click () ->
+			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			url = "https://twitter.com/intent/tweet?text=#{encodeURIComponent(text)}&url=#{encodeURIComponent(shortLink)}&via=musicplayer_io&related=musicplayer_io"
+			openPopup url, "twitter"
+
+		$("#modalSubredditShare .facebook").click () ->
+			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			url = "https://www.facebook.com/sharer/sharer.php?u=#{encodeURIComponent(link)}"
+			openPopup url, "facebook"
+
+		$("#modalSubredditShare .google.plus").click () ->
+			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			url = "https://plus.google.com/share?url=#{encodeURIComponent(link)}"
+			openPopup url, "google plus"
+
+		$("#modalSubredditShare .reddit").click () ->
+			s = subs.map (sub) -> "[/r/#{sub}]"
+			text = "[Playlist] #{s.join(' ')} 💛"
+			url = "https://reddit.com/r/musicplayer/submit?title=#{encodeURIComponent(text)}&url=#{encodeURIComponent(link)}&sub=musicplayer"
+			openPopup url, "reddit"
+
+
+		modal.modal("show")
 	remove: (e) ->
 		currentReddit = e.currentTarget.dataset.value
 		console.log "SubredditPlayListView :: Remove :: ", currentReddit if FLAG_DEBUG
@@ -72,7 +109,7 @@ SubredditPlayListView = Backbone.View.extend
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
 		@listenTo RMP.subredditplaylist, "reset", @render
-		
+
 		console.log "SubredditPlayListView :: Ready" if FLAG_DEBUG
 
 SubredditSelectionView = Backbone.View.extend

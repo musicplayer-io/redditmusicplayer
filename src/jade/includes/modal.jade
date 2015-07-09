@@ -1,0 +1,16 @@
+.ui.basic.small.modal#modalSubredditShare
+  i.close.icon
+  .header Share Your Subreddit Playlist
+  .content
+    .ui.form.fluid.inverted
+      .field
+        label(for="subredditsLink") Full URL
+        input#subredditsLink(name="link", type="text", readonly)
+      .field
+        label(for="subredditsShort") Short URL
+        input#subredditsShort(name="link", type="text", readonly)
+  .actions
+    .ui.icon.button.google.plus: i.icon.google.plus
+    .ui.icon.button.facebook: i.icon.facebook
+    .ui.icon.button.twitter: i.icon.twitter
+    .ui.icon.button.reddit: i.icon.reddit
