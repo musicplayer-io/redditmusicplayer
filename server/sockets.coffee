@@ -55,7 +55,7 @@ module.exports.routes = ->
 		if not socket?
 			return res.send
 				control: action
-				success: false
+				status: false
 				message: "Bad token or disconnecsted"
 
 		switch action
@@ -63,19 +63,19 @@ module.exports.routes = ->
 				socket.emit "controls:play"
 				res.send
 					control: "play"
-					success: true
+					status: true
 
 			when "forward"
 				socket.emit "controls:forward"
 				res.send
 					control: "forward"
-					success: true
+					status: true
 
 			when "backward"
 				socket.emit "controls:forward"
 				res.send
-					success: "backward"
-					success: true
+					control: "backward"
+					status: true
 
 			when "subreddits"
 				subreddits = req.body["subreddits[]"]?.join("+")
@@ -85,7 +85,7 @@ module.exports.routes = ->
 				res.send
 					control: "subreddits"
 					subreddits: subreddits
-					success: true
+					status: true
 
 	@get "/remote/:token/:action", (req, res, next) ->
 		token = req.params.token
@@ -97,7 +97,7 @@ module.exports.routes = ->
 		if not socket?
 			return res.send
 				control: action
-				success: false
+				status: false
 				message: "Bad token"
 
 		switch action
@@ -105,21 +105,21 @@ module.exports.routes = ->
 				socket.once "answer:user", (data) ->
 					res.send
 						control: "user"
-						success: true
+						status: true
 						data: data
 				socket.emit "get:user"
 			when "play"
 				socket.once "answer:play", (data) ->
 					res.send
 						control: "play"
-						success: true
+						status: true
 						data: data
 				socket.emit "get:play"
 			when "subreddits"
 				socket.once "answer:subreddits", (data) ->
 					res.send
 						control: "subreddits"
-						success: true
+						status: true
 						data: data
 				socket.emit "get:subreddits"
 			when "song"
@@ -127,12 +127,12 @@ module.exports.routes = ->
 					if data
 						res.send
 							control: "song"
-							success: true
+							status: true
 							data: data
 					else
 						res.send
 							control: "song"
-							success: false
+							status: false
 							data: {}
 							message: "No song selected"
 				socket.emit "get:song"
