@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.5.9 - 9 July 2015
+
+* Colors per type: youtube, soundcloud, vimeo, bandcamp, self/link
+* Cleaner UI for metadata
+
 ### 0.5.8 - 8 July 2015
 
 * Hooks for API

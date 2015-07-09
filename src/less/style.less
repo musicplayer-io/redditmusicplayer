@@ -1,4 +1,3 @@
-	
 @import "mixins";
 
 // Roboto 100, 300, 400, 500, 700, 900
@@ -84,8 +83,8 @@ a {
 	background: fade(@col-fg, 10%);
 	// .transition(0.15s, ease-out);
 }
- 
-::-webkit-scrollbar-thumb {
+
+:-webkit-scrollbar-thumb {
     border-radius: 100px;
     background: fade(@col-fg, 15%);
     &:hover {
@@ -448,7 +447,7 @@ a {
 			&::-moz-placeholder {  /* Firefox 19+ */
 			   color: rgba(255, 255, 255, .7);
 			}
-			&:-ms-input-placeholder {  
+			&:-ms-input-placeholder {
 			   color: rgba(255, 255, 255, .7);
 			}
 			&:hover, &:active {
@@ -470,6 +469,19 @@ a {
 			margin: 0px;
 			margin-left: 2em;
 			padding: .7em 0;
+		}
+		.ui.statistics {
+			text-align: center;
+			.statistic {
+				display: inline-block;
+				float: none;
+				margin: 1em;
+				.value {
+					text-transform: none;
+					min-height: 0;
+					font-size: 1rem;
+				}
+			}
 		}
 		.vote {
 			display: block;
@@ -579,7 +591,7 @@ a {
 				.comments {display: none;}
 				.content.expand {display: block;}
 			}
-			
+
 		}
 	}
 }
@@ -608,7 +620,7 @@ a {
 	.ui.header {
 		font-weight: 300;
 	}
-	
+
 }
 
 .ui.container > .content.playlist {
@@ -644,6 +656,32 @@ a {
 			clear: both;
 			cursor: pointer;
 			overflow: hidden;
+			&.youtube {
+				border-left: 1px solid #e52d27;
+			}
+			&.bandcamp {
+				border-left: 1px solid #73A5B3;
+			}
+			&.soundcloud {
+				border-left: 1px solid #FC6C00;
+			}
+			&.vimeo {
+				border-left: 1px solid #1CB6EC;
+			}
+			&.self, &.link {
+				border-left: 1px solid gray;
+				.thumbnail {
+					font-size: 1.5em;
+					padding: 5px;
+				}
+				.content {
+					padding: .5em .5em .5em 100px;;
+					.title {
+						color: rgba(255, 255, 255, .8);
+						font-weight: 300;
+					}
+				}
+			}
 			.thumbnail {
 				margin: auto;
 				width: 80px;
@@ -652,7 +690,7 @@ a {
 				font-size: 3em;
 			}
 			> .content {
-				padding: .5em 2em .5em 5.5em;
+				padding: .5em 2em .5em 100px;
 			}
 			.author, .subreddit {
 				color: @col-primary;
@@ -681,7 +719,7 @@ a {
 			}
 		}
 	}
-	
+
 }
 
 .ui.container > .content.remote {

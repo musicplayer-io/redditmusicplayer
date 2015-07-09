@@ -7,7 +7,7 @@ Templates =
 			</a>
 		")
 	PlayListView: _.template("
-			<div class='ui item' data-id='<%= id %>'>
+			<div class='ui item <%= type %>' data-id='<%= id %>'>
 				<% if (thumbnail) { %>
 					<% if (thumbnail == 'self' || thumbnail == 'default') { %>
 						<% if (type == 'mp3') { %>
@@ -23,13 +23,15 @@ Templates =
 				<% } %>
 				<div class='content'>
 					<div class='title'><%= title %></div>
-					<span class='ups'><%= ups %></span> • 
+					<% if (playable) { %>
+					<span class='ups'><%= ups %></span> •
 					<span class='author'><%= author %></span> in
-					<span class='subreddit'><%= subreddit %></span> • 
-					<span class='created'><%= created_ago %></span> • 
+					<span class='subreddit'><%= subreddit %></span> •
+					<span class='created'><%= created_ago %></span> •
 					<span class='origin'><%= domain %></span>
 					<% if (num_comments > 0) { %>
 						• <span class='comments'><%= num_comments %> <i class='icon small chat'></i></span>
+					<% } %>
 					<% } %>
 				</div>
 			</div>
@@ -50,78 +52,69 @@ Templates =
 				<div class='downvote'><i class='icon down arrow'></i></div>
 			</div>
 			<h3 class='ui header title'><%= title %></h3>
-			<table class='ui table inverted compact striped'>
-				<tbody>
-					<% if (media) { %>
-						<tr>
-							<td>Title</td>
-							<td><%= media.oembed.title %></td>
-						</tr>
-						<tr>
-							<td>Description</td>
-							<td><%= media.oembed.description %></td>
-						</tr>
-					<% } %>
-					<tr>
-						<td class='four wide'>Karma</td>
-						<td class='thirteen wide'><%= ups %></td>
-					</tr><tr>
-						<td>Author</td>
-						<td><%= author %></td>
-					</tr><tr>
-						<td>Timestamp</td>
-						<td><%= created_ago %> ago</td>
-					</tr><tr>
-						<td>Subreddit</td>
-						<td><%= subreddit %></td>
-					</tr><tr>
-						<td>Origin</td>
-						<td><%= domain %></td>
-					</tr><tr>
-						<td>Comments</td>
-						<td><%= num_comments %> comments</td>
-					</tr><tr>
-						<td colspan='2'>
-							<div class='ui 2 fluid tiny buttons'>
-								<a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'>
-									<i class='url icon'></i>
-									Permalink
-								</a>
-								<% if (type == 'link') { %>
-									<a target='_blank' class='ui gold external button' href='<%= url %>'>
-										<i class='external url icon'></i>
-										External Link
-									</a>
-								<% } %>
-								<% if (media) { %>
-									<% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %>
-										<script src='https://apis.google.com/js/platform.js'></script>
-										<div class='ui youtube tiny button'>
-											<div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div>
-										</div>
-									<% } else if (media.type == 'soundcloud.com') { %>
-										<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
-											<i class='icon male'></i>
-											<%= media.oembed.author_name %>
-										</a>
-									<% } else if (media.type == 'vimeo.com') { %>
-										<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
-											<i class='icon male'></i>
-											<%= media.oembed.author_name %>
-										</a>
-									<% } %>
-								<% } %>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+
+			<% if (media) { %>
+					<p><%= media.oembed.description %></p>
+			<% } %>
+
 			<% if (is_self) { %>
-				<div class='ui divider'></div>
 				<div class='self text'>
 					<%= selftext_html %>
 				</div>
+				<div class='ui divider'></div>
 			<% } %>
+
+			<div class='ui inverted mini statistics'>
+				<div class='ui inverted orange statistic'>
+					<div class='value'><%= score %></div>
+					<div class='label'>Karma</div>
+				</div>
+				<div class='ui inverted statistic'>
+					<a href='http://reddit.com/u/<%=author%>' target='_blank' class='value author'>/u/<%= author %></a>
+					<div class='label'>Author</div>
+				</div>
+				<div class='ui inverted statistic'>
+					<div class='value date'><%= created_ago %></div>
+					<div class='label'>Age</div>
+				</div>
+				<div class='ui inverted statistic'>
+					<div class='value'>/r/<%= subreddit %></div>
+					<div class='label'>Subreddit</div>
+				</div>
+			</div>
+
+			<div>
+				<div class='ui 2 fluid tiny buttons'>
+					<a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'>
+						<i class='url icon'></i>
+						Permalink
+					</a>
+					<% if (type == 'link') { %>
+						<a target='_blank' class='ui gold external button' href='<%= url %>'>
+							<i class='external url icon'></i>
+							External Link
+						</a>
+					<% } %>
+					<% if (media) { %>
+						<% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %>
+							<script src='https://apis.google.com/js/platform.js'></script>
+							<div class='ui youtube tiny button'>
+								<div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div>
+							</div>
+						<% } else if (media.type == 'soundcloud.com') { %>
+							<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
+								<i class='icon male'></i>
+								<%= media.oembed.author_name %>
+							</a>
+						<% } else if (media.type == 'vimeo.com') { %>
+							<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
+								<i class='icon male'></i>
+								<%= media.oembed.author_name %>
+							</a>
+						<% } %>
+					<% } %>
+				</div>
+			</div>
 		")
 	CommentsView: _.template("
 			<div class='comment' id='<%= name %>' data-ups='<%= ups %>' data-downs='<%= downs %>'>
@@ -183,7 +176,7 @@ Templates =
 	MessageView: _.template("
 			<div data-id='<%= cid %>' class='ui message inverted <%= type %>' data-type='<%= type %>' data-status='<%= status %>'>
 				<i class='close icon'></i>
-				<%= text %> 
+				<%= text %>
 				<a class='button'><%= button %></a>
 			</div>
 		")
