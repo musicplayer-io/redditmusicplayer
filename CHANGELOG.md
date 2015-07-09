@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.5.11 - 9 July 2015
+
+* Hover on image links in the comments to preview them
+
 ### 0.5.10 - 9 July 2015
 
 * Sharing subreddit playlists via url or to Twitter, Facebook, Gplus, /r/musicplayer

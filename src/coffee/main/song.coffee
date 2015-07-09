@@ -15,7 +15,7 @@ CurrentSongView = Backbone.View.extend
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
 			when target.hasClass "downvote" then -1
-		
+
 		RMP.reddit.vote id, dir
 
 		$(parent.find(".upvote, .downvote")).removeClass "active"
@@ -26,7 +26,7 @@ CurrentSongView = Backbone.View.extend
 		song = RMP.playlist.current.song if not song?
 		if not song? then return
 		songJSON = song.toJSON()
-		
+
 		@$el.html @template songJSON
 		$('.self.text').html($($('.self.text').text()))
 
@@ -62,13 +62,13 @@ CommentsView = Backbone.View.extend
 		id = parent.attr('id')
 		@reply_id = id
 		@reply_author = $(parent.find(".author")).text()
-		
+
 		@$(".reply_to").remove()
 		temp = Templates.ReplyTo
 			author: @reply_author
 			id: @reply_id
 		@$el.append temp
-	
+
 	collapse: (e) ->
 		target = $(e.currentTarget)
 		parent = target.closest(".comment")
@@ -88,7 +88,7 @@ CommentsView = Backbone.View.extend
 		if not RMP.authentication?
 			RMP.dispatcher.trigger "message", new MessageNotAuthenticated()
 			return
-		
+
 		target = $(e.currentTarget)
 		parent = target.closest(".comment")
 		id = parent.attr('id')
@@ -117,7 +117,7 @@ CommentsView = Backbone.View.extend
 			when target.hasClass "active" then 0
 			when target.hasClass "upvote" then 1
 			when target.hasClass "downvote" then -1
-		
+
 		RMP.reddit.vote id, dir
 
 		$(parent.find(".upvote, .downvote")).removeClass "active"
@@ -140,12 +140,27 @@ CommentsView = Backbone.View.extend
 		songId = RMP.playlist.current.song.get("id")
 		comment.permalink = "#{API.Reddit.base}/r/#{comment.subreddit}/comments/#{songId}/link/#{comment.id}"
 
+		body = $ _.unescape comment.body_html
+		links = body.find("a")
+		links.attr("target", "_blank")
+		links.each (i) ->
+			link = $ @
+			url = link.attr "href"
+			isImage = url.match(/\.(jpeg|jpg|gif|png|svg||apng|bmp|ico|webp)$/) isnt null
+			if isImage
+				link.popup
+					title: link.text()
+					variation: "inverted"
+					html: "<img class='ui image fluid' src='#{url}'/>"
+
 		html = $(@template comment)
+		html.find(".text").append body
+
 
 		# recurse into nodes
 		if (typeof comment.replies is 'object')
 			html.append @parse(comment.replies.data.children)
-			
+
 		return html
 	parse: (comments) ->
 		root = $("<div class='comments'></div>")
@@ -164,7 +179,7 @@ CommentsView = Backbone.View.extend
 			RMP.reddit.getComments permalink, (comments_tree) =>
 				_.each comments_tree, (comment) =>
 					@$(".comments.overview").append @renderComment comment.data
-			
+
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @render
 		console.log "CommentsView :: Ready" if FLAG_DEBUG

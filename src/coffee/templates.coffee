@@ -134,7 +134,7 @@ Templates =
 						<span class='ups'><%= score %></span>
 						<span class='date'><%= created_ago %> ago</span>
 					</div>
-					<div class='text'><% print(_.unescape(body_html)) %></div>
+					<div class='text'></div>
 					<div class='actions'>
 						<a class='collapse'>Collapse <i class='icon minus'></i></a>
 						<a class='permalink' target='_blank' href='<%=permalink%>'>Permalink</a>
