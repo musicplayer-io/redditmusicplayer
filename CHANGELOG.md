@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.5.12 - 10 July 2015
+
+* Volume control draggable
+* First-class Vimeo support; custom color, play/pause/ended events, loaded progress, seeking, playing progress, skips to the next song when done, volume control
+
 ### 0.5.11 - 9 July 2015
 
 * Hover on image links in the comments to preview them

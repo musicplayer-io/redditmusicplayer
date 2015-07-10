@@ -85,7 +85,7 @@ YoutubePlayer = MusicPlayer.extend
 		@getTrack()
 		@init()
 		@listenTo RMP.dispatcher, "player:playing", @initProgress
-		
+
 		console.log "YoutubePlayer :: ", @track if FLAG_DEBUG
 		console.log "Player :: Youtube" if FLAG_DEBUG
 
@@ -170,7 +170,7 @@ SoundcloudPlayer = MusicPlayer.extend
 		@init () =>
 			@player.load @track.sc.uri,
 				auto_play: true
-	
+
 MP3Player = MusicPlayer.extend
 	type: "mp3"
 	events: () ->
@@ -294,37 +294,16 @@ BandcampPlayer = MP3Player.extend
 
 VimeoPlayer = MusicPlayer.extend
 	type: "vimeo"
-	events: () ->
-		# "progress": @progress_play()
-		# "play": @event_trigger("playing")
-		# "playing": @event_trigger("playing")
-		# "pause": @event_trigger("paused")
-		# "ended": @event_trigger("ended")
-		# "durationchange": @setDuration()
-	setDuration: () ->
-		# return () =>
-		# 	RMP.dispatcher.trigger "progress:duration", @player.duration # secs
-	progress_play: (data) ->
-		# return () =>
-		# 	RMP.dispatcher.trigger "progress:loaded", @player.buffered.end(0)/@player.duration # secs
-		# 	RMP.dispatcher.trigger "progress:current", @player.currentTime # secs
 	playerState: "ended"
-	event_trigger: (ev) ->
-		# return (data) =>
-		# 	@playerState = ev
-		# 	RMP.dispatcher.trigger "player:#{ev}", @
+	duration: 60
+	postMessage: (options) ->
+		@player.postMessage JSON.stringify(options), "*"
 	init: () ->
 		console.log "VimeoPlayer :: Making Player" if FLAG_DEBUG
-		player = $("<iframe src='http://player.vimeo.com/video/#{@track.id}?api=1&autoplay=1' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
-		@$el.append player
-		
-		@player = player[0].contentWindow
-		@player.postMessage({
-			"method": "play"
-		}, "*")
-
-		# _.each @events(), (listener, ev) =>
-		# 	$(@player).bind ev, listener
+		@playerEl = $("<iframe src='http://player.vimeo.com/video/#{@track.id}?api=1&autoplay=1&player_id=vimeoplayer' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
+		@$el.append @playerEl
+		@player = @playerEl[0].contentWindow
+		@postMessage method: "play"
 	clean: (justTheElement) ->
 		$("#player iframe").remove()
 		@$el.html ""
@@ -344,11 +323,67 @@ VimeoPlayer = MusicPlayer.extend
 	isPlaying: -> @playerState is "playing"
 	playPause: () ->
 		if @isPlaying()
-			@player.postMessage({method: "pause"}, "*")
+			@postMessage method: "pause"
 		else
-			@player.postMessage({method: "play"}, "*")
-	seekTo: (percentage, seekAhead) ->
-		# @player.currentTime = percentage * @player.duration
+			@postMessage method: "play"
+	seekTo: (percentage) ->
+		@postMessage
+			method: "seekTo"
+			value: percentage * @duration
+	onReady: () ->
+		@postMessage
+			method: "setColor"
+			value: "FDC00F"
+		@postMessage
+			method: "addEventListener"
+			value: "pause"
+		@postMessage
+			method: "addEventListener"
+			value: "finish"
+		@postMessage
+			method: "addEventListener"
+			value: "playProgress"
+		@postMessage
+			method: "addEventListener"
+			value: "loadProgress"
+		@postMessage
+			method: "addEventListener"
+			value: "play"
+		@postMessage
+			method: "getVideoHeight"
+		@postMessage
+			method: "getVideoWidth"
+		@volume RMP.volumecontrol.model.get("volume")
+	volume: (value) ->
+		@postMessage
+			method: "setVolume"
+			value: value
+	onPlayProgress: (data) ->
+		@duration = data.duration
+		RMP.dispatcher.trigger "progress:duration", data.duration # secs
+		RMP.dispatcher.trigger "progress:current", data.seconds # secs
+	onPause: () ->
+		@playerState = "paused"
+		RMP.dispatcher.trigger "player:paused", @
+	onFinish: () ->
+		@playerState = "ended"
+		RMP.dispatcher.trigger "player:ended", @
+	onPlay: () ->
+		@playerState = "playing"
+		RMP.dispatcher.trigger "player:playing", @
+	onLoadProgress: (data) ->
+		RMP.dispatcher.trigger "progress:loaded", data.percent
+	onVideoHeight: (value) ->
+		@height = value
+		@setHeight()
+	onVideoWidth: (value) ->
+		@width = value
+		@setHeight()
+	setHeight: () ->
+		if @height? and @width?
+			externalWidth = $(".content.song").width()
+			ratio = @height / @width
+			@playerEl.height ratio * externalWidth
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@$el.html ""
@@ -358,7 +393,16 @@ VimeoPlayer = MusicPlayer.extend
 
 		video_id = url.match(/\/video\/(\d+)/)
 		@track.id = video_id[1] if video_id?
-		
+
+		@listenTo RMP.dispatcher, "vimeo:ready", @onReady
+		@listenTo RMP.dispatcher, "vimeo:playProgress", @onPlayProgress
+		@listenTo RMP.dispatcher, "vimeo:pause", @onPause
+		@listenTo RMP.dispatcher, "vimeo:finish", @onFinish
+		@listenTo RMP.dispatcher, "vimeo:play", @onPlay
+		@listenTo RMP.dispatcher, "vimeo:loadProgress", @onLoadProgress
+		@listenTo RMP.dispatcher, "vimeo:getVideoWidth", @onVideoWidth
+		@listenTo RMP.dispatcher, "vimeo:getVideoHeight", @onVideoHeight
+
 		@init()
 
 

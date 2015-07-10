@@ -38,7 +38,7 @@ Templates =
 		")
 	CurrentSongView: _.template("
 			<% if (media) { %>
-				<% if (url.indexOf('youtu') == -1) { %>
+				<% if (url.indexOf('youtu') == -1 && url.indexOf('vimeo') == -1) { %>
 					<img class='ui image fluid' src='<%= media.oembed.thumbnail_url %>' />
 				<% } %>
 			<% } %>
