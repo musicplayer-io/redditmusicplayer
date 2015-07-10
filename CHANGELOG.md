@@ -4,6 +4,7 @@
 
 * Volume control draggable
 * First-class Vimeo support; custom color, play/pause/ended events, loaded progress, seeking, playing progress, skips to the next song when done, volume control
+* Larger, visual player for soundcloud and fixes
 
 ### 0.5.11 - 9 July 2015
 
