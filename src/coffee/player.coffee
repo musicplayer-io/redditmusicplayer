@@ -120,11 +120,12 @@ SoundcloudPlayer = MusicPlayer.extend
 		@init () =>
 			@player.load @track.sc.uri,
 				auto_play: true
+				visual: true
 	setUp: (callback) ->
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
 			if $("#soundcloud").length is 0
-				iframe = $("<iframe id='soundcloud' src='//w.soundcloud.com/player/?visual=true&url=#{@track.sc.uri}'>")
+				iframe = $ "<iframe id='soundcloud' width='100%' height='450' scrolling='no' frameborder='no' src='https://w.soundcloud.com/player/?url=#{@track.sc.uri}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true'></iframe>"
 					.appendTo($("#player"))
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
@@ -136,8 +137,13 @@ SoundcloudPlayer = MusicPlayer.extend
 		@off()
 		@trigger "destroy"
 	init: (callback) ->
-		@track = @attributes.media.oembed
-		url = decodeURIComponent(decodeURIComponent(@track.html))
+		if @get("media")?
+			@track = @attributes.media.oembed if @attributes.media?
+			url = decodeURIComponent(decodeURIComponent(@track.html))
+		else
+			console.error "SoundcloudPlayer :: Not Streamable"
+			RMP.dispatcher.trigger "controls:forward"
+			return
 
 		user_id = url.match(/\/users\/(\d+)/)
 		@track.type = "users" if user_id?
@@ -151,7 +157,7 @@ SoundcloudPlayer = MusicPlayer.extend
 		@track.type = "playlists" if track_id?
 		@track.id = track_id[1] if track_id?
 
-		console.log @track
+		console.log @track if FLAG_DEBUG
 		$.ajax
 			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
 			jsonp: "callback"
@@ -160,16 +166,23 @@ SoundcloudPlayer = MusicPlayer.extend
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
 				console.log sctrack if FLAG_DEBUG
-				if not sctrack.streamable then throw new Error("Not Streamable")
+				if not sctrack.streamable
+					console.error "SoundcloudPlayer :: Not Streamable"
+					RMP.dispatcher.trigger "controls:forward"
 				@track.sc = sctrack
 
 				RMP.progressbar.enableSoundcloud @track.sc.waveform_url
 				@setUp callback
+			error: (xhr, status, err) =>
+				console.error "SoundcloudPlayer :: Error Loading :: ", status, err
+				RMP.dispatcher.trigger "controls:forward"
 	initialize: () ->
 		@$el = $("#player") if not @$el?
 		@init () =>
-			@player.load @track.sc.uri,
+			@player.load "#{@track.sc.uri}",
 				auto_play: true
+				visual: true
+
 
 MP3Player = MusicPlayer.extend
 	type: "mp3"
