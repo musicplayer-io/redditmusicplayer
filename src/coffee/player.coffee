@@ -125,7 +125,7 @@ SoundcloudPlayer = MusicPlayer.extend
 		if not @player?
 			console.log "setting up iframe" if FLAG_DEBUG
 			if $("#soundcloud").length is 0
-				iframe = $ "<iframe id='soundcloud' width='100%' height='450' scrolling='no' frameborder='no' src='https://w.soundcloud.com/player/?url=#{@track.sc.uri}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true'></iframe>"
+				iframe = $ "<iframe id='soundcloud' width='100%' height='450' scrolling='no' frameborder='no' src='//w.soundcloud.com/player/?url=#{@track.sc.uri}&amp;auto_play=true&amp;hide_related=true&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true'></iframe>"
 					.appendTo($("#player"))
 			@player = SC.Widget "soundcloud"
 			_.each @events(), (listener, ev) =>
@@ -138,7 +138,7 @@ SoundcloudPlayer = MusicPlayer.extend
 		@trigger "destroy"
 	init: (callback) ->
 		if @get("media")?
-			@track = @attributes.media.oembed if @attributes.media?
+			@track = @attributes.media.oembed
 			url = decodeURIComponent(decodeURIComponent(@track.html))
 		else
 			console.error "SoundcloudPlayer :: Not Streamable"
@@ -313,7 +313,7 @@ VimeoPlayer = MusicPlayer.extend
 		@player.postMessage JSON.stringify(options), "*"
 	init: () ->
 		console.log "VimeoPlayer :: Making Player" if FLAG_DEBUG
-		@playerEl = $("<iframe src='http://player.vimeo.com/video/#{@track.id}?api=1&autoplay=1&player_id=vimeoplayer' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
+		@playerEl = $("<iframe src='//player.vimeo.com/video/#{@track.id}?api=1&autoplay=1&player_id=vimeoplayer' webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'>")
 		@$el.append @playerEl
 		@player = @playerEl[0].contentWindow
 		@postMessage method: "play"
@@ -460,8 +460,8 @@ RMP.player = new PlayerController
 
 # Youtube functions
 RMP.dispatcher.once "app:main", () ->
-	$("<script src='https://www.youtube.com/iframe_api' />").appendTo $(".scripts")
-	$("<script src='https://w.soundcloud.com/player/api.js' />").appendTo $(".scripts")
+	$("<script src='//www.youtube.com/iframe_api' />").appendTo $(".scripts")
+	$("<script src='//w.soundcloud.com/player/api.js' />").appendTo $(".scripts")
 
 onYouTubeIframeAPIReady = () ->
 	console.log "Youtube :: iFramed" if FLAG_DEBUG
