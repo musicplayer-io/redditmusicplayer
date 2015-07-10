@@ -27,7 +27,7 @@ ProgressBar = Backbone.Model.extend
 		@listenTo RMP.dispatcher, "progress:current", @setCurrent
 		@listenTo RMP.dispatcher, "progress:loaded", @setLoaded
 		@listenTo RMP.dispatcher, "progress:duration", @setDuration
-		
+
 
 ProgressBarView = Backbone.View.extend
 	events:
@@ -51,7 +51,7 @@ ProgressBarView = Backbone.View.extend
 		@$(".progress .current").css("width", @percentage * 100 + "%")
 	stopSeeking: () ->
 		return if not @justSeeked
-		
+
 		RMP.dispatcher.trigger "progress:set", @percentage, not RMP.dragging
 		console.log "ProgressBarView :: Seek :: #{@percentage * 100}%" if FLAG_DEBUG and RMP.dragging is false
 
@@ -138,20 +138,36 @@ VolumeControl = Backbone.Model.extend
 			localStorage["volume"] = @get("volume")
 		catch e
 			console.error e
-		
+
 	initialize: () ->
 		@listenTo @, "change:volume", @volumeChange
 		@set "volume", (localStorage["volume"]) if localStorage["volume"]?
 
 VolumeControlView = Backbone.View.extend
 	events:
-		"click .volume.popup": "click"
-	click: (e) ->
+		"mousemove .volume.popup": "seeking"
+		"mousedown .volume.popup": "startSeeking"
+	justSeeked: false
+	setPercentage: (e) ->
 		max = @model.get("size")
-		
 		offset = e.offsetY or e.layerY or e.originalEvent.layerY or 0 # firefox
 		current = (offset - max) * -1
-
+		ratio = current / max
+		@model.set "volume", ratio
+	startSeeking: (e) ->
+		RMP.dragging = true
+		@setPercentage e
+		@justSeeked = true
+	seeking: (e) ->
+		return if not @justSeeked # mousedown didn't start on volumebar, return
+		@setPercentage e
+	stopSeeking: () ->
+		return if not @justSeeked
+		@justSeeked = false
+	click: (e) ->
+		max = @model.get("size")
+		offset = e.offsetY or e.layerY or e.originalEvent.layerY or 0 # firefox
+		current = (offset - max) * -1
 		ratio = current / max
 		@model.set "volume", ratio
 	render: () ->
@@ -163,7 +179,7 @@ VolumeControlView = Backbone.View.extend
 			@$(".icon.volume").removeClass("off up down").addClass "off"
 		else
 			@$(".icon.volume").removeClass("off up down").addClass "down"
-		
+
 	initialize: () ->
 		@listenTo @model, "change:volume", @render
 		@$(".volume.button").popup
@@ -172,6 +188,7 @@ VolumeControlView = Backbone.View.extend
 			position: "top center"
 			distanceAway: 0
 		@render()
+		@listenTo RMP.dispatcher, "events:stopDragging", @stopSeeking
 
 RMP.volumecontrol = new VolumeControlView
 	model: new VolumeControl
