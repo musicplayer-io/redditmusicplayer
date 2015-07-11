@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.5.13 - 11 July 2015
+
+* Mobile UI is now cleaner; hiding thumbnails on very small phones and tiny tweaks
+* Shuffle button shuffles your current playlist once per click
+* Getting more music is now more performant
+
 ### 0.5.12 - 10 July 2015
 
 * Volume control draggable

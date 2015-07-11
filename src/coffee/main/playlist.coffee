@@ -92,8 +92,10 @@ Playlist = Backbone.Collection.extend
 			RMP.dispatcher.trigger "app:loadedMusic"
 	more: (callback) ->
 		RMP.reddit.getMore @last().get("name"), (items) =>
+			parsedSongs = []
 			_.each items, (item) =>
-				@add @parseSong item.data
+				parsedSongs.push @parseSong item.data
+			@add parsedSongs
 			callback() if callback?
 	forward: () ->
 		return if RMP.remote.get("receiver") is false
@@ -156,18 +158,21 @@ PlaylistView = Backbone.View.extend
 		RMP.playlist.activate song
 	template: Templates.PlayListView
 	render: () ->
-		@$el.html ""
+		console.time "PlayListView :: Render" if FLAG_DEBUG
+		content = []
 		RMP.playlist.each (model) =>
-			@$el.append @template model.toJSON()
+		 	content.push @template model.toJSON()
+		@$el.html content.join ""
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song
+		console.timeEnd "PlayListView :: Render" if FLAG_DEBUG
 	setCurrent: (index, song) ->
 		@$(".item").removeClass "active"
 		$(@$(".item")[index]).addClass "active"
 	initialize: () ->
-		@listenTo RMP.playlist, "add", @render
 		@listenTo RMP.playlist, "remove", @render
 		@listenTo RMP.playlist, "reset", @render
+		@listenTo RMP.playlist, "update", @render
 		@listenTo RMP.dispatcher, "song:change", @setCurrent
 		console.log "PlayListView :: Ready" if FLAG_DEBUG
 
@@ -193,7 +198,7 @@ SortMethodView = Backbone.View.extend
 
 		RMP.reddit.changeSortMethod(sortMethod, topMethod)
 		RMP.dispatcher.trigger "controls:sortMethod", sortMethod, topMethod
-		
+
 		@render()
 	initialize: () ->
 		@render()
@@ -211,3 +216,6 @@ RMP.dispatcher.on "loaded:playlist", (page) ->
 
 	RMP.sortmethodview.setElement $(".content.playlist .sortMethod")
 	RMP.sortmethodview.render()
+
+	$(".shuffle-button").popup()
+	$(".shuffle-button").click -> RMP.playlist.reset(RMP.playlist.shuffle())

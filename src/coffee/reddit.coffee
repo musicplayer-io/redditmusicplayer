@@ -53,6 +53,7 @@ Reddit = Backbone.Model.extend
 				data: data
 				success: (r) ->
 					return console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
+					console.log "Reddit :: Music Received :: ", r.data.children.length if FLAG_DEBUG
 					callback r.data.children
 				error: (xhr, status, err) ->
 					console.error "Reddit :: #{status} :: #{err}", arguments
@@ -117,7 +118,7 @@ Reddit = Backbone.Model.extend
 			localStorage["topMethod"] = @get "topMethod"
 		catch e
 			console.error e
-		
+
 	initialize: () ->
 		@set "sortMethod", localStorage["sortMethod"] if localStorage["sortMethod"]?
 		@set "topMethod", localStorage["topMethod"] if localStorage["topMethod"]?

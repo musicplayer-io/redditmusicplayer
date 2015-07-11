@@ -9,10 +9,10 @@ html(xmlns:og='http://ogp.me/ns#')
 		link(href='/css/style.css?v=#{pkg.version}', rel='stylesheet')
 	body
 		include includes/titlebar 
-		.ui.container.active.one(data-page="browse", style="width: 20%;")
+		.ui.container.one(data-page="browse", style="width: 20%;")
 			include content/main/browse
 		if page && content
-			.ui.container.two(data-page=page, style="width: 46.66%; left: 20%;")
+			.ui.container.active.two(data-page=page, style="width: 46.66%; left: 20%;")
 				|!{content}
 		else
 			.ui.container.two(data-page="playlist", style="width: 46.66%; left: 20%;")

@@ -1,11 +1,13 @@
 .ui.titlebar.top.fixed.menu.reddit.inverted
 	.left.menu
-		.item.redditmusicplayer
+		.item.redditmusicplayer.phone-hide
 			span Music
 			|  Player 
 			span  for 
 			| Reddit
 			sup  #{pkg.version}
+		.item.phone-only
+			i.icon.music
 	.right.menu
 		.page.icon.pop.link.item(data-page="playlist", class={active: page == "playlist"}, , data-content="Playlist", data-variation="inverted")
 			i.icon.sound
@@ -20,9 +22,9 @@
 				i.icon.user
 				| Log In
 .ui.mobilebar.menu.reddit.inverted.three.item.wide.top.fixed
-	.link.one.item.active(data-page="browse") Browse
+	.link.one.item(data-page="browse") Browse
 	if page && content
-		.link.two.item(data-page=page) #{page}
+		.link.two.item.active(data-page=page) #{page}
 	else
-		.link.two.item(data-page="playlist") Playlist
+		.link.two.item.active(data-page="playlist") Playlist
 	.link.three.item(data-page="song") Song

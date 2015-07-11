@@ -237,6 +237,7 @@ RMP.dispatcher.on "loaded:browse", (page) ->
 	RMP.subredditplaylistview.render() if RMP.subredditplaylist.length > 0
 
 	RMP.customsubreddit.setElement $(".content.browse .custom-subreddit")
+	$(".share.pop").popup()
 
 RMP.dispatcher.on "app:main", () ->
 	if RMP.URLsubreddits?

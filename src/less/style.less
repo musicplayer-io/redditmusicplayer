@@ -13,6 +13,7 @@
 @desktop:   ~"only screen and (min-width: 960px)";
 @tablet:    ~"only screen and (min-width: 720px) and (max-width: 959px)";
 @phone: 	~"only screen and (max-width: 719px)";
+@tiny:      ~"only screen and (max-width: 400px)";
 
 @maxwidth: 1280px;
 
@@ -95,6 +96,19 @@ a {
     }
 }
 
+.phone-only {
+	display: none !important;
+	@media @phone {
+		display: block !important;
+	}
+}
+
+.phone-hide {
+	@media @phone {
+		display: none !important;
+	}
+}
+
 
 // color override
 /*--- button ---*/
@@ -146,7 +160,11 @@ a {
 
 // Menus
 .ui.inverted.reddit.menu.top.titlebar {
-	 background: lighten(@col-bg, 5%) url(../images/header.png) top repeat-x;
+	 background: lighten(@col-bg, 5%) url(/images/header.png) top repeat-x;
+	 height: 45px;
+	 .item {
+		 padding: 1.1em 1em;
+	 }
 	.redditmusicplayer {
 		text-align: center;
 		font-weight: 400;
@@ -156,7 +174,6 @@ a {
 			font-variant: small-caps;
 			font-weight: 300;
 		}
-		padding: 13px;
 	}
 	.input.reddit {
 		font-weight: 300;
@@ -184,6 +201,13 @@ a {
 			&:hover, &:focus {
 				background: lighten(@col-bg, 15%);
 			}
+		}
+	}
+
+	@media @phone {
+		.music {
+			color: @col-primary;
+			opacity: 1;
 		}
 	}
 }
@@ -320,13 +344,27 @@ a {
 
 // switcher
 .switcher {
-	.dropdown {
+	.dropdown, .right {
 		float: right;
 		position: absolute;
 		right: 0px;
 		top: 0px;
 		margin: .5em;
 		padding: .5em;
+		opacity: .9;
+		transition: opacity .1s;
+		&:hover, &:focus {
+			opacity: 1;
+		}
+		&.shuffle-button {
+			right: 40px;
+			display: inline-block;
+			cursor: pointer;
+			line-height: 1em;
+			&.active {
+				color: @col-gold;
+			}
+		}
 	}
 	margin-bottom: 1em;
 	border-bottom: 1px dashed darken(@col-fg, 70%);
@@ -728,7 +766,20 @@ a {
 			}
 		}
 	}
-
+	@media @tiny {
+		padding: .5em .5em;
+		.ui.vertical.playlist {
+			.ui.item {
+				padding: 5px;
+				.thumbnail {
+					display: none;
+				}
+				> .content {
+					padding: .5em;
+				}
+			}
+		}
+	}
 }
 
 .ui.container > .content.remote {
