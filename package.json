@@ -1,6 +1,6 @@
 {
   "name": "redditmusicplayer-builder",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "Builder for Music Player for Reddit",
   "scripts": {
     "start": "coffee server/server.coffee"

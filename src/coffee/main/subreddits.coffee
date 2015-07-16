@@ -90,21 +90,25 @@ SubredditPlayListView = Backbone.View.extend
 	template: Templates.SubredditCurrentPlayListView
 	render: () ->
 		@$(".menu.selection").html("")
+
 		if RMP.search?
 			sub = new Subreddit
 				category: "search"
 				name: "search: #{RMP.search.get('text')}"
 				text: "search: #{RMP.search.get('text')}"
 			@$(".menu.selection").append @template sub.toJSON()
+
 		else if RMP.multi
 			sub = new Subreddit
 				category: "multi"
 				name: RMP.multi
 				text: RMP.multi
 			@$(".menu.selection").append @template sub.toJSON()
+
 		else
 			RMP.subredditplaylist.each (model) =>
 				@$(".menu.selection").append @template model.toJSON()
+
 	initialize: () ->
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
@@ -123,7 +127,7 @@ SubredditSelectionView = Backbone.View.extend
 		currentReddit = new Subreddit
 			category: @category
 			name: target.data "value"
-			text: target.text()
+			text: target.data "name"
 
 		if target.hasClass "active"
 			RMP.subredditplaylist.get(currentReddit).destroy()
@@ -163,6 +167,13 @@ SubredditSelectionView = Backbone.View.extend
 		@listenTo RMP.subredditplaylist, "add", @render
 		@listenTo RMP.subredditplaylist, "remove", @render
 		@listenTo RMP.subredditplaylist, "reset", @render
+
+		@$(".menu.selection .item").popup
+			variation: "inverted"
+			position: "right center"
+			transition: "fade"
+			delay:
+	      show: 300
 
 		console.log "SubredditSelectionView :: View Made", @category if FLAG_DEBUG
 

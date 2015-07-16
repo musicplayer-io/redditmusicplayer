@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.5.14 - 17 July 2015
+
+* Sorting subreddits by subscribers instead, adding more options in the future
+* Showing the title and description in the subreddit browser on hover
+
 ### 0.5.13 - 11 July 2015
 
 * Mobile UI is now cleaner; hiding thumbnails on very small phones and tiny tweaks

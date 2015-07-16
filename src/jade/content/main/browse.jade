@@ -1,9 +1,8 @@
 .content.browse
 	mixin subreddit(sub)
-		a.subreddit.item(data-value=sub.toLowerCase())
-			| #{sub}
-			i.icon.add
-			i.icon.remove
+		a.subreddit.item(data-value=sub.key.toLowerCase(), data-name=sub.name, data-category=sub.category, data-created=sub.created, data-subscribers=sub.subscribers, data-title=sub.title, data-content=sub.description)
+			| #{sub.name}
+			.ui.right.floated.tiny.label= sub.subscribers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 		| 
 	.switcher.phone-hide
 		i.icon.list
@@ -24,10 +23,10 @@
 		input(type="text", placeholder="Custom Subreddit")
 		.ui.button.icon.small.gold: i.icon.add
 
-	for category in _.shuffle(_.keys(subs))
-		.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category=_.kebabCase(category))
-			.item
-				| #{category}
-				.menu.selection
-					each sub in _.shuffle(subs[category])
-						+subreddit(sub)
+	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="subreddits")
+		.item
+			| Subreddit
+			.ui.right.floated.label Subscribers
+			.menu.selection
+				each sub in _.sortByAll(subs, "subscribers").reverse()
+					+subreddit(sub)

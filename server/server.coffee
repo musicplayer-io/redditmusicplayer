@@ -29,9 +29,9 @@ http.listen app.get("port"), () ->
 	grn = `"\033[1;32m"`
 	red = `"\033[1;31m"`
 	rst = `"\033[0m"`
-	subs = _.flatten(_.values(app.locals.subs))
+	subs = app.locals.subs
 	console.log """
-	           #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{rst}  
+	           #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{rst}
 	         #{red}♫ #{blu}♪ #{ylw}♫ #{rst} #{wht} Music Player #{rst} #{red}♫ #{blu}♪ #{ylw}♫ #{rst}
 	  __    ------------------------------
 	 |--|   Port         #{blu}#{app.get("port")} #{rst}
@@ -39,7 +39,7 @@ http.listen app.get("port"), () ->
 	() ()   Environment  #{blu}#{app.get "env"} #{rst}
 	        Subreddits   #{blu}#{subs.length} #{rst}
 	"""
-	
+
 # Socket IO
 io = require("socket.io") http
 require("./sockets") io
