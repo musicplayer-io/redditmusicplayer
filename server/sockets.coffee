@@ -25,7 +25,7 @@ module.exports = (socketio) ->
 	io.use passportSocketIo.authorize
 		cookieParser: cookieParser
 		key: "rmp.id"
-		secret: "Reddit Music Player"
+		secret: "Reddit Video Player"
 		store: new RedisStore
 			prefix: "sess"
 			port: 6379

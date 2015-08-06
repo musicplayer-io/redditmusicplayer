@@ -1,10 +1,10 @@
 {
-  "name": "redditmusicplayer-server",
+  "name": "redditvideoplayer-server",
   "version": "0.5.14",
-  "description": "Music Player for Reddit Server",
+  "description": "Video Player for Reddit Server",
   "repository": {
     "type": "git",
-    "url": "git@github.com:musicplayer-io/redditmusicplayer.git"
+    "url": "git@github.com:musicplayer-io/redditvideoplayer.git"
   },
   "scripts": {
     "start": "coffee server.coffee"

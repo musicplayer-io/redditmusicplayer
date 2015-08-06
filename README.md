@@ -2,7 +2,7 @@
 <h1 align="center">
   <br>
   <a href="http://reddit.musicplayer.io" title="reddit.musicplayer.io">
-  <img width="650" src="https://cloud.githubusercontent.com/assets/304283/8148060/19b85c3c-1279-11e5-9004-7dda6ee8f7d7.png" alt="music player for reddit">
+  <img width="650" src="https://cloud.githubusercontent.com/assets/304283/8148060/19b85c3c-1279-11e5-9004-7dda6ee8f7d7.png" alt="video player for reddit">
   </a>
   <br>
   <br>

@@ -17,7 +17,7 @@ Reddit = Backbone.Model.extend
 				console.log resp if FLAG_DEBUG
 	subreddits: () ->
 		if RMP.subredditplaylist.length is 0
-			return "listentothis"
+			return "videos"
 		else
 			return RMP.subredditplaylist.toString()
 	getMusic: (callback, after, limit) ->

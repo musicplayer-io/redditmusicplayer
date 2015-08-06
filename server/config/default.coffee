@@ -31,18 +31,18 @@ passport.use new RedditStrategy
 
 module.exports = ->
 	baseDir = @set "baseDir"
-	
+
 	# The port the server should run on
-	@set "port", process.env.PORT or 4008
-	
+	@set "port", process.env.PORT or 4009
+
 	@set "view engine", "jade"
 	@set "views", baseDir + "/src/jade"
-		
+
 	# Set the server"s public directory
 	@use express.static(baseDir + "/app")
 
 	@use logger "dev"
-	
+
 	@use cookieParser()
 	@use bodyParser.json()
 	@use bodyParser.urlencoded extended: false
@@ -50,7 +50,7 @@ module.exports = ->
 		resave: true
 		saveUninitialized: true
 		name: "rmp.id"
-		secret: "Reddit Music Player"
+		secret: "Reddit Video Player"
 		store: new RedisStore
 			prefix: "sess"
 			port: 6379
@@ -58,7 +58,7 @@ module.exports = ->
 		cookie:
 			secure: false
 			maxAge: 30 * (24 * 60 * 60 * 1000) # days
-	
+
 	# Authentication
 	@use passport.initialize()
 	@use passport.session()

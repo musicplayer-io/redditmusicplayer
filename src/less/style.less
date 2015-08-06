@@ -320,9 +320,26 @@ a {
 	width: 33.33%;
 	overflow-y: scroll;
 
-	&.one {left: 0%;}
-	&.two {left: 33.33%;}
-	&.three {left: 66.66%;}
+	&.one {
+		left: 0%;
+		width: 25%;
+		bottom: 35px;
+		top: auto;
+		height: ~"calc(40% - 45px)";
+	}
+	&.two {
+		left: 25%;
+		width: 75%;
+		bottom: 35px;
+		top: auto;
+		height: ~"calc(40% - 45px)";
+	}
+	&.three {
+		left: 0;
+		width: 100%;
+		top: 45px;
+		height: ~"calc(60% - 35px)";
+	}
 
 	> .content {
 		padding: .5em 1em;

@@ -40,8 +40,8 @@ SubredditPlayListView = Backbone.View.extend
 		"click .menu.selection .item": "remove"
 	share: (e) ->
 		subs = RMP.subredditplaylist.pluck("name")
-		link = "#{API.MusicPlayer.base}/r/#{subs.join('+')}?autoplay"
-		shortLink = "#{API.MusicPlayer.short}/r/#{subs.join('+')}?autoplay"
+		link = "#{API.VideoPlayer.base}/r/#{subs.join('+')}?autoplay"
+		shortLink = "#{API.VideoPlayer.short}/r/#{subs.join('+')}?autoplay"
 
 		modal = $("#modalSubredditShare")
 		modal.modal('setting', 'transition', "vertical flip")
@@ -52,17 +52,17 @@ SubredditPlayListView = Backbone.View.extend
 		$("#subredditsShort,#subredditsLink").click -> @select()
 
 		$("#modalSubredditShare .twitter").click () ->
-			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			text = "I 💛 Video Player for Reddit. I'm listening to #{subs.join(', ') } "
 			url = "https://twitter.com/intent/tweet?text=#{encodeURIComponent(text)}&url=#{encodeURIComponent(shortLink)}&via=musicplayer_io&related=musicplayer_io"
 			openPopup url, "twitter"
 
 		$("#modalSubredditShare .facebook").click () ->
-			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			text = "I 💛 Video Player for Reddit. I'm listening to #{subs.join(', ') } "
 			url = "https://www.facebook.com/sharer/sharer.php?u=#{encodeURIComponent(link)}"
 			openPopup url, "facebook"
 
 		$("#modalSubredditShare .google.plus").click () ->
-			text = "I 💛 Music Player for Reddit. I'm listening to #{subs.join(', ') } "
+			text = "I 💛 Video Player for Reddit. I'm listening to #{subs.join(', ') } "
 			url = "https://plus.google.com/share?url=#{encodeURIComponent(link)}"
 			openPopup url, "google plus"
 
@@ -264,5 +264,5 @@ RMP.dispatcher.on "app:main", () ->
 		if (RMP.subredditplaylist.length is 0)
 			RMP.subredditplaylist.add new Subreddit
 				category: "Other"
-				name: "listentothis"
-				text: "Listen To This"
+				name: "videos"
+				text: "videos"

@@ -1,13 +1,13 @@
 {
-  "name": "redditmusicplayer-builder",
+  "name": "redditvideoplayer-builder",
   "version": "0.5.14",
-  "description": "Builder for Music Player for Reddit",
+  "description": "Builder for Video Player for Reddit",
   "scripts": {
     "start": "coffee server/server.coffee"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:musicplayer-io/redditmusicplayer.git"
+    "url": "git@github.com:videoplayer-io/redditvideoplayer.git"
   },
   "author": "Ilias Ismanalijev",
   "license": "GPLv3",

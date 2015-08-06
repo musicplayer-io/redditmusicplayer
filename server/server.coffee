@@ -32,7 +32,7 @@ http.listen app.get("port"), () ->
 	subs = app.locals.subs
 	console.log """
 	           #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{blu}♫    #{grn}♪ #{blu}♫  #{grn}♪ #{rst}
-	         #{red}♫ #{blu}♪ #{ylw}♫ #{rst} #{wht} Music Player #{rst} #{red}♫ #{blu}♪ #{ylw}♫ #{rst}
+	         #{red}♫ #{blu}♪ #{ylw}♫ #{rst} #{wht} Video Player #{rst} #{red}♫ #{blu}♪ #{ylw}♫ #{rst}
 	  __    ------------------------------
 	 |--|   Port         #{blu}#{app.get("port")} #{rst}
 	 |  |   Version      #{blu}#{pkg.version} #{rst}
