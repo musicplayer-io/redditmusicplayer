@@ -11,11 +11,14 @@ General:
   - BestOfWorldstar
   - CuriousVideo
   - YouTube
-  - Sports
   - RedditPicks
   - KidSafeVideos
   - HappyCrowds
   - ShopTours
+
+Sports:
+  - Sports
+  - TheOcho
 
 Work:
   - ArtisanVideos
@@ -31,7 +34,6 @@ Movie:
   - Animation
   - MoviesInTheMaking
   - CinemaSins
-
 
 Longer:
   - FullMoviesOnYouTube

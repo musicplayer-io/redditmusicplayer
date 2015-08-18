@@ -24,9 +24,9 @@
 		.ui.button.icon.small.gold: i.icon.add
 
 	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="subreddits")
-		.item
-			| Subreddit
-			.ui.right.floated.label Subscribers
-			.menu.selection
-				each sub in _.sortByAll(subs, "subscribers").reverse()
-					+subreddit(sub)
+		each group in _.groupBy(subs, "category")
+			.item
+				| #{_.first(group).category}
+				.menu.selection
+					each sub in _.sortByAll(group, "subscribers").reverse()
+						+subreddit(sub)

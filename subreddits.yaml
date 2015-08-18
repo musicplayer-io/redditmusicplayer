@@ -8,7 +8,7 @@
   header_tite: ''
   header_image: ''
   description: ''
-- subscribers: 237
+- subscribers: 246
   created: 1361839900
   url: /r/Mattophobia/
   name: Mattophobia
@@ -23,7 +23,7 @@
     https://www.youtube.com/Mattophobia
 
     https://twitter.com/Mattophobia
-- subscribers: 303
+- subscribers: 313
   created: 1392690760
   url: /r/barbervideos/
   name: barbervideos
@@ -33,7 +33,7 @@
   header_tite: ''
   header_image: ''
   description: This subreddit is for non-instructional barber videos to showcase the wide variety of barbers from around the world.
-- subscribers: 643
+- subscribers: 657
   created: 1253025523
   url: /r/sciencevideos/
   name: sciencevideos
@@ -43,7 +43,7 @@
   header_tite: ''
   header_image: ''
   description: ''
-- subscribers: 1166
+- subscribers: 1207
   created: 1433888041
   url: /r/shoptours/
   name: shoptours
@@ -53,7 +53,7 @@
   header_tite: ''
   header_image: ''
   description: A subreddit for videos of workshop tours.
-- subscribers: 1552
+- subscribers: 1558
   created: 1297463151
   url: /r/KidSafeVideos/
   name: KidSafeVideos
@@ -63,7 +63,7 @@
   header_tite: 'ok... this is the *last one*.'
   header_image: ''
   description: ''
-- subscribers: 3712
+- subscribers: 3738
   created: 1387585855
   url: /r/TheWayWeWereOnVideo/
   name: TheWayWeWereOnVideo
@@ -73,7 +73,7 @@
   header_tite: ''
   header_image: ''
   description: 'A collection of home movies or any other kinds of videos that capture **everyday life** of people from past decades. Inspired by /r/TheWayWeWere.'
-- subscribers: 4658
+- subscribers: 4744
   created: 1350223977
   url: /r/FoodVideos/
   name: FoodVideos
@@ -83,7 +83,7 @@
   header_tite: ''
   header_image: ''
   description: 'Post videos about food!'
-- subscribers: 7840
+- subscribers: 8005
   created: 1383139741
   url: /r/CinemaSins/
   name: CinemaSins
@@ -93,7 +93,7 @@
   header_tite: /r/TheAbles and /r/WhatCinemaSinsMissed
   header_image: ''
   description: "The official subreddit of [that youtube channel, CinemaSins](http://youtube.com/user/CinemaSins). Because everyone needs a place to talk about how lap dances aren't in **that scene** of **that movie**."
-- subscribers: 9540
+- subscribers: 9632
   created: 1388569704
   url: /r/TheMakingOfGames/
   name: TheMakingOfGames
@@ -103,7 +103,7 @@
   header_tite: TheMakingOfGames
   header_image: ''
   description: "This subreddit is about the creation of our favourite games. Whether it's 'the making of', a presentation, podcast, concept art, or other 'behind the scenes' content, this is the place!"
-- subscribers: 9617
+- subscribers: 9693
   created: 1290304075
   url: /r/TheMakingOf/
   name: TheMakingOf
@@ -113,7 +113,17 @@
   header_tite: Ice to see you
   header_image: ''
   description: 'Share videos of behind the scenes footage, interviews and making of documentaries.'
-- subscribers: 12618
+- subscribers: 13013
+  created: 1314224993
+  url: /r/theocho/
+  name: theocho
+  key: theocho
+  category: Sports
+  title: "the Ocho: if it's almost a sport, we've got it here"
+  header_tite: ''
+  header_image: ''
+  description: ''
+- subscribers: 13707
   created: 1403486698
   url: /r/mealtimevideos/
   name: mealtimevideos
@@ -123,7 +133,7 @@
   header_tite: ''
   header_image: ''
   description: "Videos to watch when you're sitting down for a quick meal and need something to watch for 10 to 30 minutes."
-- subscribers: 16671
+- subscribers: 17693
   created: 1362875485
   url: /r/FastWorkers/
   name: FastWorkers
@@ -133,7 +143,7 @@
   header_tite: ''
   header_image: ''
   description: 'Videos of talented workers, who are speedy and accurate.'
-- subscribers: 23738
+- subscribers: 23925
   created: 1201236231
   url: /r/video/
   name: video
@@ -143,7 +153,7 @@
   header_tite: ''
   header_image: ''
   description: "reddit's videos"
-- subscribers: 27237
+- subscribers: 27773
   created: 1219789019
   url: /r/animation/
   name: animation
@@ -153,7 +163,7 @@
   header_tite: ''
   header_image: ''
   description: 'For animators and fans of animation - news, shorts, discussions, and everything else!'
-- subscribers: 27858
+- subscribers: 28819
   created: 1226424332
   url: /r/trailers/
   name: trailers
@@ -163,7 +173,7 @@
   header_tite: /r/trailers
   header_image: ''
   description: 'This subreddit is dedicated to viewing the latest trailers!'
-- subscribers: 29058
+- subscribers: 29451
   created: 1328152366
   url: /r/nerdcubed/
   name: nerdcubed
@@ -173,7 +183,7 @@
   header_tite: Welcome to the domain of the Nerd³
   header_image: ''
   description: 'The official subreddit dedicated to the Gaming YouTuber and ego known as Nerd³. http://www.nerdcubed.co.uk/'
-- subscribers: 29370
+- subscribers: 30569
   created: 1201244325
   url: /r/youtube/
   name: youtube
@@ -183,7 +193,7 @@
   header_tite: ''
   header_image: ''
   description: 'This subreddit is for news, announcements, and intelligent discussion of YouTube announcements, features, bugs, design, channels, and trends.'
-- subscribers: 35044
+- subscribers: 35163
   created: 1342252871
   url: /r/Moviesinthemaking/
   name: Moviesinthemaking
@@ -193,7 +203,7 @@
   header_tite: ''
   header_image: ''
   description: A behind-the-scenes look at the wonderful world of movies
-- subscribers: 37302
+- subscribers: 40745
   created: 1349427974
   url: /r/happycrowds/
   name: happycrowds
@@ -203,7 +213,17 @@
   header_tite: 'Joyous, Loud, and Boisterous Crowds'
   header_image: ''
   description: "A subreddit for clips of massive audience support for a musician, athlete, performer, entertainer, whathaveyou. Crowds singing along, chanting the name of a champion, dancing in the aisles, cheering until it's deafening, the rolling slow clap, etc. We're looking for the clips that give you a chill and make you wish you were there."
-- subscribers: 39670
+- subscribers: 41523
+  created: 1333204817
+  url: /r/bestofworldstar/
+  name: bestofworldstar
+  key: bestofworldstar
+  category: General
+  title: The Best Of World Star Hip-Hop
+  header_tite: ''
+  header_image: ''
+  description: ''
+- subscribers: 42831
   created: 1264137719
   url: /r/ObscureMedia/
   name: ObscureMedia
@@ -222,18 +242,8 @@
     the not so often seen? Well perhaps this reddit is for you. Post your
     favorites. Discuss, request info whatever.  Silent films? 60's &amp; 70's
     exploitation flicks? Old classics? Old TV. Pretty much anything   Give it
-    a try.  Please include the year in your submission title.
-- subscribers: 41028
-  created: 1333204817
-  url: /r/bestofworldstar/
-  name: bestofworldstar
-  key: bestofworldstar
-  category: General
-  title: The Best Of World Star Hip-Hop
-  header_tite: ''
-  header_image: ''
-  description: ''
-- subscribers: 47347
+    a try.
+- subscribers: 48516
   created: 1329179156
   url: /r/NotTimAndEric/
   name: NotTimAndEric
@@ -243,7 +253,7 @@
   header_tite: ''
   header_image: ''
   description: This is subreddit for videos that are similar to content that could be found on the Tim and Eric show.
-- subscribers: 113918
+- subscribers: 116570
   created: 1336564914
   url: /r/ContagiousLaughter/
   name: ContagiousLaughter
@@ -256,7 +266,7 @@
     Something to put you in a good mood
 
     Videos and audio of people laughing infectiously. No context required
-- subscribers: 120420
+- subscribers: 126547
   created: 1364241590
   url: /r/DeepIntoYouTube/
   name: DeepIntoYouTube
@@ -266,7 +276,7 @@
   header_tite: Deep Into YouTube
   header_image: ''
   description: 'A place to venture into the deep, dark depths of youtube to find things you never thought you would.'
-- subscribers: 130410
+- subscribers: 133641
   created: 1297162860
   url: /r/ArtisanVideos/
   name: ArtisanVideos
@@ -276,17 +286,17 @@
   header_tite: ''
   header_image: ''
   description: ''
-- subscribers: 138967
+- subscribers: 140319
   created: 1337314960
   url: /r/montageparodies/
   name: montageparodies
   key: montageparodies
   category: Humour
   title: 'montageparodies: Satirize the videogame montage community, life'
-  header_tite: Pyrocynical is a Furry
+  header_tite: 'Midnight Editing w/Chuul0 '
   header_image: ''
   description: Video parodies of the typical video game montage
-- subscribers: 168253
+- subscribers: 171734
   created: 1331921987
   url: /r/youtubehaiku/
   name: youtubehaiku
@@ -296,7 +306,7 @@
   header_tite: Youtube Haiku
   header_image: ''
   description: "Youtube Haiku: Any almost poetic video under 14 seconds. Don't ask me why 14 seconds; it's just a number I have learned from experience.  Videos can still be poetic after 15 or longer, but no longer than 30 seconds."
-- subscribers: 205377
+- subscribers: 207212
   created: 1353314128
   url: /r/fullmoviesonyoutube/
   name: fullmoviesonyoutube
@@ -306,7 +316,7 @@
   header_tite: 'Full Movies On YouTube!'
   header_image: ''
   description: 'Full Movies on YouTube!'
-- subscribers: 225712
+- subscribers: 230585
   created: 1339020853
   url: /r/LearnUselessTalents/
   name: LearnUselessTalents
@@ -316,7 +326,7 @@
   header_tite: Entertainment at its finest.
   header_image: ''
   description: This is a place to learn how to do cool things that have no use other than killing time and impressing strangers.
-- subscribers: 251724
+- subscribers: 263629
   created: 1313123391
   url: /r/GlobalOffensive/
   name: GlobalOffensive
@@ -326,7 +336,7 @@
   header_tite: 'I play CS:GO. AMA.'
   header_image: ''
   description: ''
-- subscribers: 350689
+- subscribers: 358067
   created: 1252626881
   url: /r/cringe/
   name: cringe
@@ -336,7 +346,7 @@
   header_tite: "Don't forget to feed the rabbits!"
   header_image: ''
   description: '/r/cringe: a place to share embarassing personal stories and videos of awkward situations.'
-- subscribers: 443636
+- subscribers: 446601
   created: 1244686767
   url: /r/Minecraft/
   name: Minecraft
@@ -349,7 +359,7 @@
     Minecraft community on reddit.
 
     Please read the [rules](http://www.reddit.com/r/Minecraft/wiki/rules) before posting.
-- subscribers: 633728
+- subscribers: 642113
   created: 1210023584
   url: /r/Games/
   name: Games
@@ -367,13 +377,13 @@
     Submissions should be for the purpose of informing or initiating
     a discussion, not just with the goal of entertaining viewers. Memes, comics,
     funny screenshots, arts-and-crafts, etc. will be removed.
-- subscribers: 714648
+- subscribers: 726166
   created: 1263422348
   url: /r/leagueoflegends/
   name: leagueoflegends
   key: leagueoflegends
   category: Gaming
-  title: League of Bug Fixes
+  title: League of Legends
   header_tite: Thanks to /u/theKonster and others for our Snoos
   header_image: ''
   description: >-
@@ -385,7 +395,7 @@
 
     /r/Leagueoflegends is dedicated to discuss everything about League of Legends
     from eSports, Champion Discussions, Game Meta etc.
-- subscribers: 3516533
+- subscribers: 3732562
   created: 1206105722
   url: /r/Documentaries/
   name: Documentaries
@@ -394,28 +404,18 @@
   title: Documentaries
   header_tite: tl;dw
   header_image: ''
-  description: >-
-    We have decided to join several other subreddits in going dark to protest the
-    lack of communication between the reddit admins and the volunteers who help
-    keep the subreddits running.
-
-
-
-    We apologize for the inconvenience, and hope to be back to our normal state
-    as soon as possible. For an explanation of what is going on, please see this
-    outoftheloop thread. Also - please check out /r/doctalk for discussions on
-    documentaries and for requests!
-- subscribers: 4043943
+  description: tl;dw
+- subscribers: 4247668
   created: 1190054581
   url: /r/sports/
   name: sports
   key: sports
-  category: General
+  category: Sports
   title: the sportspage of the internet
   header_tite: ''
   header_image: ''
   description: The central hub for all things sports on reddit.
-- subscribers: 4605792
+- subscribers: 4620698
   created: 1201268659
   url: /r/WTF/
   name: WTF
@@ -425,7 +425,7 @@
   header_tite: What. The. Fuck.
   header_image: ''
   description: 'Things that make you say "What the F*ck".'
-- subscribers: 4984934
+- subscribers: 5192486
   created: 1201276354
   url: /r/television/
   name: television
@@ -435,7 +435,7 @@
   header_tite: ''
   header_image: ''
   description: 'A general-topic television subreddit for discussion, reviews, and top level news sources. We do not accept disposable content like images, memes, blogspam, or lists. We keep a directory of series-specific subreddits that have much less stingy rules in our sidebar.'
-- subscribers: 8154849
+- subscribers: 8364150
   created: 1190054605
   url: /r/gaming/
   name: gaming
@@ -445,7 +445,7 @@
   header_tite: 'Games! Board, tabletop, mobile, cards, consoles, arcades &amp; computer. We all play together!'
   header_image: ''
   description: 'A subreddit for (almost) anything related to games - video games, board games, card games, etc. (but not [sports](http://www.reddit.com/r/sports)).'
-- subscribers: 8214714
+- subscribers: 8422733
   created: 1201232236
   url: /r/videos/
   name: videos
@@ -455,7 +455,7 @@
   header_tite: Presented in 4D Where Available
   header_image: ''
   description: A great place for video content of all kinds.
-- subscribers: 9046191
+- subscribers: 9258114
   created: 1201242956
   url: /r/funny/
   name: funny
