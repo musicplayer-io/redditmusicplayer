@@ -18,15 +18,15 @@
 			| My Subreddit Playlist
 			.menu.selection
 				p.item.description Select subreddits to add them to your subreddit playlist.
-				
+
 	.ui.input.action.fluid.inverted.custom-subreddit
 		input(type="text", placeholder="Custom Subreddit")
 		.ui.button.icon.small.gold: i.icon.add
 
 	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="subreddits")
 		.item
-			| Subreddit
-			.ui.right.floated.label Subscribers
+			.item.subreddits-heading Subreddit
+				.ui.right.floated.label Subscribers
 			.menu.selection
 				each sub in _.sortByAll(subs, "subscribers").reverse()
 					+subreddit(sub)
