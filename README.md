@@ -54,7 +54,7 @@ Then edit it in `src/coffee/config.coffee`.
 #### Reddit
 
 [Get the API key](https://www.reddit.com/prefs/apps/) - Only required for authentication.
-You can set an API key for development and production seperately in `server/config.reddit.coffee`.
+You can set an API key for development and production separately in `server/config.reddit.coffee`.
 
 
 # License
