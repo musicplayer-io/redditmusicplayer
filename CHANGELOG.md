@@ -1,5 +1,12 @@
 ## Changelog
 
+### 0.5.15 - 16 September 2015
+
+* Add timestamps to dates
+* Fix metalcore being listed twice - brandly
+* Fix layout for subreddit list heading - brandly 
+* Fix upvote/downvote cursor - mixxorz
+
 ### 0.5.14 - 17 July 2015
 
 * Sorting subreddits by subscribers instead, adding more options in the future

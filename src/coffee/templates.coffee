@@ -73,7 +73,7 @@ Templates =
 					<a href='http://reddit.com/u/<%=author%>' target='_blank' class='value author'>/u/<%= author %></a>
 					<div class='label'>Author</div>
 				</div>
-				<div class='ui inverted statistic'>
+				<div class='ui inverted statistic' title='<%= new Date(created_utc * 1000).toLocaleString() %>'>
 					<div class='value date'><%= created_ago %></div>
 					<div class='label'>Age</div>
 				</div>
@@ -132,7 +132,7 @@ Templates =
 					<a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
 					<div class='metadata'>
 						<span class='ups'><%= score %></span>
-						<span class='date'><%= created_ago %> ago</span>
+						<span class='date' title='<%= new Date(created_utc * 1000).toLocaleString() %>'><%= created_ago %> ago</span>
 					</div>
 					<div class='text'></div>
 					<div class='actions'>

@@ -1,6 +1,6 @@
 {
   "name": "redditmusicplayer-server",
-  "version": "0.5.14",
+  "version": "0.5.15",
   "description": "Music Player for Reddit Server",
   "repository": {
     "type": "git",
