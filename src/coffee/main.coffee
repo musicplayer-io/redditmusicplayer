@@ -34,7 +34,7 @@ onMessageReceived = (ev) ->
 		when "ready"
 			RMP.dispatcher.trigger "vimeo:ready"
 		when "playProgress"
-  	    	RMP.dispatcher.trigger "vimeo:playProgress", data.data
+			RMP.dispatcher.trigger "vimeo:playProgress", data.data
 		when "pause"
 			RMP.dispatcher.trigger "vimeo:pause"
 		when "finish"
@@ -54,15 +54,15 @@ onMessageReceived = (ev) ->
 			console.log data if FLAG_DEBUG
 
 if window.addEventListener
-    window.addEventListener "message", onMessageReceived, false
+	window.addEventListener "message", onMessageReceived, false
 else
-    window.attachEvent "onmessage", onMessageReceived, false
+	window.attachEvent "onmessage", onMessageReceived, false
 
 
 openPopup = (url, type) ->
 	width = 575
-	height= 400
+	height = 400
 	left = ($(window).width()  - width)  / 2
 	top = ($(window).height() - height) / 2
 	opts = "status=1,width=#{width},height=#{height},top=#{top},left=#{left}"
-	window.open(url, type, opts);
+	window.open url, type, opts

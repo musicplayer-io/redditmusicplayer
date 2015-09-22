@@ -173,7 +173,7 @@ SoundcloudPlayer = MusicPlayer.extend
 
 				RMP.progressbar.enableSoundcloud @track.sc.waveform_url
 				@setUp callback
-			error: (xhr, status, err) =>
+			error: (xhr, status, err) ->
 				console.error "SoundcloudPlayer :: Error Loading :: ", status, err
 				RMP.dispatcher.trigger "controls:forward"
 	initialize: () ->

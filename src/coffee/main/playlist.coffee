@@ -161,7 +161,7 @@ PlaylistView = Backbone.View.extend
 		console.time "PlayListView :: Render" if FLAG_DEBUG
 		content = []
 		RMP.playlist.each (model) =>
-		 	content.push @template model.toJSON()
+			content.push @template model.toJSON()
 		@$el.html content.join ""
 		@$el.append $("<div class='item more'>Load More</div>")
 		@setCurrent RMP.playlist.current.index, RMP.playlist.current.song

@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.5.16 - 22 September 2015
+
+* Remove ListenToThis when adding a new sub if ListenToThis was added as default
+
 ### 0.5.15 - 16 September 2015
 
 * Add timestamps to dates

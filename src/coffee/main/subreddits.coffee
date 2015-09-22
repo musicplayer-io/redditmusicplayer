@@ -173,7 +173,7 @@ SubredditSelectionView = Backbone.View.extend
 			position: "right center"
 			transition: "fade"
 			delay:
-	      show: 300
+				show: 300
 
 		console.log "SubredditSelectionView :: View Made", @category if FLAG_DEBUG
 
@@ -262,7 +262,10 @@ RMP.dispatcher.on "app:main", () ->
 	else
 		RMP.subredditplaylist.fetch reset: true
 		if (RMP.subredditplaylist.length is 0)
-			RMP.subredditplaylist.add new Subreddit
+			defaultSub = new Subreddit
 				category: "Other"
 				name: "listentothis"
 				text: "Listen To This"
+			RMP.subredditplaylist.add defaultSub
+			RMP.subredditplaylist.listenToOnce RMP.subredditplaylist, "add", (x) ->
+				RMP.subredditplaylist.remove defaultSub
