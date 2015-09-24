@@ -140,6 +140,9 @@ CommentsView = Backbone.View.extend
 		songId = RMP.playlist.current.song.get("id")
 		comment.permalink = "#{API.Reddit.base}/r/#{comment.subreddit}/comments/#{songId}/link/#{comment.id}"
 
+		songSubmitter = RMP.playlist.current.song.get("author")
+		comment.isSubmitter = songSubmitter is comment.author
+
 		body = $ _.unescape comment.body_html
 		links = body.find("a")
 		links.attr("target", "_blank")
@@ -172,11 +175,13 @@ CommentsView = Backbone.View.extend
 		return if not song?
 		songJSON = song.toJSON()
 		@$(".num_comments").text songJSON.num_comments
-		@$(".comments.overview").html ""
+		@$(".comments.overview").html "<i class='icon loading circle notched'></i>"
 
 		permalink = songJSON.permalink
 		if songJSON.num_comments > 0
 			RMP.reddit.getComments permalink, (comments_tree) =>
+				return if RMP.playlist.current.index isnt index
+				@$(".comments.overview").html ""
 				_.each comments_tree, (comment) =>
 					@$(".comments.overview").append @renderComment comment.data
 

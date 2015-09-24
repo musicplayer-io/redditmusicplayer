@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.5.17 - 24 September 2015
+
+* Clean up comment styles
+* Add moderator color for comments
+* Add submitter color for comments
+
 ### 0.5.16 - 22 September 2015
 
 * Remove ListenToThis when adding a new sub if ListenToThis was added as default
@@ -8,7 +14,7 @@
 
 * Add timestamps to dates
 * Fix metalcore being listed twice - brandly
-* Fix layout for subreddit list heading - brandly 
+* Fix layout for subreddit list heading - brandly
 * Fix upvote/downvote cursor - mixxorz
 
 ### 0.5.14 - 17 July 2015

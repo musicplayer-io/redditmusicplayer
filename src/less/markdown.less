@@ -21,10 +21,16 @@ p, blockquote, ul, ol, dl, table, pre {
 	max-width: @post-width;
 	margin: 15px auto;
 }
+
+ul, ol, dl {
+  padding-left: 20px;
+}
+
 blockquote {
 	border-left: 4px solid @gold;
 	padding: 0 15px;
 }
+
 hr {
 	max-width: @post-width;
 	margin: 30px auto;
@@ -86,34 +92,11 @@ p {
 sup {
 	vertical-align: super;
 	font-size: smaller;
+  top: 0;
 }
 sub {
 	vertical-align: sub;
 	font-size: smaller;
-}
-
-.footnote {
-	font-size: 14px;
-	font-weight: 300;
-}
-
-h1, h2, h3, h4, h5, h6 {
-	margin: 2em auto 0.5em;
-	max-width: @post-width;
-}
-h1 {
-	text-transform: capitalize;
-	font-weight: 100;
-	border-bottom: 1px solid #FFF;
-	padding-bottom: 0.5em;
-	margin-bottom: 0px;
-	text-align: center;
-}
-h2 {
-	font-weight: 300;
-}
-h3 {
-	font-weight: 400;
 }
 
 & + .divider {

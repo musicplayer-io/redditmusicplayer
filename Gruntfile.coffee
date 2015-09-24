@@ -30,7 +30,7 @@ module.exports = (grunt) =>
 					join: true
 					sourceMap: true
 					bare: true
-				files: 
+				files:
 					"app/js/main.js": coffeeFiles
 
 		coffeelint:
@@ -58,7 +58,8 @@ module.exports = (grunt) =>
 				tasks: ["less"]
 			coffee:
 				files: ["src/coffee/*", "src/coffee/*/*"]
-				tasks: ["coffee", "uglify"]
+				tasks: ["coffeelint", "coffee", "uglify"]
+
 			livereload:
 				options:
 					livereload: true

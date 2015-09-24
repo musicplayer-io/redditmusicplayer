@@ -123,13 +123,25 @@ Templates =
 					<div class='downvote<% if (likes === false) print(' active') %>'><i class='icon down arrow'></i></div>
 				</div>
 				<div class='content expand'>
+          <% if (distinguished && distinguished === 'moderator') { %>
+          <a class='author moderator'><%= author %> [M]</a>
+          <% } else if (isSubmitter) { %>
+          <a class='author submitter'><%= author %> [S]</a>
+          <% } else { %>
 					<a class='author'><%= author %></a>
+          <% } %>
 					<div class='metadata'>
 						<a class='expand'>Expand <i class='icon plus'></i></a>
 					</div>
 				</div>
 				<div class='content'>
-					<a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
+          <% if (distinguished && distinguished === 'moderator') { %>
+					<a class='author moderator' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [M]</a>
+          <% } else if (isSubmitter) { %>
+          <a class='author submitter' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [S]</a>
+          <% } else { %>
+          <a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
+          <% } %>
 					<div class='metadata'>
 						<span class='ups'><%= score %></span>
 						<span class='date' title='<%= new Date(created_utc * 1000).toLocaleString() %>'><%= created_ago %> ago</span>
