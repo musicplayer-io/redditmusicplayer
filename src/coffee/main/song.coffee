@@ -184,6 +184,9 @@ CommentsView = Backbone.View.extend
 				@$(".comments.overview").html ""
 				_.each comments_tree, (comment) =>
 					@$(".comments.overview").append @renderComment comment.data
+		else
+			return if RMP.playlist.current.index isnt index
+			@$(".comments.overview").html "No comments to display."
 
 	initialize: () ->
 		@listenTo RMP.dispatcher, "song:change", @render
