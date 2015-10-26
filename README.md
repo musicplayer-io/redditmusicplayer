@@ -19,11 +19,9 @@
 $ git clone https://github.com/musicplayer-io/redditmusicplayer.git
 $ cd redditmusicplayer
 $ npm install
-$ cd server
-$ npm install
 
-$ cp config/reddit.coffee.sample config/reddit.coffee
-$ cd ..
+$ cp server/config/reddit.coffee.sample server/config/reddit.coffee
+# edit server/config/reddit.coffee
 
 $ cp src/coffee/config.coffee.sample src/coffee/config.coffee
 # edit src/coffee/config.coffee

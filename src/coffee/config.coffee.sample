@@ -1,15 +1,15 @@
 API =
 	Bandcamp:
-		base: "//api.bandcamp.com/api"
-		key: "YOUR_BANDCAMP_KEY"
+		base: '//api.bandcamp.com/api'
+		key: 'YOUR_BANDCAMP_KEY'
 	Soundcloud:
-		base: "//api.soundcloud.com"
-		key: "YOUR_SOUNDCLOUD_KEY"
+		base: '//api.soundcloud.com'
+		key: 'YOUR_SOUNDCLOUD_KEY'
 	Reddit:
-		base: "//www.reddit.com"
+		base: '//www.reddit.com'
 	MusicPlayer:
-		base: "https://reddit.musicplayer.io"
-		short: "http://r.il.ly"
+		base: 'https://reddit.musicplayer.io'
+		short: 'http://r.il.ly'
 
 FLAG_DEBUG = false
-FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is "true"
+FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is 'true'

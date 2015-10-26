@@ -3,20 +3,21 @@
 
 Search = Backbone.Model.extend
 	defaults:
-		sites: "site:youtube.com OR site:soundcloud.com OR site:bandcamp.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com"
+		sites: 'site:youtube.com OR site:soundcloud.com OR site:bandcamp.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com'
 	toString: () ->
-		return @get("text") + " " + @get("sites")
+		return @get('text') + ' ' + @get('sites')
 	initialize: (@text) ->
+		console.log "Search :: Ready :: #{@text}" if FLAG_DEBUG
 
 SearchView = Backbone.View.extend
 	events:
-		"keyup input": "enter"
-		"click .button": "submit"
+		'keyup input': 'enter'
+		'click .button': 'submit'
 	enter: (e) ->
 		return if e.keyCode isnt 13
 		@submit()
 	submit: () ->
-		val = @$("input").val()
+		val = @$('input').val()
 
 		return if not val?
 		return if val.trim().length < 3
@@ -27,12 +28,12 @@ SearchView = Backbone.View.extend
 		RMP.playlist.refresh()
 		RMP.subredditplaylistview.render()
 	initialize: () ->
-		console.log "Search View :: Ready" if FLAG_DEBUG
+		console.log 'Search View :: Ready' if FLAG_DEBUG
 
 
 RMP.searchview = new SearchView
 	model: RMP.remote
-	el: $(".content.browse .search-reddit")
+	el: $('.content.browse .search-reddit')
 
-RMP.dispatcher.on "loaded:browse", (page) ->
-	RMP.searchview.setElement $(".content.browse .search-reddit")
+RMP.dispatcher.on 'loaded:browse', (page) ->
+	RMP.searchview.setElement $('.content.browse .search-reddit')

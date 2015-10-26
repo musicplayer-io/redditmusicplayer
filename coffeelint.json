@@ -65,7 +65,7 @@
     "console": false
   },
   "no_empty_functions": {
-    "level": "ignore"
+    "level": "error"
   },
   "no_empty_param_list": {
     "level": "ignore"
@@ -105,7 +105,7 @@
     "allowed_in_empty_lines": true
   },
   "no_unnecessary_double_quotes": {
-    "level": "ignore"
+    "level": "warn"
   },
   "no_unnecessary_fat_arrows": {
     "level": "warn"

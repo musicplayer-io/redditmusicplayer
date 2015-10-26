@@ -1,58 +1,58 @@
 
-seo = require "./seo"
-req = require "request"
-reddit = require "../config/reddit"
-pkg = require "../../package.json"
+seo = require './seo'
+req = require 'request'
+reddit = require '../config/reddit'
+pkg = require '../../package.json'
 
 # Auth controller
 # Provider Reddit Interaction
 
 postToReddit = (url, token, data, callback) ->
 	options =
-		method: "POST"
+		method: 'POST'
 		url: "https://oauth.reddit.com#{url}"
 		form: data
 		headers:
-			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
+			'Authorization': "bearer #{token}"
+			'User-Agent': "Reddit Music Player/#{pkg.version} by illyism"
 	req(options, callback)
 
 getFromReddit = (url, token, data, callback) ->
 	options =
-		method: "GET"
+		method: 'GET'
 		url: "https://oauth.reddit.com#{url}"
 		json: data
 		headers:
-			"Authorization": "bearer #{token}"
-			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
+			'Authorization': "bearer #{token}"
+			'User-Agent': "Reddit Music Player/#{pkg.version} by illyism"
 	req(options, callback)
 
 refreshTokenReddit = (request, response, callback) ->
 	data =
-		"grant_type": "refresh_token"
-		"refresh_token": request.session.refreshToken
-		"client_id": reddit.client_id
-		"client_secret": reddit.secret
-		"scope": reddit.scope
-		"state": "fresh"
-		"duration": "permanent"
-		"redirect_uri": reddit.redirect_uri
+		'grant_type': 'refresh_token'
+		'refresh_token': request.session.refreshToken
+		'client_id': reddit.client_id
+		'client_secret': reddit.secret
+		'scope': reddit.scope
+		'state': 'fresh'
+		'duration': 'permanent'
+		'redirect_uri': reddit.redirect_uri
 	token = request.user.accessToken
 	options =
-		method: "POST"
-		url: "https://ssl.reddit.com/api/v1/access_token"
+		method: 'POST'
+		url: 'https://ssl.reddit.com/api/v1/access_token'
 		form: data
 		auth:
 			user: reddit.client_id
 			pass: reddit.secret
 		headers:
-			"User-Agent": "Reddit Music Player/#{pkg.version} by illyism"
+			'User-Agent': "Reddit Music Player/#{pkg.version} by illyism"
 	req options, (err, resp, body) ->
 		if resp.statusCode is 401 or body.error?
 			return response.send
 				error:
-					type: "APIError"
-					message: "Something went wrong."
+					type: 'APIError'
+					message: 'Something went wrong.'
 					status: resp.statusCode
 					data: body
 		else
@@ -61,7 +61,7 @@ refreshTokenReddit = (request, response, callback) ->
 				p = JSON.parse body
 			catch e
 				console.error e
-			console.log "Refresh Token :: ", p
+			console.log 'Refresh Token :: ', p
 			request.user.accessToken = request.session.accessToken = request.user._json.token = p.access_token if p.access_token?
 			callback(request, response) if callback?
 
@@ -69,14 +69,14 @@ class APIController
 	add_comment: (request, response, callback) =>
 		if not request.body.thing_id? then return response.send
 			error:
-				type: "InvalidID"
-				message: "Wrong or no ID supplied."
+				type: 'InvalidID'
+				message: 'Wrong or no ID supplied.'
 
 		data =
 			comment: request.body.text
 			parent: request.body.thing_id
 
-		postToReddit "/api/comment", request.user.accessToken, data, (err, resp, body) =>
+		postToReddit '/api/comment', request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
 				response.send body
 			else
@@ -85,20 +85,20 @@ class APIController
 				else
 					response.send
 						error:
-							type: "APIError"
-							message: "Something went wrong."
+							type: 'APIError'
+							message: 'Something went wrong.'
 							status: resp.statusCode
 							data: body
 
 	comments: (request, response, callback) =>
 		if not request.query.permalink? then return response.send
 			error:
-				type: "InvalidPermalink"
-				message: "Wrong or no permalink supplied."
+				type: 'InvalidPermalink'
+				message: 'Wrong or no permalink supplied.'
 
 		data =
 			sort: request.query.sort
-		data.t = request.query.t if request.query.sort is "top"
+		data.t = request.query.t if request.query.sort is 'top'
 
 		getFromReddit request.query.permalink, request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
@@ -109,22 +109,22 @@ class APIController
 				else
 					response.send
 						error:
-							type: "APIError"
-							message: "Something went wrong."
+							type: 'APIError'
+							message: 'Something went wrong.'
 							status: resp.statusCode
 							data: body
 
 	vote: (request, response, callback) =>
 		if not request.body.id? then return response.send
 			error:
-				type: "InvalidID"
-				message: "Wrong or no ID supplied."
+				type: 'InvalidID'
+				message: 'Wrong or no ID supplied.'
 
 		data =
 			dir: parseInt request.body.dir
 			id: request.body.id
 
-		postToReddit "/api/vote", request.user.accessToken, data, (err, resp, body) =>
+		postToReddit '/api/vote', request.user.accessToken, data, (err, resp, body) =>
 			if not err? and resp.statusCode is 200
 				response.send
 					user: request.user._json
@@ -137,21 +137,21 @@ class APIController
 				else
 					response.send
 						error:
-							type: "APIError"
-							message: "Something went wrong."
+							type: 'APIError'
+							message: 'Something went wrong.'
 							status: resp.statusCode
 							data: body
 
 	get: (request, response, callback) ->
-		url = "http://www.reddit.com" + request.url.replace "/api/get", ""
+		url = 'http://www.reddit.com' + request.url.replace '/api/get', ''
 		req.get(url).pipe(response)
 
 	isAuthenticated: (request, response, callback) ->
 		return callback() if request.isAuthenticated()
 		response.send
 			error:
-				type: "NotAuthenticated"
-				message: "You need to be logged in."
+				type: 'NotAuthenticated'
+				message: 'You need to be logged in.'
 
 controller = new APIController
 module.exports = controller

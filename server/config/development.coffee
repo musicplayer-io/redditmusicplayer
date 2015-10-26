@@ -1,6 +1,6 @@
 
 # Dependencies
-express = require "express"
+express = require 'express'
 
 # Server development configuration
 module.exports = ->
