@@ -1,9 +1,16 @@
-firstRequest = false
+
+Constants = require 'Constants'
+Dispatcher = require('Util').Dispatcher
+SubredditPlaylist = require 'collections/SubredditPlaylist'
+Store = require 'Store'
+
+
 
 Reddit = Backbone.Model.extend
 	defaults:
 		sortMethod: 'hot'
 		topMethod: 'month'
+
 	vote: (id, dir) ->
 		data =
 			id: id
@@ -15,11 +22,13 @@ Reddit = Backbone.Model.extend
 			data: data
 			success: (resp) ->
 				console.log resp if FLAG_DEBUG
+
 	subreddits: () ->
-		if RMP.subredditplaylist.length is 0
+		if SubredditPlaylist.length is 0
 			return 'listentothis'
 		else
-			return RMP.subredditplaylist.toString()
+			return SubredditPlaylist.toString()
+
 	getMusic: (callback, after, limit) ->
 		data = {}
 		data.sort = @get('sortMethod')
@@ -27,9 +36,10 @@ Reddit = Backbone.Model.extend
 		data.after = after if after?
 		data.limit = limit or 100
 
-		if RMP.search?
+		if Store.search?
 			return @getSearch callback, data
-		if RMP.multi?
+
+		if Store.multi?
 			return @getMulti callback, data
 
 		subs = @subreddits()
@@ -37,7 +47,7 @@ Reddit = Backbone.Model.extend
 			return
 		console.log 'Reddit :: GetMusic :: ', subs if FLAG_DEBUG
 
-		if firstRequest
+		if Store.firstRequest
 			$.ajax
 				dataType: 'json'
 				url: "/api/get/r/#{subs}/#{@get('sortMethod')}.json?jsonp=?"
@@ -45,7 +55,7 @@ Reddit = Backbone.Model.extend
 				success: (r) ->
 					throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					callback r.data.children
-			firstRequest = false
+			Store.firstRequest = false
 		else
 			$.ajax
 				dataType: 'json'
@@ -57,10 +67,10 @@ Reddit = Backbone.Model.extend
 					callback r.data.children
 				error: (xhr, status, err) ->
 					console.error "Reddit :: #{status} :: #{err}", arguments
-					RMP.dispatcher.trigger 'message', new MessageFailedToGetMusic()
+					Dispatcher.trigger Constants.MESSAGE, new MessageFailedToGetMusic()
 
 	getSearch: (callback, data) ->
-		@set 'search', RMP.search
+		@set 'search', Store.search
 		console.log 'Reddit :: GetSearch ::', @get('search') if FLAG_DEBUG
 		$.ajax
 			dataType: 'json'
@@ -72,7 +82,7 @@ Reddit = Backbone.Model.extend
 
 	getMulti: (callback, data) ->
 		if not @has('multi')
-			@set 'multi', RMP.multi
+			@set 'multi', Store.multi
 		console.log 'Reddit :: GetMulti ::', @get('multi') if FLAG_DEBUG
 		$.ajax
 			dataType: 'json'
@@ -81,15 +91,17 @@ Reddit = Backbone.Model.extend
 			success: (r) ->
 				throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r.data.children
+
 	getMore: (last, callback) ->
 		@getMusic callback, last, 20
+
 	getComments: (permalink, callback) ->
 		data = {}
 		data.sort = @get('sortMethod')
 		data.t = @get('topMethod') if @get('sortMethod') is 'top'
 		url = "#{API.Reddit.base}#{permalink}.json?jsonp=?"
-		url = '/api/comments' if RMP.authentication?
-		data.permalink = permalink if RMP.authentication?
+		url = '/api/comments' if Store.authentication?
+		data.permalink = permalink if Store.authentication?
 		$.ajax
 			dataType: 'json'
 			url: url
@@ -97,6 +109,7 @@ Reddit = Backbone.Model.extend
 			success: (r) ->
 				throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				callback r[1].data.children
+
 	addComment: (params) ->
 		data =
 			text: params.text
@@ -109,9 +122,11 @@ Reddit = Backbone.Model.extend
 			success: (r) ->
 				throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 				params.callback(r)
+
 	changeSortMethod: (sortMethod, topMethod) ->
 		@set 'sortMethod', sortMethod
 		@set 'topMethod', topMethod
+
 	save: () ->
 		try
 			localStorage['sortMethod'] = @get 'sortMethod'
@@ -127,4 +142,6 @@ Reddit = Backbone.Model.extend
 			@save()
 		@listenTo @, 'change', @save
 
-RMP.reddit = new Reddit
+
+
+module.exports = new Reddit()

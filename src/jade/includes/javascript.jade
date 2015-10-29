@@ -1,13 +1,16 @@
-.scripts
-	script(src="/js/lib/lodash.js")
-	script(src="/js/lib/jquery.js")
-	script(src="/js/lib/backbone.js")
-	script(src="/js/lib/backbone.localstorage.js")
-	script(src="/js/lib/semantic.min.js")
-	script(src="/socket.io/socket.io.js")
-	script(src="/js/lib/jquery.qrcode.js")
-	if "production" == process.env.NODE_ENV
-		script(src="/js/main.min.js?v=#{pkg.version}")
-		include gtm
-	else
-		script(src="/js/main.js?v=#{pkg.version}")
+script(src="/js/lib/lodash.js")
+script(src="/js/lib/jquery.js")
+script(src="/js/lib/backbone.js")
+script(src="/js/lib/backbone.localstorage.js")
+script(src="/js/lib/semantic.min.js")
+script(src="/socket.io/socket.io.js")
+script(src="/js/lib/jquery.qrcode.js")
+if "production" == process.env.NODE_ENV
+	script.
+		var FLAG_DEBUG = false
+	script(src="/js/main.min.js?v=#{pkg.version}")
+	include gtm
+else
+	script.
+		var FLAG_DEBUG = true
+	script(src="/js/main.js?v=#{pkg.version}")

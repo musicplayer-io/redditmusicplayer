@@ -1,5 +1,15 @@
 ## Changelog
 
+### 0.6.0 - 28 October 2015
+
+* Restructured the front-end code
+  * Separated files in collections, controllers, models, players and views
+  * Using a Constants object instead of simple strings to keep track of events
+  * Seperated other code in an Util.coffee file
+  * Using a Store for maintaining other state
+  * Using Browserify to compile CoffeeScript
+	* Slightly more enforced coffee linter
+
 ### 0.5.17 - 24 September 2015
 
 * Clean up comment styles

@@ -1,4 +1,4 @@
-API =
+global.API =
 	Bandcamp:
 		base: '//api.bandcamp.com/api'
 		key: 'YOUR_BANDCAMP_KEY'
@@ -11,5 +11,5 @@ API =
 		base: 'https://reddit.musicplayer.io'
 		short: 'http://r.il.ly'
 
-FLAG_DEBUG = false
-FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is 'true'
+global.FLAG_DEBUG = false
+global.FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is 'true'

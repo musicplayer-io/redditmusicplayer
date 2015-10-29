@@ -1,29 +1,15 @@
 if (subreddits != null && subreddits.length > 0)
 	script(type="text/javascript").
-		(function() {
-			RMP.URLsubreddits = !{JSON.stringify(subreddits)};
-		})();
+		url_subreddits = !{JSON.stringify(subreddits)};
 if (comment != null)
 	script(type="text/javascript").
-		(function() {
-			RMP.URLcomment = !{JSON.stringify(comment)};
-		})();
+		url_comment = !{JSON.stringify(comment)};
 if (autoplay != null)
 	script(type="text/javascript").
-		(function() {
-			RMP.autoplay = true;
-			RMP.dispatcher.once("app:loadedMusic", function() {
-				RMP.dispatcher.trigger("controls:play");
-			});
-		})();
+		url_autoplay = true;	
 if (multi != null)
 	script(type="text/javascript").
-		(function() {
-			RMP.multi = "!{multi}";
-		})();
+		url_multi = "!{multi}";
 if (remote != null)
 	script(type="text/javascript").
-		(function() {
-			RMP.remote.setHash("#{remote}")
-			RMP.remote.setReceiver(false);
-		})();
+		url_remote = "#{remote}";

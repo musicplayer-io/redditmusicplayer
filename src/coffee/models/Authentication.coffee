@@ -1,6 +1,13 @@
 
+Constants = require 'Constants'
+Dispatcher = require('Util').Dispatcher
+Templates = require 'Templates'
+
+
+
 Authentication = Backbone.Model.extend
 	template: Templates.AuthenticationView
+
 	initialize: () ->
 		@$el = $('.titlebar .authentication')
 		@$ = (selector) ->
@@ -8,11 +15,9 @@ Authentication = Backbone.Model.extend
 		if @get ('name')
 			@$el.html @template @attributes
 			@$('.ui.dropdown').dropdown()
-		RMP.dispatcher.trigger 'authenticated', @
+
+		Dispatcher.trigger Constants.AUTHENTICATED, @
 
 
-RMP.dispatcher.on 'app:page', (category, page) ->
-	if RMP.authentication?
-		$(".titlebar .authentication .sign-out').attr('href', '/logout?redirect=/#{page}")
-	else
-		$(".titlebar .authentication .log-in').attr('href', '/login?redirect=/#{page}")
+
+module.exports = Authentication

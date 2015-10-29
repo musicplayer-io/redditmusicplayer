@@ -22,7 +22,8 @@ html(xmlns:og='http://ogp.me/ns#')
 		include includes/controls
 		include includes/message
 		include includes/modal
-		include includes/javascript
-		block userscript
-			include includes/authentication
-			include includes/url
+		.scripts
+			block userscript
+				include includes/authentication
+				include includes/url
+			include includes/javascript

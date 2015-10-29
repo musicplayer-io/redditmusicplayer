@@ -23,6 +23,9 @@ class AuthController
 		else
 			if request.query.redirect? then response.redirect request.query.redirect else response.redirect '/'
 	authenticate: (request, response, callback) ->
+		if not request.session?
+			console.error 'Redis is not enabled. Please turn run a Redis server.'
+			return response.redirect '/'
 		request.session.state = crypto.randomBytes(32).toString('hex')
 		auth = passport.authenticate 'reddit',
 			state: request.session.state
