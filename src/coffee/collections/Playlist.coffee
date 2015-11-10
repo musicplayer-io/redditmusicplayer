@@ -1,5 +1,4 @@
 
-Remote = require 'controllers/Remote'
 Constants = require 'Constants'
 Dispatcher = require('Util').Dispatcher
 SubredditPlaylist = require 'collections/SubredditPlaylist'
@@ -57,7 +56,7 @@ Playlist = Backbone.Collection.extend
 			callback() if callback?
 
 	forward: () ->
-		return if Remote.get('receiver') is false
+		return if require('controllers/Remote').get('receiver') is false
 		if @current.index >= @length  - 1
 			@more () =>
 				@forward()
@@ -70,7 +69,7 @@ Playlist = Backbone.Collection.extend
 				@activate(@current.song)
 
 	backward: () ->
-		return if Remote.get('receiver') is false
+		return if require('controllers/Remote').get('receiver') is false
 		if (@current.index - 1 <= 0)
 			@current.song = @at(@current.index - 1)
 			if @current.song.get('playable') is true

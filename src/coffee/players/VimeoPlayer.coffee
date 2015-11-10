@@ -7,7 +7,7 @@ VolumeControl = require 'controllers/VolumeControl'
 
 VimeoPlayer = MusicPlayer.extend
 	type: 'vimeo'
-	playerState: 'ENDED'
+	playerState: Constants.ENDED
 	duration: 60
 
 	postMessage: (options) ->
@@ -38,7 +38,7 @@ VimeoPlayer = MusicPlayer.extend
 		@clean(true)
 		@init()
 
-	isPlaying: -> @playerState is 'PLAYING'
+	isPlaying: -> @playerState is Constants.PLAYING
 
 	playPause: () ->
 		if @isPlaying()
@@ -87,15 +87,15 @@ VimeoPlayer = MusicPlayer.extend
 		Dispatcher.trigger Constants.PROGRESS_CURRENT, data.seconds # secs
 
 	onPause: () ->
-		@playerState = 'PAUSED'
+		@playerState = Constants.PAUSED
 		Dispatcher.trigger Constants.PLAYER_PAUSED, @
 
 	onFinish: () ->
-		@playerState = 'ENDED'
+		@playerState = Constants.ENDED
 		Dispatcher.trigger Constants.PLAYER_ENDED, @
 
 	onPlay: () ->
-		@playerState = 'PLAYING'
+		@playerState = Constants.PLAYING
 		Dispatcher.trigger Constants.PLAYER_PLAYING, @
 
 	onLoadProgress: (data) ->

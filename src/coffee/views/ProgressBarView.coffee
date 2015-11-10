@@ -62,6 +62,7 @@ ProgressBarView = Backbone.View.extend
 		@$('.progress .current').css('width', @model.get('current') / @model.get('duration') * 100 + '%')
 
 	enableSoundcloud: (track) ->
+		return if not track.sc.waveform_url?
 		@$('.progress').addClass 'soundcloud'
 		@$('.progress .waveform').css '-webkit-mask-box-image', "url(#{track.sc.waveform_url})"
 

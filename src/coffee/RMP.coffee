@@ -37,11 +37,11 @@ initViews = () ->
 
 	# Capture all events
 	# Dispatcher.on 'all', (event_name, object) ->
-	#	if _.values(Constants).indexOf(event_name) < 0
-	#		console.error 'EVENT NOT FOUND', event_name
-	#		console.trace()
-	#	else
-	#		console.log 'Event', event_name, object if FLAG_DEBUG
+	# 	if _.values(Constants).indexOf(event_name) < 0
+	# 		console.error 'EVENT NOT FOUND', event_name
+	# 		console.trace()
+	# 	else
+	# 		console.log 'Event', event_name, object if FLAG_DEBUG
 
 	backward = new ButtonControlView
 		el: $('.controls .backward.button')
@@ -60,11 +60,11 @@ initViews = () ->
 			listenEvent: "#{Constants.PLAYER_PLAYING} #{Constants.PLAYER_PAUSED} #{Constants.PLAYER_ENDED}"
 			checkState: () ->
 				player = PlayerController.controller
-				console.log 'Checking state', player
 				if player.type is 'youtube'
+					return false if not player.player? or not player.player.getPlayerState?
 					return player.player.getPlayerState() is 1
 				else
-					return player.playerState is 'playing'
+					return player.playerState is Constants.PLAYING
 
 	commentsView = new CommentsView
 		el: $('.content.playlist .comments.root')

@@ -1,3 +1,4 @@
+
 Dispatcher = require('Util').Dispatcher
 MusicPlayer = require 'players/MusicPlayer'
 Constants = require 'Constants'
@@ -7,14 +8,14 @@ VolumeControl = require 'controllers/VolumeControl'
 
 MP3Player = MusicPlayer.extend
 	type: 'mp3'
-	playerState: 'ended'
+	playerState: Constants.ENDED
 
 	events: () ->
 		'progress': @progress_play()
-		'play': @event_trigger('PLAYING')
-		'playing': @event_trigger('PLAYING')
-		'pause': @event_trigger('PAUSED')
-		'ended': @event_trigger('ENDED')
+		'play': @event_trigger(Constants.PLAYING)
+		'playing': @event_trigger(Constants.PLAYING)
+		'pause': @event_trigger(Constants.PAUSED)
+		'ended': @event_trigger(Constants.ENDED)
 		'durationchange': @setDuration()
 
 	setDuration: () ->
@@ -53,7 +54,7 @@ MP3Player = MusicPlayer.extend
 		@clean(true)
 		@init()
 
-	isPlaying: -> @playerState is 'PLAYING'
+	isPlaying: -> @playerState is Constants.PLAYING
 
 	playPause: () ->
 		if @isPlaying() then @player.pause() else @player.play()

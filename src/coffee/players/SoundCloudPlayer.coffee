@@ -1,3 +1,4 @@
+
 Constants = require('Constants')
 Dispatcher = require('Util').Dispatcher
 MusicPlayer = require 'players/MusicPlayer'
@@ -7,17 +8,29 @@ VolumeControl = require 'controllers/VolumeControl'
 
 SoundCloudPlayer = MusicPlayer.extend
 	type: 'soundcloud'
-	playerState: 'ENDED'
+	playerState: Constants.ENDED
 
 	events: () ->
 		'playProgress': @progress_play
-		'play': @event_trigger('PLAYING')
-		'pause': @event_trigger('PAUSED')
-		'finish': @event_trigger('ENDED')
+		'play': @event_trigger(Constants.PLAYING)
+		'pause': @event_trigger(Constants.PAUSED)
+		'finish': @onFinish.bind @
 
 	progress_play: (data) ->
 		Dispatcher.trigger Constants.PROGRESS_CURRENT, data.currentPosition / 1000 # secs
 		Dispatcher.trigger Constants.PROGRESS_LOADED, data.loadedProgress # secs
+
+	onFinish: () ->
+		@player.getCurrentSoundIndex (index) =>
+			# 199 = The embed player has a maximum of 199 tracks
+			# But the amount of tracks returned in the API call can be higher
+			if index >= @track.sc.track_count - 1 or index >= 199
+				@playerState = Constants.ENDED
+				Dispatcher.trigger Constants.PLAYER_ENDED, @
+			else
+				@playerState = Constants.PAUSED
+				Dispatcher.trigger Constants.PLAYER_PAUSED, @
+
 
 	event_trigger: (ev) ->
 		return (data) =>
@@ -27,7 +40,7 @@ SoundCloudPlayer = MusicPlayer.extend
 			@playerState = ev
 			Dispatcher.trigger "PLAYER_#{ev}", @
 
-	isPlaying: -> @playerState is 'PLAYING'
+	isPlaying: -> @playerState is Constants.PLAYING
 
 	playPause: () ->
 		@player.toggle()
@@ -86,13 +99,12 @@ SoundCloudPlayer = MusicPlayer.extend
 
 		console.log 'SoundCloudPlayer :: Track ', @track if FLAG_DEBUG
 		$.ajax
-			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json?callback=?"
-			jsonp: 'callback'
-			dataType: 'jsonp'
+			url: "#{API.Soundcloud.base}/#{@track.type}/#{@track.id}.json"
+			dataType: 'json'
 			data:
 				client_id: API.Soundcloud.key
 			success: (sctrack) =>
-				console.log sctrack if FLAG_DEBUG
+				console.log 'SoundcloudPlayer :: Track received ', sctrack if FLAG_DEBUG
 				if not sctrack.streamable
 					console.error 'SoundcloudPlayer :: Not Streamable'
 					# Skip to the next song
