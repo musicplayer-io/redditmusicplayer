@@ -12,7 +12,8 @@ Message = Backbone.Model.extend
 MessageFailedToGetMusic = Message.extend
 	type: 'error'
 	status: 'MessageFailedToGetMusic'
-	text: 'Failed to Get Music'
+	text: 'Failed to load music from Reddit.'
+	help: 'https://www.reddit.com/r/MusicPlayer/comments/3s9h98/help_failed_to_load_music_from_reddit/'
 	button: 'Try Again?'
 
 	callback: () ->
@@ -25,6 +26,7 @@ MessageNotAuthenticated = Message.extend
 	status: 'MessageNotAuthenticated'
 	text: 'You need to be logged in for this'
 	button: 'Log In'
+	
 	callback: () ->
 		location.href = '/login'
 

@@ -1,6 +1,12 @@
 ## Changelog
 
-### 0.6.0 - 28 October 2015
+### 0.6.1 - 10 November 2015
+
+* Fixes for messages
+* Nicer looking messages on mobile phones
+* Added a help link for some messages
+
+### 0.6.0 - 10 November 2015
 
 * Restructured the front-end code
   * Separated files in collections, controllers, models, players and views

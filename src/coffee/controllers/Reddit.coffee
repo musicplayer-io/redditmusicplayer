@@ -3,6 +3,7 @@ Constants = require 'Constants'
 Dispatcher = require('Util').Dispatcher
 SubredditPlaylist = require 'collections/SubredditPlaylist'
 Store = require 'Store'
+{MessageFailedToGetMusic} = require 'models/Message'
 
 
 

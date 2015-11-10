@@ -9,8 +9,8 @@ Messages = require 'collections/Messages'
 MessageView = Backbone.View.extend
 	template: Templates.MessageView
 	events:
-		'click .close': 'close'
-		'click .button': 'click'
+		'click .close.button': 'close'
+		'click .action.button': 'click'
 
 	click: (e) ->
 		message = Messages.get $(e.currentTarget).parents('.message').data 'id'

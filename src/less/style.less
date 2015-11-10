@@ -819,6 +819,17 @@ a {
 	}
 	.message {
 		pointer-events: all;
+		overflow: hidden;
+		clear: both;
+		padding: 0;
+	}
+	.text {
+		padding: 9px 15px;
+		float: left;
+	}
+	.buttons {
+		float: right;
+		margin-right: 0px;
 	}
 	.button {
 		cursor: pointer;
@@ -826,6 +837,26 @@ a {
 		font-weight: bold;
 		&:hover, &:active {
 			color: lighten(@col-primary, 20%);
+		}
+	}
+	@media @phone {
+		.text {
+			float: none;
+			display: block;
+			padding: 15px;
+		}
+		.message {
+			text-align: center;
+		}
+		.buttons {
+			float: none;
+			flex: 1;
+			display: flex;
+		}
+		.button {
+			flex: 1;
+			display: flex;
+			justify-content: center;
 		}
 	}
 }

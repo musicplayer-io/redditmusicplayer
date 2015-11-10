@@ -6,6 +6,8 @@ Reddit = require 'controllers/Reddit'
 Util = require 'Util'
 Constants = require 'Constants'
 Store = require 'Store'
+{MessageNotAuthenticated} = require 'models/Message'
+
 
 
 CommentsView = Backbone.View.extend

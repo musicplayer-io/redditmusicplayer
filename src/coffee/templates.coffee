@@ -187,8 +187,15 @@ module.exports =
 		")
 	MessageView: _.template("
 			<div data-id='<%= cid %>' class='ui message inverted <%= type %>' data-type='<%= type %>' data-status='<%= status %>'>
-				<i class='close icon'></i>
-				<%= text %>
-				<a class='button'><%= button %></a>
+				<span class='text'><%= text %></span>
+				<div class='ui buttons'>
+					<% if (help) { %>
+						<a target='_blank' href='<%= help %>' class='blue inverted ui button'>Help</a>
+					<% } %>
+					<a class='yellow inverted ui button action'><%= button %></a>
+					<a class='red inverted icon ui button close'>
+						<i class='close icon'></i>
+					</a>
+				</div>
 			</div>
 		")
