@@ -5,7 +5,7 @@ Dispatcher = require('Util').Dispatcher
 SubredditPlaylist = require 'collections/SubredditPlaylist'
 Reddit = require 'controllers/Reddit'
 {NotASong, NotALink} = require 'models/NotASong'
-{Song,  SongYoutube, SongSoundcloud, SongBandcamp, SongMP3, SongVimeo} = require 'models/Song'
+{Song,  SongYoutube, SongSoundcloud, SongMP3, SongVimeo} = require 'models/Song'
 
 
 
@@ -21,7 +21,6 @@ Playlist = Backbone.Collection.extend
 				item.domain is 'youtu.be' or
 				item.domain is 'm.youtube.com' then new SongYoutube item
 			when item.domain is 'soundcloud.com' then new SongSoundcloud item
-			when item.domain.substr(-12) is 'bandcamp.com' then new SongBandcamp item
 			when item.url.substr(-4) is '.mp3' then new SongMP3 item
 			when item.domain is 'vimeo.com' then new SongVimeo item
 			when item.is_self then new NotALink item

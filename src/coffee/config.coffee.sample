@@ -1,7 +1,4 @@
 global.API =
-	Bandcamp:
-		base: '//api.bandcamp.com/api'
-		key: 'YOUR_BANDCAMP_KEY'
 	Soundcloud:
 		base: '//api.soundcloud.com'
 		key: 'YOUR_SOUNDCLOUD_KEY'

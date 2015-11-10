@@ -3,7 +3,7 @@
 
 Search = Backbone.Model.extend
 	defaults:
-		sites: 'site:youtube.com OR site:soundcloud.com OR site:bandcamp.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com'
+		sites: 'site:youtube.com OR site:soundcloud.com OR site:vimeo.com OR site:youtu.be OR site:m.youtube.com'
 
 	toString: () ->
 		return @get('text') + ' ' + @get('sites')

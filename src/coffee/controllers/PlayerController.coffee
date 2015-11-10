@@ -1,7 +1,6 @@
 
 Dispatcher = require('Util').Dispatcher
 Constants = require 'Constants'
-BandcampPlayer = require 'players/BandcampPlayer'
 MP3Player = require 'players/MP3Player'
 SoundCloudPlayer = require 'players/SoundCloudPlayer'
 VimeoPlayer = require 'players/VimeoPlayer'
@@ -15,7 +14,6 @@ PlayerController = Backbone.Model.extend
 			@controller = switch
 				when song.type is 'youtube' then new YouTubePlayer song.attributes
 				when song.type is 'soundcloud' then new SoundCloudPlayer song.attributes
-				when song.type is 'bandcamp' then new BandcampPlayer song.attributes
 				when song.type is 'vimeo' then new VimeoPlayer song.attributes
 				when song.type is 'mp3' then new MP3Player song.attributes
 		else

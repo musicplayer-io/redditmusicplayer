@@ -9,6 +9,7 @@
   * Using a Store for maintaining other state
   * Using Browserify to compile CoffeeScript
 	* Slightly more enforced coffee linter
+* Removed support for Bandcamp
 
 ### 0.5.17 - 24 September 2015
 

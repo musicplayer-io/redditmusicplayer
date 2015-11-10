@@ -43,11 +43,7 @@ CurrentSongView = Backbone.View.extend
 		if song.playable is true
 			$('.current-song-sidebar .title').text(songJSON.title)
 			document.title = "#{songJSON.title} | Music Player for Reddit"
-			if song.get('type') is 'bandcamp' and song.get('media')
-				console.log(song.get('media')) if FLAG_DEBUG
-				$('.current-song-sidebar .image').attr 'src', song.get('media').oembed.thumbnail_url
-			else
-				$('.current-song-sidebar .image').attr 'src', ''
+			$('.current-song-sidebar .image').attr 'src', ''
 
 	initialize: () ->
 		console.log 'CurrentSongView :: Ready' if FLAG_DEBUG

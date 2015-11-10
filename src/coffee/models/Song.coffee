@@ -25,13 +25,6 @@ SongSoundcloud = Song.extend
 	playable: true
 
 
-
-SongBandcamp = Song.extend
-	type: 'bandcamp'
-	playable: true
-
-
-
 SongMP3 = Song.extend
 	type: 'mp3'
 	playable: true
@@ -47,6 +40,5 @@ SongVimeo = Song.extend
 module.exports.Song = Song
 module.exports.SongYoutube = SongYoutube
 module.exports.SongSoundcloud = SongSoundcloud
-module.exports.SongBandcamp = SongBandcamp
 module.exports.SongMP3 = SongMP3
 module.exports.SongVimeo = SongVimeo
