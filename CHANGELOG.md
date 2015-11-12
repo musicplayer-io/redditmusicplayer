@@ -5,6 +5,8 @@
 * Fixes for messages
 * Nicer looking messages on mobile phones
 * Added a help link for some messages
+* Highlights on clicking items in the playlist and sub playlists
+* Added a `/r/` before custom subreddit to try to decrease confusion
 
 ### 0.6.0 - 10 November 2015
 

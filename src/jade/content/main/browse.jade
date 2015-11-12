@@ -2,7 +2,7 @@
 	mixin subreddit(sub)
 		a.subreddit.item(data-value=sub.key.toLowerCase(), data-name=sub.name, data-category=sub.category, data-created=sub.created, data-subscribers=sub.subscribers, data-title=sub.title, data-content=sub.description)
 			| #{sub.name}
-			.ui.right.floated.tiny.label= sub.subscribers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			i.icon.add
 		| 
 	.switcher.phone-hide
 		i.icon.list
@@ -20,13 +20,15 @@
 				p.item.description Select subreddits to add them to your subreddit playlist.
 
 	.ui.input.action.fluid.inverted.custom-subreddit
-		input(type="text", placeholder="Custom Subreddit")
-		.ui.button.icon.small.gold: i.icon.add
+		span.pre /r/
+		input(type="text", placeholder="custom-subreddit")
+		.ui.button.icon.small.gold: i.icon.reddit
 
-	.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category="subreddits")
-		.item
-			.item.subreddits-heading Subreddit
-				.ui.right.floated.label Subscribers
-			.menu.selection
-				each sub in _.sortByAll(subs, "subscribers").reverse()
-					+subreddit(sub)
+	each category in _.groupBy(_.sortByAll(subs, "category"), "category")
+		- var categoryName = _.first(category).category
+		.ui.fluid.secondary.inverted.vertical.menu.reddit.subreddits(data-category=_.camelCase(categoryName))
+			.item
+				.item.subreddits-heading= categoryName
+				.menu.selection
+					each sub in _.sortByAll(category, "name")
+						+subreddit(sub)

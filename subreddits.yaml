@@ -241,16 +241,6 @@
   header_tite: ''
   header_image: ''
   description: A destination for people who love Asian rap and hip-hop.
-- subscribers: 760
-  created: 1361656939
-  url: /r/asianrap/
-  name: asianrap
-  key: asianrap
-  category: Rap / Hip Hop
-  title: Asian Rap
-  header_tite: ''
-  header_image: ''
-  description: A destination for people who love Asian rap and hip-hop.
 - subscribers: 763
   created: 1263430188
   url: /r/rhythmicnoise/
@@ -2812,4 +2802,3 @@
   header_tite: ''
   header_image: ''
   description: The musical community of reddit.
-
