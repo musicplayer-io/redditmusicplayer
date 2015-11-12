@@ -21,10 +21,10 @@ module.exports = (grunt) ->
 		'Store.coffee',
 		'Templates.coffee',
 		'controllers/*.coffee',
-    'models/*.coffee',
+		'models/*.coffee',
 		'players/*.coffee',
-    'collections/*.coffee',
-    'views/*.coffee',
+		'collections/*.coffee',
+		'views/*.coffee',
 		'RMP.coffee',
 	].map (i) -> "src/coffee/#{i}"
 
