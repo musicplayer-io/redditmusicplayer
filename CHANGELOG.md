@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.6.2 - 16 November 2015
+
+* another Soundcloud fix
+* Added a survey message until next week
+
 ### 0.6.1 - 10 November 2015
 
 * Fixes for messages
