@@ -43,7 +43,7 @@ UI = Backbone.View.extend
 		@$el.html data.content
 		@$el.find('.ui.dropdown').dropdown()
 		@$el.find('.ui.checkbox').checkbox()
-		Dispatcher.trigger "LOADED_#{page.toUppercase()}"
+		Dispatcher.trigger "LOADED_#{page.toUpperCase()}"
 
 	scrollInPlaylist: (index, song) ->
 		return if not @$el.find('.content').hasClass('playlist')
