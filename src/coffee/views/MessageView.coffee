@@ -9,12 +9,16 @@ Messages = require 'collections/Messages'
 MessageView = Backbone.View.extend
 	template: Templates.MessageView
 	events:
-		'click .close.button': 'close'
-		'click .action.button': 'click'
+		'click .buttons .button': 'click'
 
 	click: (e) ->
 		message = Messages.get $(e.currentTarget).parents('.message').data 'id'
-		message.callback() if message? and message.callback?
+		return if not message?
+
+		clickedButton = message.buttons[$(e.currentTarget).data 'id']
+		return if not clickedButton?
+		@close(e) if clickedButton.action is 'close'
+		clickedButton.callback() if clickedButton.callback?
 
 	close: (e) ->
 		Messages.remove $(e.currentTarget).parents('.message').data 'id'

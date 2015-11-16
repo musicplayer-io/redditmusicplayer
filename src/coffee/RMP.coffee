@@ -4,12 +4,14 @@ Messages = require 'collections/Messages.coffee'
 Playlist = require 'collections/Playlist'
 SubredditPlaylist = require 'collections/SubredditPlaylist'
 
-KeyboardController = require 'models/KeyboardController'
+KeyboardController = require 'controllers/KeyboardController'
 PlayerController = require 'controllers/PlayerController'
-ProgressBar = require 'models/ProgressBar'
-Remote = require 'controllers/Remote'
-Authentication = require 'models/Authentication'
 VolumeControl = require 'controllers/VolumeControl'
+Remote = require 'controllers/Remote'
+
+Message = require 'models/Message'
+ProgressBar = require 'models/ProgressBar'
+Authentication = require 'models/Authentication'
 
 ButtonControlView = require 'views/ButtonControlView'
 CommentsView = require 'views/CommentsView'
@@ -130,6 +132,39 @@ initViews = () ->
 		el: $('.ui.titlebar')
 		panel: panelTwo
 
+	MessageSurvey = Message.extend
+		type: 'info'
+		status: 'MessageSurvey'
+		text: 'We\'re looking for feedback. Help us by filling out this survey.'
+		buttons: [
+			{
+				text: 'View survey',
+				className: 'yellow'
+				url: 'https://www.surveymonkey.com/r/PHTTNPD'
+				callback: () ->
+					localStorage.setItem('survey', 'filled')
+					Messages.removeByStatus 'MessageSurvey'
+			},
+			{
+				text: 'Never',
+				className: 'red'
+				callback: () ->
+					localStorage.setItem('survey', 'filled')
+					Messages.removeByStatus 'MessageSurvey'
+			},
+			{
+				text: 'Remind me later',
+				action: 'close',
+				className: 'blue close'
+			}
+		]
+
+	if localStorage.getItem('survey') isnt 'filled'
+		showSurvey = () -> Dispatcher.trigger Constants.MESSAGE, new MessageSurvey()
+		window.setTimeout showSurvey, 10 * 1000 * 60
+
+
+
 initWindowEvents = () ->
 	$(window).resize ->
 		Dispatcher.trigger Constants.APP_RESIZE
@@ -186,11 +221,11 @@ $(document).ready ->
 
 
 	console.log '''
-	   __                 #               #
-	  |--|   ### # #  ##     ###     ###  #   ## # # ### ###
-	  |  |   ### # #  #   #  #       # #  #  # # ### ##  #
-	 () ()   # # ### ##   ## ###     ###  ## ###   # ### #
-	                                 #           ###
+		 __								 #							 #
+		|--|	 ### # #	##		 ###		 ###	#	 ## # # ### ###
+		|	|	 ### # #	#	 #	#			 # #	#	# # ### ##	#
+	 () ()	 # # ### ##	 ## ###		 ###	## ###	 # ### #
+																	 #					 ###
  	 https://github.com/musicplayer-io/redditmusicplayer
 
 	'''

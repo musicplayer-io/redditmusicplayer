@@ -123,25 +123,25 @@ module.exports =
 					<div class='downvote<% if (likes === false) print(' active') %>'><i class='icon down arrow'></i></div>
 				</div>
 				<div class='content expand'>
-          <% if (distinguished && distinguished === 'moderator') { %>
-          <a class='author moderator'><%= author %> [M]</a>
-          <% } else if (isSubmitter) { %>
-          <a class='author submitter'><%= author %> [S]</a>
-          <% } else { %>
+					<% if (distinguished && distinguished === 'moderator') { %>
+					<a class='author moderator'><%= author %> [M]</a>
+					<% } else if (isSubmitter) { %>
+					<a class='author submitter'><%= author %> [S]</a>
+					<% } else { %>
 					<a class='author'><%= author %></a>
-          <% } %>
+					<% } %>
 					<div class='metadata'>
 						<a class='expand'>Expand <i class='icon plus'></i></a>
 					</div>
 				</div>
 				<div class='content'>
-          <% if (distinguished && distinguished === 'moderator') { %>
+					<% if (distinguished && distinguished === 'moderator') { %>
 					<a class='author moderator' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [M]</a>
-          <% } else if (isSubmitter) { %>
-          <a class='author submitter' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [S]</a>
-          <% } else { %>
-          <a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
-          <% } %>
+					<% } else if (isSubmitter) { %>
+					<a class='author submitter' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [S]</a>
+					<% } else { %>
+					<a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
+					<% } %>
 					<div class='metadata'>
 						<span class='ups'><%= score %></span>
 						<span class='date' title='<%= new Date(created_utc * 1000).toLocaleString() %>'><%= created_ago %> ago</span>
@@ -189,13 +189,15 @@ module.exports =
 			<div data-id='<%= cid %>' class='ui message inverted <%= type %>' data-type='<%= type %>' data-status='<%= status %>'>
 				<span class='text'><%= text %></span>
 				<div class='ui buttons'>
-					<% if (help) { %>
-						<a target='_blank' href='<%= help %>' class='blue inverted ui button'>Help</a>
+					<% for (btn of buttons) { %>
+						<a data-id='<%= buttons.indexOf(btn) %>' class='inverted ui button <%= btn.className %>' <% if (btn.url) { %> href='<%= btn.url %>' target='_blank' <% } %>>
+							<% if (btn.icon) { %>
+								<i class='<%= btn.icon %> icon'></i>
+							<% } else { %>
+								<%= btn.text %>
+							<% } %>
+						</a>
 					<% } %>
-					<a class='yellow inverted ui button action'><%= button %></a>
-					<a class='red inverted icon ui button close'>
-						<i class='close icon'></i>
-					</a>
 				</div>
 			</div>
 		")
