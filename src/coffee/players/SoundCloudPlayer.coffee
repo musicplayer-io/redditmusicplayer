@@ -24,7 +24,7 @@ SoundCloudPlayer = MusicPlayer.extend
 		@player.getCurrentSoundIndex (index) =>
 			# 199 = The embed player has a maximum of 199 tracks
 			# But the amount of tracks returned in the API call can be higher
-			if index >= @track.sc.track_count - 1 or index >= 199
+			if @track.sc.kind is 'track' or index >= @track.sc.track_count - 1 or index >= 199
 				@playerState = Constants.ENDED
 				Dispatcher.trigger Constants.PLAYER_ENDED, @
 			else
