@@ -29,7 +29,7 @@ Playlist = Backbone.Collection.extend
 		index = _.indexOf(@models, song)
 		@current.song = song
 		@current.index = index
-		Dispatcher.trigger Constants.SONG_CLICKED, index, song
+		Dispatcher.trigger Constants.SONG_ACTIVATED, index, song
 		if @current.index >= @length  - 1
 			@more()
 
@@ -98,6 +98,7 @@ Playlist = Backbone.Collection.extend
 		@listenTo Dispatcher, Constants.CONTROLS_SORTMETHOD, @refresh
 		@listenTo Dispatcher, Constants.GET_MUSIC, @refresh
 
+		@listenTo Dispatcher, Constants.SONG_CLICKED, @activate
 		@listenTo Dispatcher, Constants.PLAYER_ENDED, @forward
 
 

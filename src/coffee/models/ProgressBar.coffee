@@ -29,7 +29,7 @@ ProgressBar = Backbone.Model.extend
 
 	initialize: () ->
 		console.log 'ProgressBar :: Ready' if FLAG_DEBUG
-		@listenTo Dispatcher, Constants.SONG_CLICKED, @songChanged
+		@listenTo Dispatcher, Constants.SONG_ACTIVATED, @songChanged
 		@listenTo Dispatcher, Constants.PROGRESS_CURRENT, @setCurrent
 		@listenTo Dispatcher, Constants.PROGRESS_LOADED, @setLoaded
 		@listenTo Dispatcher, Constants.PROGRESS_DURATION, @setDuration

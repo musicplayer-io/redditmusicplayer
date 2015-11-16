@@ -48,7 +48,7 @@ PlayerController = Backbone.Model.extend
 		@controller.seekTo(percentage, seekAhead)
 
 	initialize: () ->
-		@listenTo Dispatcher, Constants.SONG_CLICKED, @change
+		@listenTo Dispatcher, Constants.SONG_ACTIVATED, @change
 		@listenTo Dispatcher, Constants.CONTROLS_PLAY, @playPause
 		@listenTo Dispatcher, Constants.CONTROLS_VOLUME, @volume
 		@listenTo Dispatcher, Constants.CONTROLS_SEEKTO, @seekTo

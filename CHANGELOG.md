@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.4 - 16 November 2015
+
+* Fixes for YouTube
+
 ### 0.6.2 - 16 November 2015
 
 * another Soundcloud fix

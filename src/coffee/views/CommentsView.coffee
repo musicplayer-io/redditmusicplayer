@@ -161,7 +161,7 @@ CommentsView = Backbone.View.extend
 			@$('.comments.overview').html 'No comments to display.'
 
 	initialize: () ->
-		@listenTo Dispatcher, Constants.SONG_CLICKED, @render
+		@listenTo Dispatcher, Constants.SONG_ACTIVATED, @render
 		console.log 'CommentsView :: Ready' if FLAG_DEBUG
 		@listenTo Dispatcher, Constants.LOADED_PLAYLIST, (page) =>
 			@setElement $('.content.song .comments.root')

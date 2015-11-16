@@ -20,7 +20,7 @@ PlaylistView = Backbone.View.extend
 		target = $ e.currentTarget
 		id = target.data 'id'
 		song = @collection.get id
-		@collection.activate song
+		Dispatcher.trigger Constants.SONG_CLICKED, song
 
 	render: () ->
 		content = []
@@ -38,7 +38,7 @@ PlaylistView = Backbone.View.extend
 		@listenTo @collection, 'remove', @render
 		@listenTo @collection, 'reset', @render
 		@listenTo @collection, 'update', @render
-		@listenTo Dispatcher, Constants.SONG_CLICKED, @setCurrent
+		@listenTo Dispatcher, Constants.SONG_ACTIVATED, @setCurrent
 		@listenTo Dispatcher, Constants.LOADED_PLAYLIST, (page) =>
 			@setElement $('.content.playlist .music.playlist')
 			@render() if @collection.length > 0

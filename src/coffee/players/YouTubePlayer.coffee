@@ -13,7 +13,6 @@ YouTubePlayer = MusicPlayer.extend
 		e.target.playVideo()
 
 	onPlayerStateChange: (e) ->
-		console.log 'YouTubePlayer :: StateChange', e if FLAG_DEBUG
 		switch e.data
 			when YT.PlayerState.UNSTARTED then Dispatcher.trigger Constants.PLAYER_UNSTARTED, @
 			when YT.PlayerState.PLAYING then Dispatcher.trigger Constants.PLAYER_PLAYING, @
@@ -32,8 +31,7 @@ YouTubePlayer = MusicPlayer.extend
 		'onError': @onError
 
 	init: () ->
-		isReady = YT?
-		if not isReady then throw new Error 'YouTube not Ready!'
+		if not YT? then throw new Error 'YouTube not Ready!'
 		@player = new YT.Player 'player',
 			videoId: @track.id
 			events: @events()
@@ -76,36 +74,28 @@ YouTubePlayer = MusicPlayer.extend
 		@player.seekTo percentage * @player.getDuration(), seekAhead
 
 	findYouTubeId: (url) ->
-		domain = @get('domain')
-		if @get('domain') is 'youtu.be'
-			regex = @track.url.match(/\/\/youtu.be\/(.*)$/)
-			if regex and regex[1] then regex[1] else null
-		else
-			regex = @track.url.match(/\/\/.*=([\w+]+)$/)
-			if regex and regex[1] then regex[1] else null
+		regex = /(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.)?youtube\.com\/watch(?:\.php)?\?.*v=)([a-zA-Z0-9\-_]+)/gm
+		matches = regex.exec url
+		return matches[1] if matches? and matches[1]
 
 	getTrack: () ->
-		if @attributes.media is null
-			console.error 'YouTubePlayer :: No Media Data' if FLAG_DEBUG
+		if @attributes.media is null or not @attributes.media.oembed.url?
+			console.error 'YouTubePlayer :: No Media Data', @attributes if FLAG_DEBUG
 			@track =
 				url: @attributes.url
-			id = @findYouTubeId @track.url
-			if id
-				@track.id = id
-			else
-				return Dispatcher.trigger Constants.CONTROLS_FORWARD
+				id: @findYouTubeId @attributes.media.oembed.url
 		else
 			@track = @attributes.media.oembed
-			@track.id = @track.url.substr(31)
+			@track.id = @findYouTubeId @track.url
 
 	initialize: () ->
+		console.log 'Player :: YouTube' if FLAG_DEBUG
+
 		@$el = $('#player') if not @$el?
 		@getTrack()
 		@init()
 		@listenTo Dispatcher, Constants.PLAYER_PLAYING, @initProgress
-
 		console.log 'YouTubePlayer :: ', @track if FLAG_DEBUG
-		console.log 'Player :: YouTube' if FLAG_DEBUG
 
 
 

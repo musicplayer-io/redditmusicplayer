@@ -47,7 +47,7 @@ CurrentSongView = Backbone.View.extend
 
 	initialize: () ->
 		console.log 'CurrentSongView :: Ready' if FLAG_DEBUG
-		@listenTo Dispatcher, Constants.SONG_CLICKED, @render
+		@listenTo Dispatcher, Constants.SONG_ACTIVATED, @render
 		@listenTo Dispatcher, Constants.LOADED_PLAYLIST, (page) =>
 			@setElement $('.content.song .current.song')
 			@render()
