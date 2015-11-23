@@ -179,7 +179,6 @@ module.exports =
 						</div>
 					<% } %>
 					<a class='item sign-out' href='/logout'>
-						<i class='icon off'></i>
 						Log Out
 					</a>
 				</div>

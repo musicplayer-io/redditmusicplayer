@@ -9,14 +9,28 @@
 		.item.phone-only
 			i.icon.music
 	.right.menu
-		.page.icon.pop.link.item(data-page="playlist", class={active: page == "playlist"}, , data-content="Playlist", data-variation="inverted")
-			i.icon.sound
-		.page.icon.pop.link.item(data-page="remote", class={active: page == "remote"}, , data-content="Remote", data-variation="inverted")
-			i.icon.wifi
-		a.icon.pop.item(href="https://github.com/musicplayer-io/redditmusicplayer", data-content="Fork Me", target="_blank", data-variation="inverted")
-			i.icon.github.alternative
-		a.icon.pop.item(href="http://www.musicplayer.io/donate.html", data-content="Donate", target="_blank", data-variation="inverted")
-			i.icon.gift
+		.ui.dropdown.item.reddit
+			| Menu
+			i.icon.dropdown
+			.menu
+				.page.icon.link.item(data-page="playlist", class={active: page == "playlist"})
+					i.icon.sound
+					| Playlist
+				.page.icon.link.item(data-page="remote", class={active: page == "remote"})
+					i.icon.wifi
+					| Remote Control
+				a.icon.item(href="https://github.com/musicplayer-io/redditmusicplayer", target="_blank")
+					i.icon.github.alternative
+					| Source Code
+				a.icon.item(href="https://www.reddit.com/r/musicplayer", target="_blank")
+					i.icon.reddit
+					| Reddit
+				a.icon.item(href="https://twitter.com/musicplayer_io", target="_blank")
+					i.icon.twitter
+					| Twitter
+				a.icon.item(href="https://www.facebook.com/musicplayer.io", target="_blank")
+					i.icon.facebook
+					| Facebook
 		span.authentication
 			a.item.log-in(href="/login")
 				i.icon.user

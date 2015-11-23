@@ -132,36 +132,38 @@ initViews = () ->
 		el: $('.ui.titlebar')
 		panel: panelTwo
 
-	MessageSurvey = Message.extend
+	pollMsg = if localStorage.getItem('survey') is 'filled' then 'We\'re looking through the list of answers from the survey. ' else ''
+	pollMsg += 'Vote on what features you\'d like to see next!'
+	MessagePoll = Message.extend
 		type: 'info'
-		status: 'MessageSurvey'
-		text: 'We\'re looking for feedback. Help us by filling out this survey.'
+		status: 'MessagePoll'
+		text: pollMsg
 		buttons: [
 			{
-				text: 'View survey',
+				text: 'Vote',
 				className: 'yellow'
-				url: 'https://www.surveymonkey.com/r/PHTTNPD'
+				url: 'https://strawpoll.me/6080492'
 				callback: () ->
-					localStorage.setItem('survey', 'filled')
-					Messages.removeByStatus 'MessageSurvey'
+					localStorage.setItem('poll-1', 'filled')
+					Messages.removeByStatus 'MessagePoll'
 			},
 			{
-				text: 'Never',
+				text: 'Nah',
 				className: 'red'
 				callback: () ->
-					localStorage.setItem('survey', 'filled')
-					Messages.removeByStatus 'MessageSurvey'
+					localStorage.setItem('poll-1', 'filled')
+					Messages.removeByStatus 'MessagePoll'
 			},
 			{
-				text: 'Remind me later',
+				text: 'Not now',
 				action: 'close',
 				className: 'blue close'
 			}
 		]
 
-	if localStorage.getItem('survey') isnt 'filled'
-		showSurvey = () -> Dispatcher.trigger Constants.MESSAGE, new MessageSurvey()
-		window.setTimeout showSurvey, 10 * 1000 * 60
+	if localStorage.getItem('poll-1') isnt 'filled'
+		showPoll = () -> Dispatcher.trigger Constants.MESSAGE, new MessagePoll()
+		window.setTimeout showPoll, 0.1 * 1000 * 60
 
 
 

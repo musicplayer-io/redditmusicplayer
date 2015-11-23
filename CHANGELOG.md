@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.6.5 - 23 November 2015
+
+* Changed the titlebar menu items to a dropdown with text
+* Removed survey message, added poll message
+* Fixed hover on dropdown menus
+
 ### 0.6.4 - 16 November 2015
 
 * Fixes for YouTube
