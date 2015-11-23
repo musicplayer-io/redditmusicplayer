@@ -22,7 +22,13 @@ YouTubePlayer = MusicPlayer.extend
 			when YT.PlayerState.BUFFERING then Dispatcher.trigger Constants.PLAYER_BUFFERING, @
 
 	onError: (e) ->
-		console.error 'YouTubePlayer :: Error', e if FLAG_DEBUG
+		message = switch e.data
+			when 2 then 'Invalid parameter'
+			when 5 then 'Cannot be played in HTML5 player'
+			when 100 then 'Video was not found, removed or private'
+			when 101 then 'Not allowed in embedded players'
+			when 150 then 'Not allowed in embedded players - 150'
+		console.error 'YouTubePlayer :: Error :: ', message if FLAG_DEBUG
 		Dispatcher.trigger Constants.CONTROLS_FORWARD
 
 	events: () ->
