@@ -132,40 +132,6 @@ initViews = () ->
 		el: $('.ui.titlebar')
 		panel: panelTwo
 
-	pollMsg = if localStorage.getItem('survey') is 'filled' then 'We\'re looking through the list of answers from the survey. ' else ''
-	pollMsg += 'Vote on what features you\'d like to see next!'
-	MessagePoll = Message.extend
-		type: 'info'
-		status: 'MessagePoll'
-		text: pollMsg
-		buttons: [
-			{
-				text: 'Vote',
-				className: 'yellow'
-				url: 'https://strawpoll.me/6080492'
-				callback: () ->
-					localStorage.setItem('poll-1', 'filled')
-					Messages.removeByStatus 'MessagePoll'
-			},
-			{
-				text: 'Nah',
-				className: 'red'
-				callback: () ->
-					localStorage.setItem('poll-1', 'filled')
-					Messages.removeByStatus 'MessagePoll'
-			},
-			{
-				text: 'Not now',
-				action: 'close',
-				className: 'blue close'
-			}
-		]
-
-	if localStorage.getItem('poll-1') isnt 'filled'
-		showPoll = () -> Dispatcher.trigger Constants.MESSAGE, new MessagePoll()
-		window.setTimeout showPoll, 0.1 * 1000 * 60
-
-
 
 initWindowEvents = () ->
 	$(window).resize ->
