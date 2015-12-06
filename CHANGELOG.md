@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.6.6 - 6 December 2015
+
+* Removed poll
+* Slightly bigger controls
+* Fixed scrollbars on webkit
+
 ### 0.6.5 - 23 November 2015
 
 * Changed the titlebar menu items to a dropdown with text

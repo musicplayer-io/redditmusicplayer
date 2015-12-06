@@ -77,22 +77,21 @@ a {
 /* Scrollbar */
 ::-webkit-scrollbar {
 	margin-right: 1px;
-    width: 8px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar:vertical {
 	background: fade(@col-fg, 10%);
-	// .transition(0.15s, ease-out);
 }
 
-:-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     border-radius: 100px;
-    background: fade(@col-fg, 15%);
+    background: fade(@col-primary, 50%);
     &:hover {
-    	background: fade(@col-fg, 10%);
+    	background: fade(@col-primary, 75%);
     }
     &:active {
-    	background: fade(@col-fg, 5%);
+    	background: @col-primary;
     }
 }
 
