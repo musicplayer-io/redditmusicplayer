@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.7 - 7 December 2015
+
+* Added IndustrialTechno, video category
+
 ### 0.6.6 - 6 December 2015
 
 * Removed poll
