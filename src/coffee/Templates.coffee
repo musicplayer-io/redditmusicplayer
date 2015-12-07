@@ -47,11 +47,46 @@ module.exports =
 					<img src='<%= url %>' />
 				</a>
 			<% } %>
-			<div class='vote' id='<%= name %>'>
-				<div class='upvote'><i class='icon up arrow'></i></div>
-				<div class='downvote'><i class='icon down arrow'></i></div>
-			</div>
 			<h3 class='ui header title'><%= title %></h3>
+
+			<div class='ui inverted actions statistics vote'>
+				<div class='ui inverted statistic upvote'>
+					<div class='value'><i class='icon large up arrow'></i></div>
+					<div class='label'>Upvote</div>
+				</div>
+				<div class='ui inverted statistic downvote'>
+					<div class='value'><i class='icon large down arrow'></i></div>
+					<div class='label'>Downvote</div>
+				</div>
+				<a class='ui inverted statistic' href='http://www.reddit.com<%= permalink %>' target='_blank'>
+					<span class='value'><i class='icon large reddit'></i></span>
+					<span class='label'>Reddit</span>
+				</a>
+				<% if (type == 'link') { %>
+					<a target='_blank' class='ui inverted statistic' href='<%= url %>'>
+						<span class='value'><i class='external url large icon'></i></span>
+						<span class='label'>External Link</span>
+					</a>
+				<% } %>
+				<% if (media) { %>
+					<% if (media.type == 'soundcloud.com') { %>
+						<a href='<%= media.oembed.author_url %>' target='_blank' class='ui inverted statistic'>
+							<span class='value'><i class='icon large soundcloud'></i></span>
+							<span class='label'><%= media.oembed.author_name %></span>
+						</a>
+					<% } else if (media.type == 'vimeo.com') { %>
+						<a href='<%= media.oembed.author_url %>' target='_blank' class='ui inverted statistic'>
+							<span class='value'><i class='icon large vimeo'></i></span>
+							<span class='label'><%= media.oembed.author_name %></span>
+						</a>
+					<% } else if (media.type.indexOf('youtu') !== -1) { %>
+						<a href='<%= media.oembed.author_url %>' target='_blank' class='ui inverted statistic'>
+							<span class='value'><i class='icon large youtube'></i></span>
+							<span class='label'><%= media.oembed.author_name %></span>
+						</a>
+					<% } %>
+				<% } %>
+			</div>
 
 			<% if (media) { %>
 					<p><%= media.oembed.description %></p>
@@ -80,39 +115,6 @@ module.exports =
 				<div class='ui inverted statistic'>
 					<div class='value'>/r/<%= subreddit %></div>
 					<div class='label'>Subreddit</div>
-				</div>
-			</div>
-
-			<div>
-				<div class='ui 2 fluid tiny buttons'>
-					<a target='_blank' class='permalink ui gold button' href='http://www.reddit.com<%= permalink %>'>
-						<i class='url icon'></i>
-						Permalink
-					</a>
-					<% if (type == 'link') { %>
-						<a target='_blank' class='ui gold external button' href='<%= url %>'>
-							<i class='external url icon'></i>
-							External Link
-						</a>
-					<% } %>
-					<% if (media) { %>
-						<% if (media && (media.type == 'youtube.com' || media.type == 'youtu.be')) { %>
-							<script src='https://apis.google.com/js/platform.js'></script>
-							<div class='ui youtube tiny button'>
-								<div class='g-ytsubscribe' data-channel='<%= media.oembed.author_name %>' data-layout='default' data-theme='dark' data-count='default'></div>
-							</div>
-						<% } else if (media.type == 'soundcloud.com') { %>
-							<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
-								<i class='icon male'></i>
-								<%= media.oembed.author_name %>
-							</a>
-						<% } else if (media.type == 'vimeo.com') { %>
-							<a href='<%= media.oembed.author_url %>' target='_blank' class='ui soundcloud button'>
-								<i class='icon male'></i>
-								<%= media.oembed.author_name %>
-							</a>
-						<% } %>
-					<% } %>
 				</div>
 			</div>
 		")

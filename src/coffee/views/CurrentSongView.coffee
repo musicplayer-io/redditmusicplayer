@@ -5,6 +5,7 @@ Templates = require 'Templates'
 Reddit = require 'controllers/Reddit'
 Constants = require 'Constants'
 Store = require 'Store'
+{MessageNotAuthenticated} = require 'models/Message'
 
 
 CurrentSongView = Backbone.View.extend
@@ -14,7 +15,9 @@ CurrentSongView = Backbone.View.extend
 		'click .downvote': 'vote'
 
 	vote: (e) ->
-		return if not Store.authentication?
+		if not Store.authentication?
+			Dispatcher.trigger Constants.MESSAGE, new MessageNotAuthenticated()
+			return
 
 		target = $(e.currentTarget)
 		parent = target.parents('.vote')
