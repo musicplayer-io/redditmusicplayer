@@ -6,3 +6,4 @@ module.exports =
 	firstRequest: false
 	subredditsSelection: []
 	authentication: null
+	filterFunction: (song) -> song.data.is_self is false

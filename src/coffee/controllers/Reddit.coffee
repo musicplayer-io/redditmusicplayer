@@ -55,7 +55,8 @@ Reddit = Backbone.Model.extend
 				data: data
 				success: (r) ->
 					throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-					callback r.data.children
+					songs = r.data.children.filter Store.filterFunction
+					callback songs
 			Store.firstRequest = false
 		else
 			$.ajax
@@ -65,7 +66,8 @@ Reddit = Backbone.Model.extend
 				success: (r) ->
 					throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
 					console.log 'Reddit :: Music Received :: ', r.data.children.length if FLAG_DEBUG
-					callback r.data.children
+					songs = r.data.children.filter Store.filterFunction
+					callback songs
 				error: (xhr, status, err) ->
 					console.error "Reddit :: #{status} :: #{err}", arguments
 					Dispatcher.trigger Constants.MESSAGE, new MessageFailedToGetMusic()
@@ -79,7 +81,8 @@ Reddit = Backbone.Model.extend
 			data: data
 			success: (r) ->
 				throw console.error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+				songs = r.data.children.filter Store.filterFunction
+				callback songs
 
 	getMulti: (callback, data) ->
 		if not @has('multi')
@@ -91,7 +94,8 @@ Reddit = Backbone.Model.extend
 			data: data
 			success: (r) ->
 				throw new Error "Reddit :: #{r.error.type} :: #{r.error.message}" if r.error?
-				callback r.data.children
+				songs = r.data.children.filter Store.filterFunction
+				callback songs
 
 	getMore: (last, callback) ->
 		@getMusic callback, last, 20
