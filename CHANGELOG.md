@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.6.8 - 11 December 2015
+
+* Added a [beta](https://beta.musicplayer.io) channel
+* Change the current song view to include actions above the description
+
 ### 0.6.7 - 7 December 2015
 
 * Added IndustrialTechno, video category
