@@ -49,7 +49,7 @@ module.exports =
 			<% } %>
 			<h3 class='ui header title'><%= title %></h3>
 
-			<div class='ui inverted actions statistics vote'>
+			<div class='ui inverted actions statistics vote' id='<%= name %>'>
 				<div class='ui inverted statistic upvote'>
 					<div class='value'><i class='icon large up arrow'></i></div>
 					<div class='label'>Upvote</div>

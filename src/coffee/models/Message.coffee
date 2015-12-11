@@ -39,7 +39,8 @@ MessageNotAuthenticated = Message.extend
 	buttons: [
 		{
 			text: 'Log In',
-			url: '/login'
+			className: 'yellow',
+			callback: () -> location.href = '/login'
 		},
 		{
 			icon: 'close',
