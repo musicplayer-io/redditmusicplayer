@@ -10,26 +10,36 @@ CustomSubredditView = Backbone.View.extend
 	events:
 		'keyup input': 'keypress'
 		'click .button': 'submit'
+
+	_showHideList: (show, hide, val) ->
+		val = @$('input').val()
+
+		_.forEach Store.subredditsSelection, (s) -> s.show()
+		return if not val? or val.trim().length is 0
+
+		val = val.toLowerCase()
+		# Hide empty categories
+		_(Store.subredditsSelection)
+			.filter (cat) ->
+				not _.find cat.reddits, (r) ->
+					r.indexOf(val) > -1
+			.forEach (list) -> list.hide()
+			.commit()
+
+		# Hide empty subs
+		_(Store.subredditsSelection)
+			.filter (cat) ->
+				_.find cat.reddits, (r) ->
+					r.indexOf(val) > -1
+			.forEach (list) -> list.hideAllExcept val
+			.commit()
+
+
 	keypress: (e) ->
 		if e.keyCode is 13
 			@submit()
 		else
-			val = @$('input').val()
-
-			_.forEach Store.subredditsSelection, (s) -> s.show()
-			return if not val? or val.trim().length is 0
-
-			val = val.toLowerCase()
-
-			# Hide empty categories
-			hiddenList = _.filter Store.subredditsSelection, (s) ->
-				not _.find s.reddits, (r) -> _.startsWith r, val
-			_.forEach hiddenList, (list) -> list.hide()
-
-			# Hide empty subs
-			showList = _.filter Store.subredditsSelection, (s) ->
-				_.find s.reddits, (r) -> _.startsWith r, val
-			_.forEach showList, (list) -> list.hideAllExcept(val)
+			@showHideList()
 
 	submit: () ->
 		_.forEach Store.subredditsSelection, (s) -> s.show()
@@ -50,10 +60,14 @@ CustomSubredditView = Backbone.View.extend
 		sub.save()
 
 		@render()
+
 	render: () ->
 		@$('input').val('')
+
 	initialize: () ->
+		@showHideList = _.debounce @_showHideList, 500
 		console.log 'Custom Subreddit :: Ready' if FLAG_DEBUG
+
 		@listenTo SubredditPlaylist, 'add', @render
 		@listenTo SubredditPlaylist, 'remove', @render
 

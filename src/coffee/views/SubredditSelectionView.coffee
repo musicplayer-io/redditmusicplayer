@@ -45,9 +45,13 @@ SubredditSelectionView = Backbone.View.extend
 		@$el.hide()
 
 	hideAllExcept: (value) ->
-		subsList = _.filter @reddits, (r) -> not _.startsWith r, value
-		_.each subsList, (element) =>
-			@$(".menu .item[data-value='#{element}']").hide()
+		elements = $()
+		_(@reddits)
+			.filter (r) -> r.indexOf(value) is -1
+			.forEach (element) =>
+				elements = elements.add @$(".menu .item[data-value='#{element}']")
+			.value()
+		elements.hide()
 
 	show: () ->
 		@$el.show()

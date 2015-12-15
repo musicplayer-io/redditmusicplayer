@@ -1,9 +1,16 @@
 ## Changelog
 
+### 0.6.9 - 15 December 2015
+
+* Updated Lodash
+* Improve performance of search-as-you-type
+* Searching subreddits show all matches, not just subs starting with the match
+
 ### 0.6.8 - 11 December 2015
 
 * Added a [beta](https://beta.musicplayer.io) channel
 * Change the current song view to include actions above the description
+* Filtering out self posts
 
 ### 0.6.7 - 7 December 2015
 
