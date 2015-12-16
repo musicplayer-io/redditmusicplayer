@@ -15,6 +15,16 @@ SoundCloudPlayer = MusicPlayer.extend
 		'play': @event_trigger(Constants.PLAYING)
 		'pause': @event_trigger(Constants.PAUSED)
 		'finish': @onFinish.bind @
+		'ready': @ready.bind @
+		'error': @error.bind @
+
+	ready: () ->
+		console.log 'SoundCloudPlayer :: Ready' if FLAG_DEBUG
+		@player.play()
+
+	error: (err) ->
+		console.error 'SoundCloudPlayer :: Error ::', err if FLAG_DEBUG
+		Dispatcher.trigger Constants.CONTROLS_FORWARD
 
 	progress_play: (data) ->
 		Dispatcher.trigger Constants.PROGRESS_CURRENT, data.currentPosition / 1000 # secs

@@ -80,7 +80,7 @@ YouTubePlayer = MusicPlayer.extend
 		@player.seekTo percentage * @player.getDuration(), seekAhead
 
 	findYouTubeId: (url) ->
-		regex = /(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.)?youtube\.com\/watch(?:\.php)?\?.*v=)([a-zA-Z0-9\-_]+)/gm
+		regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|attribution_link\?a=.+?watch.+?v(?:%|=)))((\w|-){11})(?:\S+)?$/
 		matches = regex.exec url
 		return matches[1] if matches? and matches[1]
 
@@ -89,7 +89,7 @@ YouTubePlayer = MusicPlayer.extend
 			console.error 'YouTubePlayer :: No Media Data', @attributes if FLAG_DEBUG
 			@track =
 				url: @attributes.url
-				id: @findYouTubeId @attributes.media.oembed.url
+				id: @findYouTubeId @attributes.url
 		else
 			@track = @attributes.media.oembed
 			@track.id = @findYouTubeId @track.url

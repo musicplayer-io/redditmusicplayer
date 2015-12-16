@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.6.10 - 16 December 2015
+
+* Added SoundcloudPlayer logging on ready and errors
+* Skipping when a Soundcloud link has errors
+* Improved ID matching in YouTube
+
 ### 0.6.9 - 15 December 2015
 
 * Updated Lodash
