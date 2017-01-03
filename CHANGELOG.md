@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.11 - 3 January 2017
+
+* Fixes for remote control
+
 ### 0.6.10 - 16 December 2015
 
 * Added SoundcloudPlayer logging on ready and errors
