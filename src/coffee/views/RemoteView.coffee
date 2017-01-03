@@ -21,7 +21,7 @@ RemoteView = Backbone.View.extend
 			@$('.qrcode').qrcode text: url
 
 	copySubreddits: () ->
-		@model.send 'remote:subreddits', SubredditPlaylist.toString()
+		@model.send Constants.REMOTE_SUBREDDITS, SubredditPlaylist.toString()
 
 	button: (e) ->
 		item = $ e.currentTarget

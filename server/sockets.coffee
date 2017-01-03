@@ -3,6 +3,7 @@ session = require 'express-session'
 RedisStore = require('connect-redis') session
 cookieParser = require 'cookie-parser'
 crypto = require 'crypto'
+Constants = require '../src/coffee/Constants'
 _ = require 'lodash'
 
 onAuthorizeSuccess = (data, accept) ->
@@ -13,14 +14,14 @@ onAuthorizeFail = (data, message, error, accept) ->
 
 sendToRoomOnTrigger = (socket, type) ->
 	socket.on type, (data) ->
-		socket.rooms.forEach (room) ->
+		_.each socket.rooms, (room) ->
 			socket.to(room).emit type, data
 
 io = null
 
 module.exports = (socketio) ->
 	io = socketio
-	simpleEvents = ['controls:play', 'controls:forward', 'controls:backward', 'remote:subreddits']
+	simpleEvents = [Constants.CONTROLS_FORWARD, Constants.CONTROLS_BACKWARD, Constants.CONTROLS_PLAY, Constants.REMOTE_SUBREDDITS]
 
 	io.use passportSocketIo.authorize
 		cookieParser: cookieParser
@@ -60,19 +61,19 @@ module.exports.routes = ->
 
 		switch action
 			when 'play'
-				socket.emit 'controls:play'
+				socket.emit Constants.CONTROLS_PLAY
 				res.send
 					control: 'play'
 					status: true
 
 			when 'forward'
-				socket.emit 'controls:forward'
+				socket.emit Constants.CONTROLS_FORWARD
 				res.send
 					control: 'forward'
 					status: true
 
 			when 'backward'
-				socket.emit 'controls:forward'
+				socket.emit Constants.CONTROLS_BACKWARD
 				res.send
 					control: 'backward'
 					status: true
@@ -81,7 +82,7 @@ module.exports.routes = ->
 				subreddits = req.body['subreddits[]']?.join('+')
 				subreddits = req.body.subreddits if not subreddits?
 				console.log subreddits, req.body
-				socket.emit 'remote:subreddits', subreddits
+				socket.emit Constants.REMOTE_SUBREDDITS, subreddits
 				res.send
 					control: 'subreddits'
 					subreddits: subreddits

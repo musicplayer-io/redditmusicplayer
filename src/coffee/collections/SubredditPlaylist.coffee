@@ -50,7 +50,7 @@ SubredditPlaylist = Backbone.Collection.extend
 	initialize: () ->
 		console.log 'SubredditPlaylist :: Ready' if FLAG_DEBUG
 		@listenTo @, 'remove', (x) -> x.destroy()
-		@listenTo Dispatcher, 'remote:subreddits', @parseFromRemote
+		@listenTo Dispatcher, Constants.REMOTE_SUBREDDITS, @parseFromRemote
 		@listenTo Dispatcher, Constants.APP_MAIN, =>
 			if url_subreddits?
 				@loadFromServer()

@@ -58,7 +58,7 @@ Remote = Backbone.Model.extend
 			@set 'name', authentication.get('name')
 			@socket = io()
 
-			simpleEvents = [Constants.CONTROLS_FORWARD, Constants.CONTROLS_BACKWARD, Constants.CONTROLS_PLAY, 'remote:subreddits']
+			simpleEvents = [Constants.CONTROLS_FORWARD, Constants.CONTROLS_BACKWARD, Constants.CONTROLS_PLAY, Constants.REMOTE_SUBREDDITS]
 
 			for ev in simpleEvents
 				@triggerOnEmit ev
