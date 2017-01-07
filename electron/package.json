@@ -7,7 +7,7 @@
   "license": "GPLv3",
   "main": "app/background.js",
   "build": {
-    "appId": "com.example.electron-boilerplate",
+    "appId": "com.example.redditmusicplayer",
     "files": [
       "app/**/*",
       "node_modules/**/*",
