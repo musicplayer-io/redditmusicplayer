@@ -44,7 +44,7 @@ SoundCloudPlayer = MusicPlayer.extend
 
 	event_trigger: (ev) ->
 		return (data) =>
-			@player.setVolume(VolumeControl.get('volume')) # didn't work on ready event
+			@player.setVolume(VolumeControl.get('volume') * 100) # didn't work on ready event
 			@player.getDuration (duration) ->
 				Dispatcher.trigger Constants.PROGRESS_DURATION, duration / 1000 # secs
 			@playerState = ev
@@ -56,7 +56,7 @@ SoundCloudPlayer = MusicPlayer.extend
 		@player.toggle()
 
 	volume: (value) ->
-		@player.setVolume(value)
+		@player.setVolume(value * 100)
 
 	seekTo: (percentage, seekAhead) ->
 		@player.getDuration (duration) =>
