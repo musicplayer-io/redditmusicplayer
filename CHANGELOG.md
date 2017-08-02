@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.6.12 - 2 August 2017
+
+* Fixes for soundcloud volume changing from 0-1 to 0-100
+
 ### 0.6.11 - 3 January 2017
 
 * Fixes for remote control
