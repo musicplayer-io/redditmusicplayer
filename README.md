@@ -16,6 +16,8 @@
 
 # Contributing
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/musicplayer-io/redditmusicplayer.svg)](https://greenkeeper.io/)
+
 ## Installation from source
 
 ```
