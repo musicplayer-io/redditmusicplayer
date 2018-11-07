@@ -12,7 +12,7 @@ NotASong = Backbone.Model.extend
 		@set 'type', @type
 		@set 'playable', @playable
 		if @get('domain').indexOf 'imgur.com' > -1
-			@set 'url', @get('url').replace('http:', '')
+			@set 'url', @get('url').replace('http:', 'https:')
 
 
 

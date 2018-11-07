@@ -1,12 +1,10 @@
 global.API =
 	Soundcloud:
-		base: '//api.soundcloud.com'
+		base: 'https://api.soundcloud.com'
 		key: 'YOUR_SOUNDCLOUD_KEY'
-	Reddit:
-		base: '//www.reddit.com'
 	MusicPlayer:
 		base: 'https://reddit.musicplayer.io'
-		short: 'http://r.il.ly'
+		short: 'https://r.il.ly'
 
 global.FLAG_DEBUG = false
 global.FLAG_DEBUG = true if localStorage? and localStorage.debug and localStorage.debug is 'true'

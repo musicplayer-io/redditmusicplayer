@@ -143,7 +143,7 @@ class APIController
 							data: body
 
 	get: (request, response, callback) ->
-		url = 'http://www.reddit.com' + request.url.replace '/api/get', ''
+		url = 'https://www.reddit.com' + request.url.replace '/api/get', ''
 		req.get(url).pipe(response)
 
 	isAuthenticated: (request, response, callback) ->

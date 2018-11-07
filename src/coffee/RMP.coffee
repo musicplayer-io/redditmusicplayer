@@ -141,8 +141,8 @@ initWindowEvents = () ->
 		Store.dragging = false
 		Dispatcher.trigger Constants.DRAGGING_STOPPED
 
-	$("<script src='//www.youtube.com/iframe_api' />").appendTo $('.scripts')
-	$("<script src='//w.soundcloud.com/player/api.js' />").appendTo $('.scripts')
+	$("<script src='https://www.youtube.com/iframe_api' />").appendTo $('.scripts')
+	$("<script src='https://w.soundcloud.com/player/api.js' />").appendTo $('.scripts')
 
 	if window.addEventListener
 		window.addEventListener 'message', Util.onMessageReceived, false

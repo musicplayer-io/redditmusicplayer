@@ -14,7 +14,7 @@ Playlist = Backbone.Collection.extend
 		index: -1
 
 	parseSong: (item) ->
-		item.thumbnail = item.thumbnail.replace('http:', '')
+		item.thumbnail = item.thumbnail.replace('http:', 'https:')
 		song = switch
 			when item.domain is 'youtube.com' or
 				item.domain is 'youtu.be' or

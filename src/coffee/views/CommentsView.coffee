@@ -108,7 +108,7 @@ CommentsView = Backbone.View.extend
 		comment.created_ago = Util.timeSince time
 
 		songId = Playlist.current.song.get('id')
-		comment.permalink = "#{API.Reddit.base}/r/#{comment.subreddit}/comments/#{songId}/link/#{comment.id}"
+		comment.permalink = "https://www.reddit.com/r/#{comment.subreddit}/comments/#{songId}/link/#{comment.id}"
 
 		songSubmitter = Playlist.current.song.get('author')
 		comment.isSubmitter = songSubmitter is comment.author

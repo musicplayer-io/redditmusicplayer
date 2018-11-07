@@ -58,7 +58,7 @@ module.exports =
 					<div class='value'><i class='icon large down arrow'></i></div>
 					<div class='label'>Downvote</div>
 				</div>
-				<a class='ui inverted statistic' href='http://www.reddit.com<%= permalink %>' target='_blank'>
+				<a class='ui inverted statistic' href='https://www.reddit.com<%= permalink %>' target='_blank'>
 					<span class='value'><i class='icon large reddit'></i></span>
 					<span class='label'>Reddit</span>
 				</a>
@@ -105,7 +105,7 @@ module.exports =
 					<div class='label'>Karma</div>
 				</div>
 				<div class='ui inverted statistic'>
-					<a href='http://reddit.com/u/<%=author%>' target='_blank' class='value author'>/u/<%= author %></a>
+					<a href='https://reddit.com/u/<%=author%>' target='_blank' class='value author'>/u/<%= author %></a>
 					<div class='label'>Author</div>
 				</div>
 				<div class='ui inverted statistic' title='<%= new Date(created_utc * 1000).toLocaleString() %>'>
@@ -138,11 +138,11 @@ module.exports =
 				</div>
 				<div class='content'>
 					<% if (distinguished && distinguished === 'moderator') { %>
-					<a class='author moderator' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [M]</a>
+					<a class='author moderator' href='https://reddit.com/u/<%= author %>' target='_blank'><%= author %> [M]</a>
 					<% } else if (isSubmitter) { %>
-					<a class='author submitter' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %> [S]</a>
+					<a class='author submitter' href='https://reddit.com/u/<%= author %>' target='_blank'><%= author %> [S]</a>
 					<% } else { %>
-					<a class='author' href='http://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
+					<a class='author' href='https://reddit.com/u/<%= author %>' target='_blank'><%= author %></a>
 					<% } %>
 					<div class='metadata'>
 						<span class='ups'><%= score %></span>
