@@ -7,9 +7,6 @@
   <br>
 </h1>
 
-[![Backers on Open Collective](https://opencollective.com/musicplayer/backers/badge.svg)](#backers)
-[![Sponsors on Open Collective](https://opencollective.com/musicplayer/sponsors/badge.svg)](#sponsors)
-
 > A free and open-source streaming music web player using data from Reddit.
 
 # Contributing
@@ -53,32 +50,6 @@ Then edit it in `src/coffee/config.coffee`.
 
 [Get the API key](https://www.reddit.com/prefs/apps/) - Only required for authentication.
 You can set an API key for development and production separately in `server/config.reddit.coffee`.
-
-## Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="graphs/contributors"><img src="https://opencollective.com/musicplayer/contributors.svg?width=890&button=false" /></a>
-
-## Backers
-
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/musicplayer#backer)]
-
-<a href="https://opencollective.com/musicplayer#backers" target="_blank"><img src="https://opencollective.com/musicplayer/backers.svg?width=890"></a>
-
-## Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/musicplayer#sponsor)]
-
-<a href="https://opencollective.com/musicplayer/sponsor/0/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/1/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/2/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/3/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/4/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/5/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/6/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/7/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/8/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/musicplayer/sponsor/9/website" target="_blank"><img src="https://opencollective.com/musicplayer/sponsor/9/avatar.svg"></a>
 
 # License
 
