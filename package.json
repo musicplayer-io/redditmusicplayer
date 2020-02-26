@@ -25,7 +25,7 @@
     "express-session": "^1.11.2",
     "jade": "^1.9.2",
     "js-yaml": "^3.13.1",
-    "lodash": "^3.9.3",
+    "lodash": "^4.17.13",
     "morgan": "^1.5.3",
     "opencollective": "^1.0.3",
     "passport": "^0.3.0",
