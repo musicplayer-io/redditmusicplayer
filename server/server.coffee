@@ -1,3 +1,4 @@
+require 'sqreen'
 yaml = require 'js-yaml'
 path = require 'path'
 fs = require 'fs'

@@ -4,7 +4,7 @@ bodyParser = require 'body-parser'
 cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
 session = require 'express-session'
-RedisStore = require('connect-redis')(session)
+SessionFileStore = require('session-file-store') session
 
 passport = require 'passport'
 jade = require 'jade'
@@ -51,10 +51,8 @@ module.exports = ->
 		saveUninitialized: true
 		name: 'rmp.id'
 		secret: 'Reddit Music Player'
-		store: new RedisStore
-			prefix: 'sess'
-			port: 6379
-			host: 'localhost'
+		store: new SessionFileStore
+			ttl: 60 * 60 * 24 * 30,
 		cookie:
 			secure: false
 			maxAge: 30 * (24 * 60 * 60 * 1000) # days

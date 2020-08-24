@@ -1,6 +1,6 @@
 passportSocketIo = require 'passport.socketio'
 session = require 'express-session'
-RedisStore = require('connect-redis') session
+SessionFileStore = require('session-file-store') session
 cookieParser = require 'cookie-parser'
 crypto = require 'crypto'
 Constants = require '../src/coffee/Constants'
@@ -27,10 +27,8 @@ module.exports = (socketio) ->
 		cookieParser: cookieParser
 		key: 'rmp.id'
 		secret: 'Reddit Music Player'
-		store: new RedisStore
-			prefix: 'sess'
-			port: 6379
-			host: 'localhost'
+		store: new SessionFileStore
+			ttl: 60 * 60 * 24 * 30 * 6, # 6 months 
 		success: onAuthorizeSuccess
 		fail: onAuthorizeFail
 
