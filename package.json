@@ -8,9 +8,9 @@
   },
   "scripts": {
     "build:dev": "grunt",
-    "build": "grunt build",
+    "build": "./node_modules/grunt/bin/grunt build",
     "test": "grunt test",
-    "start": "coffee server/server.coffee"
+    "start": "./node_modules/coffeescript/bin/coffee server/server.coffee"
   },
   "main": "server.coffee",
   "author": "Ilias Ismanalijev",
