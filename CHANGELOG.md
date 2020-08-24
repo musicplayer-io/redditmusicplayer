@@ -1,5 +1,13 @@
 ## Changelog
 
+### 0.6.14 - 24 August 2020
+
+- For easier maintenance, using file session store instead of redis session store.
+- Added sqreen for improved security
+- Updated dependencies and fixed build
+- Moved to a green host: https://datacenterlight.ch/
+- Note: Check out https://github.com/illyism/musicplayer for the latest version of the music player in TypeScript and Vue.js!
+
 ### 0.6.13 - 7 November 2018
 
 - Routes all JSON requests to Reddit to avoid issues with adblockers or privacy extensions
