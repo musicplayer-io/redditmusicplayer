@@ -23,7 +23,7 @@
     "express": "^4.8.8",
     "express-session": "^1.11.2",
     "js-yaml": "^3.13.1",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.19",
     "morgan": "^1.5.3",
     "passport": "^0.3.0",
     "passport-reddit": "git+https://github.com/musicplayer-io/passport-reddit.git",
