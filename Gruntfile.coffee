@@ -119,7 +119,7 @@ module.exports = (grunt) ->
 			livereload:
 				options:
 					livereload: true
-				files: ['app/css/*', 'app/js/*', 'app/jade/**']
+				files: ['app/css/*', 'app/js/*', 'app/pug/**']
 
 	grunt.loadNpmTasks 'grunt-browserify'
 	grunt.loadNpmTasks 'grunt-contrib-watch'
@@ -129,5 +129,5 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-contrib-clean'
 
 	grunt.registerTask 'default', ['browserify', 'less', 'watch']
-	grunt.registerTask 'build', ['browserify', 'uglify', 'less', 'clean:production']
+	grunt.registerTask 'build', ['browserify', 'uglify', 'less']
 	grunt.registerTask 'test', ['coffeelint', 'clean:all']

@@ -7,7 +7,7 @@ session = require 'express-session'
 SessionFileStore = require('session-file-store') session
 
 passport = require 'passport'
-jade = require 'jade'
+pug = require 'pug'
 RedditStrategy = require('passport-reddit').Strategy
 
 logger = require 'morgan'
@@ -35,8 +35,8 @@ module.exports = ->
 	# The port the server should run on
 	@set 'port', process.env.PORT or 4008
 
-	@set 'view engine', 'jade'
-	@set 'views', baseDir + '/src/jade'
+	@set 'view engine', 'pug'
+	@set 'views', baseDir + '/src/pug'
 
 	# Set the server's public directory
 	@use express.static(baseDir + '/app')
