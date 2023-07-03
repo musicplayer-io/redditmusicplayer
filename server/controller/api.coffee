@@ -144,7 +144,9 @@ class APIController
 
 	get: (request, response, callback) ->
 		url = 'https://www.reddit.com' + request.url.replace '/api/get', ''
-		req.get(url).pipe(response)
+		headers = 
+			'user-agent': request.headers['user-agent']
+		req.get(url, {headers: headers}).pipe(response)
 
 	isAuthenticated: (request, response, callback) ->
 		return callback() if request.isAuthenticated()
