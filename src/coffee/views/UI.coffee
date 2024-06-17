@@ -36,6 +36,10 @@ UI = Backbone.View.extend
 		# Show the changes in navigation
 		Dispatcher.trigger Constants.PAGE_CHANGING, @number, page
 
+		posthog.capture('$pageview', {
+			page: page
+		})
+
 	getElement: (page) ->
 		@$("[data-page=#{page}]")
 
